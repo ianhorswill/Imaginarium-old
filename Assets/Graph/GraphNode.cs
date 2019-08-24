@@ -18,7 +18,6 @@ public class GraphNode : MonoBehaviour
         rBody.gravityScale = 0;
         rBody.drag = 0.75f;
         rBody.constraints = RigidbodyConstraints2D.FreezeRotation;
-        rBody.MovePosition(gameObject.transform.position);
         textMesh = gameObject.AddComponent<TextMesh>();
         textMesh.alignment = TextAlignment.Center;
         //textMesh.fontStyle = FontStyle.Bold;
