@@ -1,8 +1,9 @@
 A cat is a person.
-A cat has a name from cat names
 Persian, tabby, Siamese, manx, Chartreux, and Maine coon are kinds of cat.
 Cats have an age between 1 and 20.
 Cats are male or female.
+A male cat has a name from male cat names
+A female cat has a name from female cat names
 Cats are long-haired or short-haired.
 Cats can be big or small.
 Cats can be cuddly or haughty.
