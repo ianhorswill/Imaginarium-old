@@ -1,0 +1,68 @@
+﻿using System;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using static Parser;
+
+namespace Tests
+{
+    [TestClass]
+    public class GeneratorTests
+    {
+        [TestMethod]
+        public void CatTest()
+        {
+            Ontology.EraseConcepts();
+            ParseAndExecute("a cat is a kind of person",
+                    "a persian is a kind of cat",
+                    "a tabby is a kind of cat",
+                    "a siamese is a kind of cat",
+                    "a cat can be haughty",
+                    "a cat can be cuddly",
+                    "a cat can be crazy",
+                    "a persian can be matted");
+            var cat = (CommonNoun)Noun.Find("cat");
+            var g = new Generator(cat);
+            for (var n = 0; n < 100; n++)
+            {
+                var i = g.Solve();
+                Assert.IsTrue(i.IsA(i.Individuals[0], cat));
+                Assert.IsTrue(i.IsA(i.Individuals[0], "persian")
+                              || i.IsA(i.Individuals[0], "tabby")
+                              || i.IsA(i.Individuals[0], "siamese"));
+                Console.WriteLine(i.Model.Model);
+                Console.WriteLine(i.Description(i.Individuals[0]));
+            }
+        }
+
+        [TestMethod]
+        public void ImpliedAdjectiveTest()
+        {
+            Ontology.EraseConcepts();
+            ParseAndExecute("cats are fuzzy");
+            var cat = CommonNoun.Find("cat");
+            var fuzzy = Adjective.Find("fuzzy");
+            var g = new Generator(cat);
+            for (var n = 0; n < 100; n++)
+            {
+                var i = g.Solve();
+                Assert.IsTrue(i.IsA(i.Individuals[0], fuzzy));
+            }
+        }
+
+        [TestMethod]
+        public void NumericPropertyTest()
+        {
+            Ontology.EraseConcepts();
+            ParseAndExecute("cats have an age between 1 and 20");
+            var cat = CommonNoun.Find("cat");
+            var age = cat.Properties[0];
+            var g = new Generator(cat);
+            for (var n = 0; n < 100; n++)
+            {
+                var i = g.Solve();
+                var ageVar = i.Individuals[0].Properties[age];
+                var ageValue = (float)i.Model[ageVar];
+                Assert.IsTrue(ageValue >= 1 && ageValue <= 20);
+            }
+        }
+    }
+}

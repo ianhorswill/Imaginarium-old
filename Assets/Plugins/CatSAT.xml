@@ -1,0 +1,3340 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>CatSAT</name>
+    </assembly>
+    <members>
+        <member name="T:CatSAT.Actions">
+            <summary>
+            Represents an action that can modify a fluent
+            Actions are functions that map time points, and optionally other arguments to propositions representing that
+            that action has occurred at that time.
+            </summary>
+        </member>
+        <member name="T:CatSAT.Actions.ActionInstantiation">
+            <summary>
+            Represents an application of an action to a specific set of arguments at a specific point in time
+            </summary>
+        </member>
+        <member name="T:CatSAT.Actions.SymmetricActionInstantiation">
+            <summary>
+            Represents an application of an action to a specifc set of arguments at a specifc point in time
+            </summary>
+        </member>
+        <member name="M:CatSAT.Actions.Action(System.String)">
+            <summary>
+            Creates a new atomic action within a CatSAT Problem
+            </summary>
+            <param name="name">Name of the action</param>
+            <returns>The action</returns>
+        </member>
+        <member name="M:CatSAT.Actions.Instances(System.Func{System.Int32,CatSAT.Actions.ActionInstantiation},System.Int32)">
+            <summary>
+            Enumeration of all possible instances of action at the specified timepoint
+            </summary>
+            <param name="a">Action</param>
+            <param name="t">Timepoint</param>
+            <returns>Instances</returns>
+        </member>
+        <member name="M:CatSAT.Actions.Action``1(System.String,System.Collections.Generic.ICollection{``0})">
+            <summary>
+            Creates a new atomic action within a CatSAT Problem
+            </summary>
+            <param name="name">Name of the action</param>
+            <param name="domain1">Domain for first argument</param>
+            <returns>The action</returns>
+        </member>
+        <member name="M:CatSAT.Actions.MapDomain``2(System.Func{``0,System.Int32,CatSAT.Actions.ActionInstantiation},System.Func{``0,``1})">
+            <summary>
+            Maps function over the domain of the action
+            </summary>
+            <param name="a">Action over whose domain to map</param>
+            <param name="f">Function to apply to the domain</param>
+            <typeparam name="T1">Type of the action's argument</typeparam>
+            <typeparam name="TOut">Result type of the function</typeparam>
+            <returns>Stream of results of the function on the domain elements</returns>
+        </member>
+        <member name="M:CatSAT.Actions.Instances``1(System.Func{``0,System.Int32,CatSAT.Actions.ActionInstantiation},System.Int32)">
+            <summary>
+            Enumeration of all possible instances of action at the specified timepoint
+            </summary>
+            <param name="a">Action</param>
+            <param name="t">Timepoint</param>
+            <returns>Instances</returns>
+        </member>
+        <member name="M:CatSAT.Actions.Action``2(System.String,System.Collections.Generic.ICollection{``0},System.Collections.Generic.ICollection{``1})">
+            <summary>
+            Creates a new atomic action within a CatSAT Problem
+            </summary>
+            <param name="name">Name of the action</param>
+            <param name="domain1">Domain for first argument</param>
+            <param name="domain2">Domain for second argument</param>
+            <returns>The action</returns>
+        </member>
+        <member name="M:CatSAT.Actions.MapDomain``3(System.Func{``0,``1,System.Int32,CatSAT.Actions.ActionInstantiation},System.Func{``0,``1,``2})">
+            <summary>
+            Maps function over the domain of the action
+            </summary>
+            <param name="a">Action over whose domain to map</param>
+            <param name="f">Function to apply to the domain</param>
+            <typeparam name="T1">Type of the action's argument</typeparam>
+            <typeparam name="T2">Type of the action's second argument</typeparam>
+            <typeparam name="TOut">Result type of the function</typeparam>
+            <returns>Stream of results of the function on the domain elements</returns>
+        </member>
+        <member name="M:CatSAT.Actions.Instances``2(System.Func{``0,``1,System.Int32,CatSAT.Actions.ActionInstantiation},System.Int32)">
+            <summary>
+            Enumeration of all possible instances of action at the specified timepoint
+            </summary>
+            <param name="a">Action</param>
+            <param name="t">Timepoint</param>
+            <returns>Instances</returns>
+        </member>
+        <member name="M:CatSAT.Actions.SymmetricAction``1(System.String,System.Collections.Generic.ICollection{``0})">
+            <summary>
+            Creates a new atomic action within a CatSAT Problem
+            </summary>
+            <param name="name">Name of the action</param>
+            <param name="domain">Domain for first and second arguments</param>
+            <returns>The action</returns>
+        </member>
+        <member name="M:CatSAT.Actions.MapDomain``2(System.Func{``0,``0,System.Int32,CatSAT.Actions.SymmetricActionInstantiation},System.Func{``0,``0,``1})">
+            <summary>
+            Maps function over the domain of the action
+            </summary>
+            <param name="a">Action over whose domain to map</param>
+            <param name="f">Function to apply to the domain</param>
+            <typeparam name="T1">Type of the action's arguments</typeparam>
+            <typeparam name="TOut">Result type of the function</typeparam>
+            <returns>Stream of results of the function on the domain elements</returns>
+        </member>
+        <member name="M:CatSAT.Actions.Instances``1(System.Func{``0,``0,System.Int32,CatSAT.Actions.SymmetricActionInstantiation},System.Int32)">
+            <summary>
+            Enumeration of all possible instances of action at the specified timepoint
+            </summary>
+            <param name="a">Action</param>
+            <param name="t">Timepoint</param>
+            <returns>Instances</returns>
+        </member>
+        <member name="M:CatSAT.Actions.Precondition(System.Func{System.Int32,CatSAT.Actions.ActionInstantiation},System.Func{System.Int32,CatSAT.Proposition})">
+            <summary>
+            Asserts that the specified fluent is a precondition of the action
+            </summary>
+            <param name="action">Action</param>
+            <param name="precondition">Fluent that must be true at a given timepoint for the action to be runnable.</param>
+        </member>
+        <member name="M:CatSAT.Actions.Precondition``1(System.Func{``0,System.Int32,CatSAT.Actions.ActionInstantiation},System.Func{``0,System.Int32,CatSAT.Proposition})">
+            <summary>
+            Asserts that the specified fluent is a precondition of the action
+            </summary>
+            <param name="action">Action</param>
+            <param name="precondition">Fluent that must be true at a given timepoint for the action to be runnable.</param>
+        </member>
+        <member name="M:CatSAT.Actions.Precondition``2(System.Func{``0,``1,System.Int32,CatSAT.Actions.ActionInstantiation},System.Func{``0,``1,System.Int32,CatSAT.Literal})">
+            <summary>
+            Asserts that the specified fluent is a precondition of the action
+            </summary>
+            <param name="action">Action</param>
+            <param name="precondition">Fluent that must be true at a given timepoint for the action to be runnable.</param>
+        </member>
+        <member name="M:CatSAT.Actions.Precondition``1(System.Func{``0,``0,System.Int32,CatSAT.Actions.SymmetricActionInstantiation},System.Func{``0,``0,System.Int32,CatSAT.Literal})">
+            <summary>
+            Asserts that the specified fluent is a precondition of the action
+            </summary>
+            <param name="action">Action</param>
+            <param name="precondition">Fluent that must be true at a given timepoint for the action to be runnable.</param>
+        </member>
+        <member name="M:CatSAT.Actions.Adds(System.Func{System.Int32,CatSAT.Actions.ActionInstantiation},System.Func{System.Int32,CatSAT.Fluents.FluentInstantiation})">
+            <summary>
+            Asserts the specified action activates the specified fluent
+            </summary>
+            <param name="action">Action that changes the fluent</param>
+            <param name="effect">Fluent being activated</param>
+        </member>
+        <member name="M:CatSAT.Actions.Adds``1(System.Func{``0,System.Int32,CatSAT.Actions.ActionInstantiation},System.Func{``0,System.Int32,CatSAT.Fluents.FluentInstantiation})">
+            <summary>
+            Asserts the specified action activates the specified fluent
+            </summary>
+            <param name="action">Action that changes the fluent</param>
+            <param name="effect">Fluent being activated</param>
+        </member>
+        <member name="M:CatSAT.Actions.Adds``2(System.Func{``0,``1,System.Int32,CatSAT.Actions.ActionInstantiation},System.Func{``0,``1,System.Int32,CatSAT.Fluents.FluentInstantiation})">
+            <summary>
+            Asserts the specified action activates the specified fluent
+            </summary>
+            <param name="action">Action that changes the fluent</param>
+            <param name="effect">Fluent being activated</param>
+        </member>
+        <member name="M:CatSAT.Actions.Adds``1(System.Func{``0,``0,System.Int32,CatSAT.Actions.SymmetricActionInstantiation},System.Func{``0,``0,System.Int32,CatSAT.Fluents.FluentInstantiation})">
+            <summary>
+            Asserts the specified action activates the specified fluent
+            </summary>
+            <param name="action">Action that changes the fluent</param>
+            <param name="effect">Fluent being activated</param>
+        </member>
+        <member name="M:CatSAT.Actions.Deletes(System.Func{System.Int32,CatSAT.Actions.ActionInstantiation},System.Func{System.Int32,CatSAT.Fluents.FluentInstantiation})">
+            <summary>
+            Asserts the specified action deactivates the specified fluent
+            </summary>
+            <param name="action">Action that changes the fluent</param>
+            <param name="effect">Fluent being deactivated</param>
+        </member>
+        <member name="M:CatSAT.Actions.Deletes``1(System.Func{``0,System.Int32,CatSAT.Actions.ActionInstantiation},System.Func{``0,System.Int32,CatSAT.Fluents.FluentInstantiation})">
+            <summary>
+            Asserts the specified action deactivates the specified fluent
+            </summary>
+            <param name="action">Action that changes the fluent</param>
+            <param name="effect">Fluent being deactivated</param>
+        </member>
+        <member name="M:CatSAT.Actions.Deletes``2(System.Func{``0,``1,System.Int32,CatSAT.Actions.ActionInstantiation},System.Func{``0,``1,System.Int32,CatSAT.Fluents.FluentInstantiation})">
+            <summary>
+            Asserts the specified action deactivates the specified fluent
+            </summary>
+            <param name="action">Action that changes the fluent</param>
+            <param name="effect">Fluent being deactivated</param>
+        </member>
+        <member name="M:CatSAT.Actions.Deletes``1(System.Func{``0,``0,System.Int32,CatSAT.Actions.SymmetricActionInstantiation},System.Func{``0,``0,System.Int32,CatSAT.Fluents.FluentInstantiation})">
+            <summary>
+            Asserts the specified action deactivates the specified fluent
+            </summary>
+            <param name="action">Action that changes the fluent</param>
+            <param name="effect">Fluent being deactivated</param>
+        </member>
+        <member name="T:CatSAT.NonBoolean.SMT.Float.FloatDomain">
+            <summary>
+            A domain of single-precision floating-point numbers.
+            Domain must be a closed interval.
+            </summary>
+        </member>
+        <member name="F:CatSAT.NonBoolean.SMT.Float.FloatDomain.Bounds">
+            <summary>
+            The upper and lower bounds of the domain
+            </summary>
+        </member>
+        <member name="M:CatSAT.NonBoolean.SMT.Float.FloatDomain.#ctor(System.String,System.Single,System.Single)">
+            <summary>
+            A floating-point domain, specified by upper- and lower-bounds
+            </summary>
+            <param name="name">Name of the variable</param>
+            <param name="lowerBound">Lower bound of the variable</param>
+            <param name="upperBound">Upper bound of the variable</param>
+        </member>
+        <member name="M:CatSAT.NonBoolean.SMT.Float.FloatDomain.Instantiate(System.Object,CatSAT.Problem,CatSAT.Literal)">
+            <inheritdoc />
+        </member>
+        <member name="M:CatSAT.NonBoolean.SMT.Float.FloatProposition.Validate">
+            <summary>
+            Sanity check the proposition
+            </summary>
+        </member>
+        <member name="M:CatSAT.NonBoolean.SMT.Float.FloatProposition.ValidateNotDependency">
+            <summary>
+            Check that other propositions don't depend on this one.
+            This is needed for propositions for which we can't implement their inverses as constraints.
+            </summary>
+        </member>
+        <member name="M:CatSAT.NonBoolean.SMT.Float.FloatSolver.Preprocess">
+            <summary>
+            Add clauses that follow from user-defined bounds, e.g. from transitivity.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:CatSAT.NonBoolean.SMT.Float.FloatSolver.Solve(CatSAT.Solution)">
+            <summary>
+            Try to find values for the FloatVariables that are consistent with the true constraints.
+            </summary>
+            <param name="s">Model providing truth values for constraints</param>
+            <returns>True if variable values found successfully</returns>
+        </member>
+        <member name="M:CatSAT.NonBoolean.SMT.Float.FloatSolver.FindEquivalenceClasses(CatSAT.Solution)">
+            <summary>
+            Find the equivalence classes of variables in this model
+            </summary>
+            <param name="s">Boolean model against which to compute equivalence classes</param>
+        </member>
+        <member name="M:CatSAT.NonBoolean.SMT.Float.FloatSolver.FindActiveFunctionalConstraints(CatSAT.Solution)">
+            <summary>
+            Find all functional constraints that are active in solution and attach them to the
+            representatives of their associated variables.
+            </summary>
+        </member>
+        <member name="M:CatSAT.NonBoolean.SMT.Float.FloatSolver.FindSolutionBounds(CatSAT.Solution)">
+            <summary>
+            Find the tightest bounds we can for each representative given the model.
+            Save these bounds in SolutionBounds field of each variable
+            </summary>
+            <param name="s">Model against which to compute bounds</param>
+            <returns>False if constraints in this model are contradictory</returns>
+        </member>
+        <member name="M:CatSAT.NonBoolean.SMT.Float.FloatSolver.ResetAll">
+            <summary>
+            Reset bounds on all variables to their initial values
+            </summary>
+        </member>
+        <member name="M:CatSAT.NonBoolean.SMT.Float.FloatSolver.PropagateUpdates">
+            <summary>
+            Iterate until fixedpoint.
+            </summary>
+            <returns>True if successful, false if contradiction found</returns>
+        </member>
+        <member name="T:CatSAT.NonBoolean.SMT.Float.FunctionalConstraint">
+            <summary>
+            Base class for constraints such as SumConstraint.
+            Represents the constraint that Result = f(args) for some f and args
+            </summary>
+        </member>
+        <member name="F:CatSAT.NonBoolean.SMT.Float.FunctionalConstraint.Result">
+            <summary>
+            The 
+            </summary>
+        </member>
+        <member name="M:CatSAT.NonBoolean.SMT.Float.FunctionalConstraint.Propagate(CatSAT.FloatVariable,System.Boolean,System.Collections.Generic.Queue{System.Tuple{CatSAT.FloatVariable,System.Boolean}})">
+            <summary>
+            Called when the bounds on a variable involved in this constraint have changed
+            </summary>
+            <param name="changed">Variable whose bound has changed</param>
+            <param name="isUpper">True if the variable's upper bound lowered, or false if its lower bound increased.</param>
+            <param name="q">Propagation queue from solver</param>
+            <returns></returns>
+        </member>
+        <member name="M:CatSAT.NonBoolean.SMT.Float.FunctionalConstraint.IsDefinedIn(CatSAT.Solution)">
+            <summary>
+            True when the constraint is valid in the solution.
+            This requires that all its variables be defined.
+            </summary>
+            <param name="s">Solution to check</param>
+            <returns>True if the constraint is valid in the solution and all its variables are defined.</returns>
+        </member>
+        <member name="M:CatSAT.NonBoolean.SMT.Float.FunctionalConstraint.CombineConditions(CatSAT.Literal,CatSAT.Literal)">
+            <summary>
+            Returns a condition (i.e. Literal or null) that is defined when both argument
+            conditions are defined.
+            </summary>
+        </member>
+        <member name="T:CatSAT.NonBoolean.SMT.Float.GeneralSumConstraint">
+            <summary>
+            Represents the constraint that Result = lhs + rhs
+            </summary>
+        </member>
+        <member name="F:CatSAT.NonBoolean.SMT.Float.GeneralSumConstraint.addends">
+            <summary>
+            The left-hand argument to +
+            </summary>
+        </member>
+        <member name="T:CatSAT.NonBoolean.SMT.Float.ConstantBound">
+            <summary>
+            The constraint that a variable is bounded above/below by a constant
+            The specific constraint is: Variable Operator Bound
+            </summary>
+        </member>
+        <member name="F:CatSAT.NonBoolean.SMT.Float.ConstantBound.Variable">
+            <summary>
+            The variable being bounded
+            </summary>
+        </member>
+        <member name="F:CatSAT.NonBoolean.SMT.Float.ConstantBound.Bound">
+            <summary>
+            The value bounding the variable
+            </summary>
+        </member>
+        <member name="P:CatSAT.NonBoolean.SMT.Float.ConstantBound.IsUpper">
+            <summary>
+            This is an upper bound on the variable
+            </summary>
+        </member>
+        <member name="P:CatSAT.NonBoolean.SMT.Float.ConstantBound.Operator">
+            <summary>
+            The relation between the Variable, on the left, and the Bound on the right.
+            </summary>
+        </member>
+        <member name="F:CatSAT.NonBoolean.SMT.Float.MonotoneFunctionConstraint.input">
+            <summary>
+            The input to the function
+            </summary>
+        </member>
+        <member name="T:CatSAT.NonBoolean.SMT.Float.ProductConstraint">
+            <summary>
+            Represents the constraint that Result = lhs * rhs
+            </summary>
+        </member>
+        <member name="F:CatSAT.NonBoolean.SMT.Float.ProductConstraint.lhs">
+            <summary>
+            The left-hand argument to *
+            </summary>
+        </member>
+        <member name="F:CatSAT.NonBoolean.SMT.Float.ProductConstraint.rhs">
+            <summary>
+            The right-hand argument to *
+            </summary>
+        </member>
+        <member name="T:CatSAT.NonBoolean.SMT.Float.BinarySumConstraint">
+            <summary>
+            Represents the constraint that Result = lhs + rhs
+            </summary>
+        </member>
+        <member name="F:CatSAT.NonBoolean.SMT.Float.BinarySumConstraint.lhs">
+            <summary>
+            The left-hand argument to +
+            </summary>
+        </member>
+        <member name="F:CatSAT.NonBoolean.SMT.Float.BinarySumConstraint.rhs">
+            <summary>
+            The right-hand argument to +
+            </summary>
+        </member>
+        <member name="T:CatSAT.NonBoolean.SMT.Float.VariableBound">
+            <summary>
+            Represents the constraint that one variable is greater than or equal to another
+            </summary>
+        </member>
+        <member name="F:CatSAT.NonBoolean.SMT.Float.VariableBound.Lhs">
+            <summary>
+            The left-hand variable of hte constraint
+            </summary>
+        </member>
+        <member name="F:CatSAT.NonBoolean.SMT.Float.VariableBound.Rhs">
+            <summary>
+            The right-hand variable of hte constraint
+            </summary>
+        </member>
+        <member name="P:CatSAT.NonBoolean.SMT.Float.VariableBound.IsUpper">
+            <summary>
+            The constraint is Lhs l.t.e. Rhs rather than the other way around
+            </summary>
+        </member>
+        <member name="P:CatSAT.NonBoolean.SMT.Float.VariableBound.Operator">
+            <summary>
+            The relation of the constraint (e.g. less-than-equal)
+            </summary>
+        </member>
+        <member name="P:CatSAT.NonBoolean.SMT.MenuVariables.MenuVariable`1.Domain">
+            <inheritdoc />
+        </member>
+        <member name="P:CatSAT.NonBoolean.SMT.MenuVariables.MenuVariable`1.PredeterminedValue">
+            <inheritdoc />
+        </member>
+        <member name="M:CatSAT.NonBoolean.SMT.MenuVariables.MenuVariable`1.Reset">
+            <inheritdoc />
+        </member>
+        <member name="T:CatSAT.NonBoolean.UndefinedVariableException">
+            <summary>
+            Signifies that the program attempted to get the value of a Variable within a Solution in which is undefined.
+            </summary>
+        </member>
+        <member name="F:CatSAT.NonBoolean.UndefinedVariableException.Variable">
+            <summary>
+            The variable that was not defined in Solution
+            </summary>
+        </member>
+        <member name="F:CatSAT.NonBoolean.UndefinedVariableException.Solution">
+            <summary>
+            The solution within which Variable was undefined
+            </summary>
+        </member>
+        <member name="M:CatSAT.NonBoolean.UndefinedVariableException.#ctor(CatSAT.Variable,CatSAT.Solution)">
+            <summary>
+            Signal that the specified variable is not defined in this solution
+            </summary>
+        </member>
+        <member name="P:CatSAT.NonBoolean.UndefinedVariableException.Message">
+            <inheritdoc />
+        </member>
+        <member name="T:CatSAT.FloatVariable">
+            <summary>
+            An float-valued SMT variable
+            </summary>
+        </member>
+        <member name="M:CatSAT.FloatVariable.#ctor(System.Object,CatSAT.NonBoolean.SMT.Float.FloatDomain,CatSAT.Literal,CatSAT.Problem)">
+            <inheritdoc />
+        </member>
+        <member name="M:CatSAT.FloatVariable.#ctor(System.Object,System.Single,System.Single)">
+            <summary>
+            An float-valued SMT variable in the range low to high
+            </summary>
+            <param name="name">Name for the variable</param>
+            <param name="low">Lower bound</param>
+            <param name="high">Upper bound</param>
+        </member>
+        <member name="M:CatSAT.FloatVariable.#ctor(System.Object,System.Single,System.Single,CatSAT.Literal)">
+            <summary>
+            An float-valued SMT variable in the range low to high
+            </summary>
+            <param name="name">Name for the variable</param>
+            <param name="low">Lower bound</param>
+            <param name="high">Upper bound</param>
+            <param name="condition">Condition under which the variable is defined</param>
+        </member>
+        <member name="F:CatSAT.FloatVariable.FloatDomain">
+            <summary>
+            Domain for the variable
+            </summary>
+        </member>
+        <member name="P:CatSAT.FloatVariable.Domain">
+            <inheritdoc />
+        </member>
+        <member name="F:CatSAT.FloatVariable.SolutionBounds">
+            <summary>
+            Saved bounds for current SMT Solution, after initial constraint processing, but before sampling
+            </summary>
+        </member>
+        <member name="F:CatSAT.FloatVariable.Bounds">
+            <summary>
+            Current bounds to which the variable has been narrowed
+            </summary>
+        </member>
+        <member name="F:CatSAT.FloatVariable.PredeterminedValueInternal">
+            <summary>
+            The predetermined value for the variable, if any.
+            </summary>
+        </member>
+        <member name="F:CatSAT.FloatVariable.AllFunctionalConstraints">
+            <summary>
+            All functional constraints applying to this variable
+            </summary>
+        </member>
+        <member name="F:CatSAT.FloatVariable.ActiveFunctionalConstraints">
+            <summary>
+            Functional constraints that apply in this solution
+            </summary>
+        </member>
+        <member name="F:CatSAT.FloatVariable.equivalence">
+            <summary>
+            Variable to which this is aliased, if any
+            </summary>
+        </member>
+        <member name="P:CatSAT.FloatVariable.Representative">
+            <summary>
+            Representative of this variable's equivalence class.
+            This will be the variable itself, unless it has been aliased to something else by
+            == proposition
+            </summary>
+        </member>
+        <member name="F:CatSAT.FloatVariable.Index">
+            <summary>
+            Position in the FloatSolver's list of variables.
+            </summary>
+        </member>
+        <member name="M:CatSAT.FloatVariable.ValueInternal(CatSAT.Solution)">
+            <inheritdoc />
+        </member>
+        <member name="P:CatSAT.FloatVariable.PredeterminedValue">
+            <inheritdoc />
+        </member>
+        <member name="M:CatSAT.FloatVariable.Reset">
+            <inheritdoc />
+        </member>
+        <member name="M:CatSAT.FloatVariable.BoundAbove(System.Single)">
+            <summary>
+            Asserts that variable must be no larger than bound.
+            Updates Bounds.Upper if necessary
+            </summary>
+            <param name="bound">Upper bound on variable</param>
+            <returns>True is resulting bounds are consistent</returns>
+        </member>
+        <member name="M:CatSAT.FloatVariable.BoundBelow(System.Single)">
+            <summary>
+            Asserts that variable must be at least as large as bound.
+            Updates Bounds.Lower if necessary
+            </summary>
+            <param name="bound">Lower bound on variable</param>
+            <returns>True is resulting bounds are consistent</returns>
+        </member>
+        <member name="M:CatSAT.FloatVariable.BoundAbove(System.Single,System.Collections.Generic.Queue{System.Tuple{CatSAT.FloatVariable,System.Boolean}})">
+            <summary>
+            Asserts that variable must be no larger than bound.
+            Updates Bounds.Upper and adds variable to propagation queue, if necessary.
+            </summary>
+            <param name="bound">Upper bound on variable</param>
+            <param name="q">Propagation queue</param>
+            <returns>True is resulting bounds are consistent</returns>
+        </member>
+        <member name="M:CatSAT.FloatVariable.NarrowTo(CatSAT.Interval,System.Collections.Generic.Queue{System.Tuple{CatSAT.FloatVariable,System.Boolean}})">
+            <summary>
+            Assert that variable is in the specified interval.
+            Updates Bounds and adds variable to propagation queue, if necessary. 
+            </summary>
+            <param name="i">Bounding interval</param>
+            <param name="q">Propagation queue</param>
+            <returns>True if resulting bounds are consistent</returns>
+        </member>
+        <member name="M:CatSAT.FloatVariable.EnsurePresent(System.Collections.Generic.Queue{System.Tuple{CatSAT.FloatVariable,System.Boolean}},System.Tuple{CatSAT.FloatVariable,System.Boolean})">
+            <summary>
+            Adds the specified (variable, IsUpper) task to queue if it is not already present.
+            </summary>
+        </member>
+        <member name="M:CatSAT.FloatVariable.BoundBelow(System.Single,System.Collections.Generic.Queue{System.Tuple{CatSAT.FloatVariable,System.Boolean}})">
+            <summary>
+            Asserts that variable must be no less than bound.
+            Updates Bounds.Lower and adds variable to propagation queue, if necessary.
+            </summary>
+            <param name="bound">Lower bound on variable</param>
+            <param name="q">Propagation queue</param>
+            <returns>True is resulting bounds are consistent</returns>
+        </member>
+        <member name="M:CatSAT.FloatVariable.op_Equality(CatSAT.FloatVariable,CatSAT.FloatVariable)">
+            <summary>
+            A proposition representing that the two variables are equal
+            </summary>
+            <param name="v1">First variable</param>
+            <param name="v2">Second variable</param>
+        </member>
+        <member name="M:CatSAT.FloatVariable.op_Inequality(CatSAT.FloatVariable,CatSAT.FloatVariable)">
+            <summary>
+            Not implemented
+            </summary>
+            <param name="v1"></param>
+            <param name="v2"></param>
+            <returns></returns>
+            <exception cref="T:System.NotImplementedException"></exception>
+        </member>
+        <member name="M:CatSAT.FloatVariable.op_LessThan(CatSAT.FloatVariable,System.Single)">
+            <summary>
+            A proposition representing that the variable is less than OR EQUAL to a constant
+            </summary>
+            <param name="v">Variable bounded by constant</param>
+            <param name="f">Upper bound on the variable</param>
+            <returns></returns>
+        </member>
+        <member name="M:CatSAT.FloatVariable.op_GreaterThan(CatSAT.FloatVariable,System.Single)">
+            <summary>
+            A proposition representing that the variable is greater than OR EQUAL to a constant
+            </summary>
+            <param name="v">Variable bounded by constant</param>
+            <param name="f">lower bound on the variable</param>
+            <returns></returns>
+        </member>
+        <member name="M:CatSAT.FloatVariable.op_LessThan(CatSAT.FloatVariable,CatSAT.FloatVariable)">
+            <summary>
+            A proposition representing that the one variable is less than OR EQUAL to another
+            </summary>
+            <param name="v1">Smaller variable</param>
+            <param name="v2">Larger variable</param>
+            <returns></returns>
+        </member>
+        <member name="M:CatSAT.FloatVariable.op_GreaterThan(CatSAT.FloatVariable,CatSAT.FloatVariable)">
+            <summary>
+            A proposition representing that the one variable is less than OR EQUAL to another
+            </summary>
+            <param name="v1">Larger variable</param>
+            <param name="v2">Smaller variable</param>
+            <returns></returns>
+        </member>
+        <member name="M:CatSAT.FloatVariable.op_Addition(CatSAT.FloatVariable,CatSAT.FloatVariable)">
+            <summary>
+            A FloatVariable constrained to be the sum of two other FloatVariables
+            </summary>
+        </member>
+        <member name="M:CatSAT.FloatVariable.op_Multiply(CatSAT.FloatVariable,CatSAT.FloatVariable)">
+            <summary>
+            A FloatVariable constrained to be the product of two other FloatVariables
+            </summary>
+        </member>
+        <member name="M:CatSAT.FloatVariable.op_Multiply(System.Single,CatSAT.FloatVariable)">
+            <summary>
+            A FloatVariable constrained to be the product of another FloatVariable and a constant
+            </summary>
+        </member>
+        <member name="M:CatSAT.FloatVariable.op_Multiply(CatSAT.FloatVariable,System.Single)">
+            <summary>
+            A FloatVariable constrained to be the product of another FloatVariable and a constant
+            </summary>
+        </member>
+        <member name="T:CatSAT.Interval">
+            <summary>
+            A closed interval over the single-precision floating-point numbers
+            </summary>
+        </member>
+        <member name="M:CatSAT.Interval.#ctor(System.Single,System.Single)">
+            <summary>
+            An interval over the floats
+            </summary>
+            <param name="lowerBound">Lower bound</param>
+            <param name="upperBound">Upper bound</param>
+        </member>
+        <member name="M:CatSAT.Interval.#ctor(System.Single)">
+            <summary>
+            Make an interval consisting of a single value
+            </summary>
+            <param name="singletonValue">The single value in the interval</param>
+        </member>
+        <member name="F:CatSAT.Interval.AllValues">
+            <summary>
+            An interval representing all possible float values
+            </summary>
+        </member>
+        <member name="F:CatSAT.Interval.Lower">
+            <summary>
+            Lower bound
+            </summary>
+        </member>
+        <member name="F:CatSAT.Interval.Upper">
+            <summary>
+            Upper bound
+            </summary>
+        </member>
+        <member name="P:CatSAT.Interval.IsNonEmpty">
+            <summary>
+            True if the interval isn't empty
+            </summary>
+        </member>
+        <member name="P:CatSAT.Interval.IsEmpty">
+            <summary>
+            True if the interval is empty
+            </summary>
+        </member>
+        <member name="P:CatSAT.Interval.IsUnique">
+            <summary>
+            True if the interval is a single value
+            </summary>
+        </member>
+        <member name="P:CatSAT.Interval.CrossesZero">
+            <summary>
+            True if interval includes positive, negative, and zero values
+            </summary>
+        </member>
+        <member name="M:CatSAT.Interval.Contains(System.Single)">
+            <summary>
+            Interval contains value
+            </summary>
+        </member>
+        <member name="M:CatSAT.Interval.op_Addition(CatSAT.Interval,CatSAT.Interval)">
+            <summary>
+            The interval sum of two intervals.
+            This is the interval bounding all possible sums of values taken from the original intervals.
+            </summary>
+        </member>
+        <member name="M:CatSAT.Interval.op_Multiply(CatSAT.Interval,CatSAT.Interval)">
+            <summary>
+            The interval product of two intervals.
+            This is the interval bounding all possible products of values taken from the original intervals.
+            </summary>
+        </member>
+        <member name="M:CatSAT.Interval.op_Division(CatSAT.Interval,CatSAT.Interval)">
+            <summary>
+            The interval quotient of two intervals.
+            This is the interval bounding all possible quotients of values taken from the original intervals.
+            IMPORTANT: if the denominator crosses zero, the set-theoretic quotient is not an interval.
+            This operator then returns the whole real line as the interval.  Sorry.
+            </summary>
+        </member>
+        <member name="M:CatSAT.Interval.ToString">
+            <inheritdoc />
+        </member>
+        <member name="T:CatSAT.Assertable">
+            <summary>
+            Something that can be Assert'ed in a Problem.
+            </summary>
+        </member>
+        <member name="M:CatSAT.Assertable.Assert(CatSAT.Problem)">
+            <summary>
+            Add this assertion to the Problem
+            </summary>
+        </member>
+        <member name="T:CatSAT.Biconditional">
+            <summary>
+            Constrains Head and Body to have the same truth value.
+            </summary>
+        </member>
+        <member name="F:CatSAT.Biconditional.Head">
+            <summary>
+            Literal stated to be equivalent to the body
+            </summary>
+        </member>
+        <member name="F:CatSAT.Biconditional.Body">
+            <summary>
+            Literal or conjunction stated to be equivalent to the head
+            </summary>
+        </member>
+        <member name="M:CatSAT.Biconditional.#ctor(CatSAT.Literal,CatSAT.Expression)">
+            <summary>
+            An expression stating that the head and body are equivalent (true in the same models)
+            </summary>
+            <param name="head">literal equivalent to the body</param>
+            <param name="body">Literal or conjunction equivalent to the head</param>
+        </member>
+        <member name="M:CatSAT.Biconditional.ToString">
+            <inheritdoc />
+        </member>
+        <member name="T:CatSAT.BooleanSolver">
+            <summary>
+            The output of a program; a model satisfying the clauses of the Problem.
+            Note: for packaging reasons, this is also where the actual solver code lives,
+            rather than in Program.
+            </summary>
+        </member>
+        <member name="F:CatSAT.BooleanSolver.Problem">
+            <summary>
+            The Program for which this is a solution.
+            </summary>
+        </member>
+        <member name="P:CatSAT.BooleanSolver.SolveTimeMicroseconds">
+            <summary>
+            Time taken to generate this solution
+            </summary>
+        </member>
+        <member name="P:CatSAT.BooleanSolver.SolveFlips">
+            <summary>
+            Number of flips required to generate this solution
+            </summary>
+        </member>
+        <member name="F:CatSAT.BooleanSolver.solution">
+            <summary>
+            The solution object containing the model we're generating.
+            </summary>
+        </member>
+        <member name="F:CatSAT.BooleanSolver.propositions">
+            <summary>
+            States of the different propositions of the Program, indexed by proposition number.
+            IMPORTANT: this is a cache of solution.Propositions.
+            </summary>
+        </member>
+        <member name="F:CatSAT.BooleanSolver.trueDisjunctCount">
+            <summary>
+            Number of presently true disjuncts in each of the Program's clauses, index by clause number.
+            </summary>
+        </member>
+        <member name="F:CatSAT.BooleanSolver.lastFlip">
+            <summary>
+            Last flipped disjunct of a given clause
+            </summary>
+        </member>
+        <member name="F:CatSAT.BooleanSolver.unsatisfiedClauses">
+            <summary>
+            Total number of unsatisfied clauses
+            </summary>
+        </member>
+        <member name="F:CatSAT.BooleanSolver.improvablePropositions">
+            <summary>
+            Propositions that would increase utility if they were flipped.
+            </summary>
+        </member>
+        <member name="F:CatSAT.BooleanSolver.totalUtility">
+            <summary>
+            The total utility of all the true propositions in the solution.
+            </summary>
+        </member>
+        <member name="P:CatSAT.BooleanSolver.PerformanceStatistics">
+            <summary>
+            A string listing the performance statistics of the solver run that generated this solution.
+            </summary>
+        </member>
+        <member name="M:CatSAT.BooleanSolver.Solve(CatSAT.Solution,System.Int32,System.Int32@,System.Boolean)">
+            <summary>
+            Try to find an assignment of truth values to propositions that satisfied the Program.
+            Implements the WalkSAT algorithm
+            </summary>
+            <returns>True if a satisfying assignment was found.</returns>
+        </member>
+        <member name="M:CatSAT.BooleanSolver.GreedyFlip(System.Boolean,System.Int16[],System.UInt16)">
+            <summary>
+            Find the proposition from the specified clause that will do the least damage to the clauses that are already satisfied.
+            </summary>
+            <param name="increaseTrueDisjuncts">If true, the clause has too few disjuncts true</param>
+            <param name="disjuncts">Signed indices of the disjuncts of the clause</param>
+            <param name="lastFlipOfThisClause">Variable that was last chosen for flipping in this clause.</param>
+            <returns>Index of the prop to flip</returns>
+        </member>
+        <member name="M:CatSAT.BooleanSolver.UnsatisfiedClauseDelta(System.UInt16)">
+            <summary>
+            The increase in the number of unsatisfied clauses as a result of flipping the specified variable
+            </summary>
+            <param name="pIndex">Index of the variable to consider flipping</param>
+            <returns>The signed increase in the number of unsatisfied clauses</returns>
+        </member>
+        <member name="M:CatSAT.BooleanSolver.Flip(System.UInt16)">
+            <summary>
+            Flip the variable at the specified index.
+            </summary>
+            <param name="pIndex">Index of the variable/proposition to flip</param>
+        </member>
+        <member name="M:CatSAT.BooleanSolver.ImproveUtility(System.Int32)">
+            <summary>
+            Forcibly flip improvable proposition to increase utility, probably at the expense
+            breaking a clause.
+            TODO: Make this actually be efficient
+            </summary>
+            <returns>True if solution wasn't already the maximum possible utility</returns>
+        </member>
+        <member name="M:CatSAT.BooleanSolver.CheckUtility">
+            <summary>
+            Check the invariant that totalUtility == the sum of the utilities of all true propositions
+            </summary>
+        </member>
+        <member name="M:CatSAT.BooleanSolver.MakeRandomAssignment">
+            <summary>
+            Randomly assign values to the propositions,
+            and initialize the other state information accordingly.
+            </summary>
+        </member>
+        <member name="T:CatSAT.Call">
+            <summary>
+            Represents a call to a predicate or function with specific arguments.
+            This gets used as the name of the Proposition that the predicate returns when you call it.
+            </summary>
+        </member>
+        <member name="F:CatSAT.Call.Name">
+            <summary>
+            Name of the predicate or other functor being called
+            </summary>
+        </member>
+        <member name="F:CatSAT.Call.Args">
+            <summary>
+            Arguments
+            </summary>
+        </member>
+        <member name="M:CatSAT.Call.FromArgs(CatSAT.Problem,System.String,System.Object)">
+            <summary>
+            Find the (unique) Call object with the specified name and args in the specified problem.
+            </summary>
+            <param name="p">Problem to get the call for</param>
+            <param name="name">Name of the predicate being called</param>
+            <param name="arg1">Argument of the predicate</param>
+        </member>
+        <member name="M:CatSAT.Call.FromArgs(CatSAT.Problem,System.String,System.Object,System.Object)">
+            <summary>
+            Find the (unique) Call object with the specified name and args in the specified problem.
+            </summary>
+            <param name="p">Problem to get the call for</param>
+            <param name="name">Name of the predicate being called</param>
+            <param name="arg1">Argument of the predicate</param>
+            <param name="arg2">Argument of the predicate</param>
+        </member>
+        <member name="M:CatSAT.Call.FromArgs(CatSAT.Problem,System.String,System.Object,System.Object,System.Object)">
+            <summary>
+            Find the (unique) Call object with the specified name and args in the specified problem.
+            </summary>
+            <param name="p">Problem to get the call for</param>
+            <param name="name">Name of the predicate being called</param>
+            <param name="arg1">Argument of the predicate</param>
+            <param name="arg2">Argument of the predicate</param>
+            <param name="arg3">Argument of the predicate</param>
+        </member>
+        <member name="M:CatSAT.Call.FromArgs(CatSAT.Problem,System.String,System.Object,System.Object,System.Object,System.Object)">
+            <summary>
+            Find the (unique) Call object with the specified name and args in the specified problem.
+            </summary>
+            <param name="p">Problem to get the call for</param>
+            <param name="name">Name of the predicate being called</param>
+            <param name="arg1">Argument of the predicate</param>
+            <param name="arg2">Argument of the predicate</param>
+            <param name="arg3">Argument of the predicate</param>
+            <param name="arg4">Argument of the predicate</param>
+        </member>
+        <member name="M:CatSAT.Call.FromArgs(CatSAT.Problem,System.String,System.Object,System.Object,System.Object,System.Object,System.Object)">
+            <summary>
+            Find the (unique) Call object with the specified name and args in the specified problem.
+            </summary>
+            <param name="p">Problem to get the call for</param>
+            <param name="name">Name of the predicate being called</param>
+            <param name="arg1">Argument of the predicate</param>
+            <param name="arg2">Argument of the predicate</param>
+            <param name="arg3">Argument of the predicate</param>
+            <param name="arg4">Argument of the predicate</param>
+            <param name="arg5">Argument of the predicate</param>
+        </member>
+        <member name="M:CatSAT.Call.FromArgArray(CatSAT.Problem,System.String,System.Object[])">
+            <summary>
+            Find the (unique) Call object with the specified name and args in the specified problem.
+            </summary>
+            <param name="p">Problem to get the call for</param>
+            <param name="name">Name of the predicate being called</param>
+            <param name="args">Arguments of the predicate</param>
+        </member>
+        <member name="M:CatSAT.Call.GetTrieRoot(CatSAT.Problem,System.String)">
+            <summary>
+            Return the root node of the trie for all calls to the specified name in the specified problem.
+            </summary>
+        </member>
+        <member name="M:CatSAT.Call.#ctor(System.String,System.Object[])">
+            <summary>
+            Makes a new "call" object.  This is just an object used to fill in the name field for a proposition that conceptually
+            represents the truth of some predicate with some specific arguments
+            </summary>
+            <param name="name">Name of the predicate or other functor</param>
+            <param name="args">Arguments</param>
+        </member>
+        <member name="M:CatSAT.Call.GetHashCode">
+            <inheritdoc />
+        </member>
+        <member name="M:CatSAT.Call.Equals(System.Object)">
+            <inheritdoc />
+        </member>
+        <member name="M:CatSAT.Call.ToString">
+            <inheritdoc />
+        </member>
+        <member name="M:CatSAT.Call.TrieNode.Lookup(System.Object)">
+            <summary>
+            Look up one level of the Trie.
+            Returns the child with specified key, creating one if needed.
+            </summary>
+            <param name="key">Next arg to look up</param>
+            <returns>Child with the specified key</returns>
+        </member>
+        <member name="T:CatSAT.ConditionAttribute">
+            <summary>
+            An attribute representing that the Variable to which it is attached is only defined in solutions for which the specified variable has the specified value.
+            </summary>
+        </member>
+        <member name="F:CatSAT.ConditionAttribute.VariableName">
+            <summary>
+            Variable whose value to check
+            </summary>
+        </member>
+        <member name="F:CatSAT.ConditionAttribute.VariableValue">
+            <summary>
+            Value to compare to
+            </summary>
+        </member>
+        <member name="M:CatSAT.ConditionAttribute.#ctor(System.String,System.Object)">
+            <summary>
+            States that this variable is only defined when variableName's value is equal to variableValue
+            </summary>
+            <param name="variableName">Variable to check the value of</param>
+            <param name="variableValue">Value the variable should have</param>
+        </member>
+        <member name="T:CatSAT.Clause">
+            <summary>
+            Represents a constraint in a Problem.
+            The name is a slight misnomer, since a true clause is satisfied as long as at least one disjunct is satisfied.
+            A clause in CatSAT is a generalized cardinality constraint, meaning the user can specify arbitrary max/min
+            number of disjuncts may be satisfied.
+            </summary>
+        </member>
+        <member name="F:CatSAT.Clause.Disjuncts">
+            <summary>
+            The literals of the clause
+            </summary>
+        </member>
+        <member name="F:CatSAT.Clause.MinDisjunctsMinusOne">
+            <summary>
+            Minimum number of disjusts that must be true in order for the constraint
+            to be satisfied, minus one.  For a normal clause, this is 0 (i.e. the real min number is 1)
+            </summary>
+        </member>
+        <member name="F:CatSAT.Clause.MaxDisjunctsPlusOne">
+            <summary>
+            Maximum number of disjucts that are allowed to be true in order for the
+            constraint to be considered satisfied, plus one.
+            For a normal clause, there is no limit, so this gets set to Disjuncts.Count+1.
+            </summary>
+        </member>
+        <member name="F:CatSAT.Clause.Index">
+            <summary>
+            Position in the Problem's Clauses list.
+            </summary>
+        </member>
+        <member name="P:CatSAT.Clause.IsNormalDisjunction">
+            <summary>
+            True if this is a plain old boring disjunction
+            </summary>
+        </member>
+        <member name="M:CatSAT.Clause.#ctor(System.UInt16,System.UInt16,System.Int16[])">
+            <summary>
+            Make a new clause (but doesn't add it to a Program)
+            </summary>
+            <param name="min">Minimum number of disjuncts that must be true to consider the clause satisfied</param>
+            <param name="max">Maximum number of disjuncts that are allowed to be true to consider the clause satisfied, or 0 if the is no maximum</param>
+            <param name="disjuncts">The disjuncts, encoded as signed proposition indices</param>
+        </member>
+        <member name="M:CatSAT.Clause.CountDisjuncts(CatSAT.Solution)">
+            <summary>
+            Return the number of disjuncts that are satisfied in the specified solution (i.e. model).
+            </summary>
+            <param name="solution">Solution to test against</param>
+            <returns>Number of satisfied disjuncts</returns>
+        </member>
+        <member name="M:CatSAT.Clause.IsSatisfied(System.UInt16)">
+            <summary>
+            Is this constraint satisfied if the specified number of disjuncts is satisfied?
+            </summary>
+            <param name="satisfiedDisjuncts">Number of satisfied disjuncts</param>
+            <returns>Whether the constraint is satisfied.</returns>
+        </member>
+        <member name="M:CatSAT.Clause.OneTooManyDisjuncts(System.UInt16)">
+            <summary>
+            Is the specified number of disjuncts one too many for this constraint to be satisfied?
+            </summary>
+        </member>
+        <member name="M:CatSAT.Clause.OneTooFewDisjuncts(System.UInt16)">
+            <summary>
+            Is the specified number of disjuncts one too few for this constraint to be satisfied?
+            </summary>
+        </member>
+        <member name="T:CatSAT.CompiledStruct">
+            <summary>
+            A CatSAT variable whose value is a normal C# class whose fields are automatically filled in by CatSAT.
+            </summary>
+        </member>
+        <member name="M:CatSAT.CompiledStruct.#ctor(System.Object,CatSAT.Problem,CatSAT.Literal)">
+            <inheritdoc />
+        </member>
+        <member name="M:CatSAT.CompiledStruct.IsDefinedInInternal(CatSAT.Solution)">
+            <inheritdoc />
+        </member>
+        <member name="M:CatSAT.CompiledStruct.ValueInternal(CatSAT.Solution)">
+            <inheritdoc />
+        </member>
+        <member name="T:CatSAT.CompiledStructType">
+            <summary>
+            The VariableType of a CompiledStruct
+            </summary>
+        </member>
+        <member name="M:CatSAT.CompiledStructType.Instantiate(System.Object,CatSAT.Problem,CatSAT.Literal)">
+            <inheritdoc />
+        </member>
+        <member name="T:CatSAT.Domain`1">
+            <summary>
+            Base class for domains of Variables.
+            A Domain defines the set of possible values of a Variable.
+            </summary>
+            <typeparam name="T">Underlying data type of values</typeparam>
+        </member>
+        <member name="M:CatSAT.Domain`1.#ctor(System.String)">
+            <inheritdoc />
+        </member>
+        <member name="T:CatSAT.DomainAttribute">
+            <summary>
+            Annotates a Variable-valued field in a CompiledStruct to specify its domain
+            </summary>
+        </member>
+        <member name="F:CatSAT.DomainAttribute.DomainName">
+            <summary>
+            Make of this variable's domain
+            </summary>
+        </member>
+        <member name="M:CatSAT.DomainAttribute.#ctor(System.String)">
+            <summary>
+            Specify that this field should have the specified domain.
+            Field must appear in a CompiledStruct and must be a subtype of CatSAT.Variable
+            </summary>
+            <param name="domainName"></param>
+        </member>
+        <member name="M:CatSAT.DomainAttribute.#ctor(System.String,System.String[])">
+            <summary>
+            Specify that this field should have the specified finite domain with the specified elements.
+            Field must appear in a CompiledStruct and must be a subtype of CatSAT.Variable
+            </summary>
+            <param name="domainName"></param>
+            <param name="domainElements">Elements of the domain</param>
+        </member>
+        <member name="P:CatSAT.DomainAttribute.Domain">
+            <summary>
+            Domain being specified.
+            </summary>
+        </member>
+        <member name="T:CatSAT.EnumDomain`1">
+            <summary>
+            A domain whose values are the values of an enumerated type.
+            </summary>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="F:CatSAT.EnumDomain`1.Singleton">
+            <summary>
+            The unique EnumDomain for enum type T.
+            </summary>
+        </member>
+        <member name="T:CatSAT.EnumVariable`1">
+            <summary>
+            A finite-domain variable whose domain is a specified enumerated type
+            </summary>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="M:CatSAT.EnumVariable`1.#ctor(System.Object,CatSAT.Literal)">
+            <summary>
+            Creates a new EnumVariable.
+            Domain need not be specified, because it's implicitly specified by the Enumerated type parameter of the class.
+            </summary>
+            <param name="name">Name of the variable</param>
+            <param name="condition">Condition under which the variable is defined (default always defined)</param>
+        </member>
+        <member name="M:CatSAT.EnumVariable`1.op_Equality(CatSAT.EnumVariable{`0},`0)">
+            <summary>
+            A Proposition asserting that the variable has a specified value.
+            </summary>
+            <param name="var">The variable who value should be checked</param>
+            <param name="value">The value to check for</param>
+            <returns></returns>
+        </member>
+        <member name="M:CatSAT.EnumVariable`1.op_Inequality(CatSAT.EnumVariable{`0},`0)">
+            <summary>
+            A Proposition asserting that the variable does not have a specified value.
+            </summary>
+            <param name="var">The variable who value should be checked</param>
+            <param name="value">The value to check for</param>
+            <returns></returns>
+        </member>
+        <member name="T:CatSAT.Conjunction">
+            <summary>
+            A conjunction of literals.
+            Used in rule bodies.
+            </summary>
+        </member>
+        <member name="F:CatSAT.Conjunction.Left">
+            <summary>
+            LHS of the conjunction
+            </summary>
+        </member>
+        <member name="F:CatSAT.Conjunction.Right">
+            <summary>
+            RHS of the conjunction
+            </summary>
+        </member>
+        <member name="M:CatSAT.Conjunction.#ctor(CatSAT.Expression,CatSAT.Expression)">
+            <summary>
+            An expression representing the condition in which both left and right are true
+            </summary>
+            <param name="left">LHS of the conjunction</param>
+            <param name="right">RHS of the conjunction</param>
+        </member>
+        <member name="M:CatSAT.Conjunction.ToString">
+            <inheritdoc />
+        </member>
+        <member name="P:CatSAT.Conjunction.Size">
+            <summary>
+            Number of terms in the conjunction
+            </summary>
+        </member>
+        <member name="M:CatSAT.Conjunction.MarkAntecedent">
+            <inheritdoc />
+        </member>
+        <member name="T:CatSAT.Expression">
+            <summary>
+            A propositional expression
+            </summary>
+        </member>
+        <member name="P:CatSAT.Expression.Size">
+            <summary>
+            Number of literals in the expression
+            </summary>
+        </member>
+        <member name="M:CatSAT.Expression.WriteNegatedSignedIndicesTo(System.Int16[],System.Int32)">
+            <summary>
+            Walk the expression tree and write the indicies of its literals into the specified array.
+            </summary>
+            <param name="clauseArray">Array of signed indices for the clause we're writing this to.</param>
+            <param name="startingPosition">Position to start writing</param>
+            <returns></returns>
+        </member>
+        <member name="M:CatSAT.Expression.op_BitwiseAnd(CatSAT.Expression,CatSAT.Expression)">
+            <summary>
+            Make a conjunction of two Expressions.
+            Performs simple constant folding, e.g. false and p = False, true and p = p.
+            </summary>
+        </member>
+        <member name="M:CatSAT.Expression.op_Implicit(System.Boolean)~CatSAT.Expression">
+            <summary>
+            Coerce an expression to a boolean
+            Will throw an exception unless the expression is really a constant-valued Proposition.
+            </summary>
+            <param name="b"></param>
+        </member>
+        <member name="P:CatSAT.Expression.PositiveLiterals">
+            <summary>
+            Find all the non-negated propositions in this Expression.
+            </summary>
+        </member>
+        <member name="M:CatSAT.Expression.MarkAntecedent">
+            <summary>
+            Mark any Propositions contained in this expression as being antecedents (of some implication or rule).
+            </summary>
+        </member>
+        <member name="T:CatSAT.FDomain`1">
+            <summary>
+            A finite domain defined by a list.
+            </summary>
+            <typeparam name="T">Base type of the domain</typeparam>
+        </member>
+        <member name="F:CatSAT.FDomain`1.Elements">
+            <summary>
+            The values of the domain
+            </summary>
+        </member>
+        <member name="M:CatSAT.FDomain`1.#ctor(System.String,`0[])">
+            <summary>
+            A finite domain with the specified name and domain elements
+            </summary>
+            <param name="name">NAme to give to the domain</param>
+            <param name="elements">Elements of hte domain</param>
+        </member>
+        <member name="M:CatSAT.FDomain`1.#ctor(System.String,System.Collections.Generic.IList{`0})">
+            <summary>
+            A finite domain with the specified name and domain elements
+            </summary>
+            <param name="name">NAme to give to the domain</param>
+            <param name="elements">Elements of hte domain</param>
+        </member>
+        <member name="M:CatSAT.FDomain`1.IndexOf(`0)">
+            <summary>
+            Element number of the specified domain element.
+            Elements are numbered 0, 1, ... #elements-1.
+            </summary>
+            <param name="element">Desired domain element</param>
+            <returns>Index of element within the Elements list</returns>
+            <exception cref="T:System.ArgumentException">If argument isn't a valid domain element</exception>
+        </member>
+        <member name="P:CatSAT.FDomain`1.Item(System.Int32)">
+            <summary>
+            Returns the i'th element of the domain.  Elements are numbered from 0.
+            </summary>
+            <param name="i">Element number</param>
+        </member>
+        <member name="M:CatSAT.FDomain`1.Instantiate(System.Object,CatSAT.Problem,CatSAT.Literal)">
+            <inheritdoc />
+        </member>
+        <member name="T:CatSAT.FDVariable`1">
+            <summary>
+            A finite domain variable.
+            FDVariables use an "eager" implementation, meaning there's one proposition in the Problem for every possible value of the variable.
+            </summary>
+            <typeparam name="T">Type of variable values</typeparam>
+        </member>
+        <member name="F:CatSAT.FDVariable`1.domain">
+            <summary>
+            Domain of the variable
+            </summary>
+        </member>
+        <member name="P:CatSAT.FDVariable`1.Domain">
+            <inheritdoc />
+        </member>
+        <member name="F:CatSAT.FDVariable`1.ValuePropositions">
+            <summary>
+            Individual propositions asserting the different possible values of the variable.
+            </summary>
+        </member>
+        <member name="M:CatSAT.FDVariable`1.#ctor(System.Object,CatSAT.FDomain{`0},CatSAT.Literal)">
+            <summary>
+            Make a new finite-domain variable to solve for
+            </summary>
+            <param name="name">"Name" to give to the variable (need not be a string)</param>
+            <param name="domain">Domain of the variable</param>
+            <param name="condition">Condition under which the variable is defined (null = true)</param>
+        </member>
+        <member name="M:CatSAT.FDVariable`1.#ctor(System.Object,CatSAT.FDomain{`0},CatSAT.Literal,CatSAT.Problem)">
+            <summary>
+            Make a new finite-domain variable to solve for
+            </summary>
+            <param name="name">"Name" to give to the variable (need not be a string)</param>
+            <param name="domain">Domain of the variable</param>
+            <param name="condition">Condition under which the variable is defined (null = true)</param>
+            <param name="problem">Problem in which to define the variable</param>
+        </member>
+        <member name="M:CatSAT.FDVariable`1.#ctor(System.Object,`0[])">
+            <summary>
+            Make a new finite-domain variable to solve for
+            </summary>
+            <param name="name">"Name" to give to the variable (need not be a string)</param>
+            <param name="domainValues">Allowed values of the variable</param>
+        </member>
+        <member name="M:CatSAT.FDVariable`1.#ctor(System.Object,CatSAT.Literal,`0[])">
+            <summary>
+            Make a new finite-domain variable to solve for
+            </summary>
+            <param name="name">"Name" to give to the variable (need not be a string)</param>
+            <param name="condition">Condition under which the variable is defined (null = true)</param>
+            <param name="domainValues">Allowed values of the variable</param>
+        </member>
+        <member name="M:CatSAT.FDVariable`1.op_Equality(CatSAT.FDVariable{`0},`0)">
+            <summary>
+            A Proposition asserting that the variable has a specified value.
+            </summary>
+            <param name="var">The variable who value should be checked</param>
+            <param name="value">The value to check for</param>
+            <returns></returns>
+        </member>
+        <member name="M:CatSAT.FDVariable`1.op_Inequality(CatSAT.FDVariable{`0},`0)">
+            <summary>
+            A Proposition asserting that the variable does not have a specified value.
+            </summary>
+            <param name="var">The variable who value should be checked</param>
+            <param name="value">The value to check for</param>
+            <returns></returns>
+        </member>
+        <member name="M:CatSAT.FDVariable`1.EqualityProposition(System.Object)">
+            <summary>
+            Returns the Prooposition representing that this variable has the specified value
+            </summary>
+            <param name="value">Value to compare to</param>
+            <returns>The unique Proposition object representing that this variable has the specified value.</returns>
+            <exception cref="T:System.ArgumentException">When value is not an element of the variable's domain.</exception>
+        </member>
+        <member name="P:CatSAT.FDVariable`1.PredeterminedValue">
+            <inheritdoc />
+        </member>
+        <member name="M:CatSAT.FDVariable`1.Reset">
+            <inheritdoc />
+        </member>
+        <member name="T:CatSAT.Fluents">
+            <summary>
+            Implements propositions and predicates that vary with time.
+            </summary>
+        </member>
+        <member name="P:CatSAT.Fluents.TimeHorizon">
+            <summary>
+            Time horizon of the current problem.
+            </summary>
+        </member>
+        <member name="P:CatSAT.Fluents.TimePoints">
+            <summary>
+            Timepoints in the time horizon of the current problem
+            </summary>
+        </member>
+        <member name="P:CatSAT.Fluents.ActionTimePoints">
+            <summary>
+            All timepoints in the time horizon of the current problem, except the last one
+            </summary>
+        </member>
+        <member name="T:CatSAT.Fluents.FluentInstantiation">
+            <summary>
+            A proposition representing a specific instantiation of a fluid, i.e. the fluid with a particular set of arguments
+            at a particular timepoint.
+            </summary>
+        </member>
+        <member name="F:CatSAT.Fluents.Activate">
+            <summary>
+            A higher-order predicate representing that the specified fluent instantiation is activated at a specified timepoint.
+            </summary>
+        </member>
+        <member name="F:CatSAT.Fluents.Deactivate">
+            <summary>
+            A higher-order predicate representing that the specified fluent instantiation is deactivated at a specified timepoint.
+            </summary>
+        </member>
+        <member name="M:CatSAT.Fluents.Fluent(System.String,CatSAT.Problem,System.Boolean,System.Boolean)">
+            <summary>
+            Makes a fluent, i.e. a time-varying proposition.
+            </summary>
+            <param name="name">Name of the fluent</param>
+            <param name="problem">Problem to add it to</param>
+            <param name="requireActivationSupport">If true, only activate the fluent when the activation is supported by a Rule</param>
+            <param name="requireDeactivationSupport">If true, only deactivate the fluent when the deactivation is suppered by a Rule.</param>
+            <returns>The new fluent</returns>
+        </member>
+        <member name="M:CatSAT.Fluents.Fluent``1(System.String,System.Collections.Generic.ICollection{``0},CatSAT.Problem,System.Boolean,System.Boolean)">
+            <summary>
+            Creates a fluent predicate over the specified domain
+            </summary>
+            <param name="name">Name of the fluent</param>
+            <param name="domain">Domain for the fluent</param>
+            <param name="problem">Problem to add it to</param>
+            <param name="requireActivationSupport">If true, only activate the fluent when the activation is supported by a Rule</param>
+            <param name="requireDeactivationSupport">If true, only deactivate the fluent when the deactivation is suppered by a Rule.</param>
+            <returns>The new fluent</returns>
+            <typeparam name="T">Element type of the domain</typeparam>
+        </member>
+        <member name="M:CatSAT.Fluents.Fluent``2(System.String,System.Collections.Generic.ICollection{``0},System.Collections.Generic.ICollection{``1},CatSAT.Problem,System.Boolean,System.Boolean)">
+            <summary>
+            Creates a fluent predicate, with two arguments besides the timepoint, over the specified domain
+            </summary>
+            <param name="name">Name of the fluent</param>
+            <param name="domain1">Domain for the fluent's first argument</param>
+            <param name="domain2">Domain for the fluent's second argument</param>
+            <param name="problem">Problem to add it to</param>
+            <param name="requireActivationSupport">If true, only activate the fluent when the activation is supported by a Rule</param>
+            <param name="requireDeactivationSupport">If true, only deactivate the fluent when the deactivation is suppered by a Rule.</param>
+            <returns>The new fluent</returns>
+            <typeparam name="T1">Element type of domain1</typeparam>
+            <typeparam name="T2">Element type of domain2</typeparam>
+        </member>
+        <member name="M:CatSAT.Fluents.SymmetricFluent``1(System.String,System.Collections.Generic.ICollection{``0},CatSAT.Problem,System.Boolean,System.Boolean)">
+            <summary>
+            Creates a fluent predicate over the specified domain, with two symmatric arguments, besides the timepoint.
+            </summary>
+            <param name="name">Name of the fluent</param>
+            <param name="domain">Domain for the fluent</param>
+            <param name="problem">Problem to add it to</param>
+            <param name="requireActivationSupport">If true, only activate the fluent when the activation is supported by a Rule</param>
+            <param name="requireDeactivationSupport">If true, only deactivate the fluent when the deactivation is suppered by a Rule.</param>
+            <returns>The new fluent</returns>
+            <typeparam name="T">Element type of the domain</typeparam>
+        </member>
+        <member name="T:CatSAT.Implication">
+            <summary>
+            States that the Body being true forces the Head to be true without placing any constraint on Body.
+            </summary>
+        </member>
+        <member name="F:CatSAT.Implication.Head">
+            <summary>
+            The literal implied by the assertion
+            </summary>
+        </member>
+        <member name="F:CatSAT.Implication.Body">
+            <summary>
+            The condition under which the head is implied
+            </summary>
+        </member>
+        <member name="M:CatSAT.Implication.#ctor(CatSAT.Literal,CatSAT.Expression)">
+            <summary>
+            Creates an expression representing that a given Literal or conjunction of literals implies the specifed literal.
+            </summary>
+            <param name="head">literal implied by the body</param>
+            <param name="body">literal or conjunction that implies the head</param>
+        </member>
+        <member name="M:CatSAT.Implication.ToString">
+            <inheritdoc />
+        </member>
+        <member name="T:CatSAT.Literal">
+            <summary>
+            Represents a Proposition or a Negation.
+            </summary>
+        </member>
+        <member name="M:CatSAT.Literal.op_Implicit(System.String)~CatSAT.Literal">
+            <summary>
+            Coerce a string to a literal
+            Returns the proposition with the specified name
+            </summary>
+            <param name="s">Name of hte proposition</param>
+            <returns>The proposition with that naem</returns>
+        </member>
+        <member name="P:CatSAT.Literal.BaseProposition">
+            <summary>
+            The proposition referred to by this literal.
+            </summary>
+        </member>
+        <member name="M:CatSAT.Literal.MarkAntecedent">
+            <inheritdoc />
+        </member>
+        <member name="M:CatSAT.Literal.op_Equality(CatSAT.Literal,CatSAT.Expression)">
+            <summary>
+            Returns a biconditional rule asserting that the head and body are true in exactly the same models
+            </summary>
+            <param name="head">Literal that's equivalent to the body</param>
+            <param name="body">Literal or conjunction that's equivalent to the head.</param>
+            <returns></returns>
+        </member>
+        <member name="M:CatSAT.Literal.op_Inequality(CatSAT.Literal,CatSAT.Expression)">
+            <summary>
+            This is not actually supported
+            </summary>
+            <param name="head"></param>
+            <param name="body"></param>
+            <returns></returns>
+            <exception cref="T:System.NotImplementedException"></exception>
+        </member>
+        <member name="P:CatSAT.Literal.SignedIndex">
+            <summary>
+            The position of this literal in the Variables array of this literal's Problem.
+            This is also the position of its truth value in the propositions array of a Solution to the Problem.
+            IMPORTANT: if this is a negation, then the index is negative.  That is, if p has index 2, then
+            Not(p) has index -2.
+            </summary>
+        </member>
+        <member name="M:CatSAT.Literal.op_LessThan(CatSAT.Expression,CatSAT.Literal)">
+            <summary>
+            This syntax is not supported for implications or rules.
+            </summary>
+            <param name="body"></param>
+            <param name="head"></param>
+            <returns></returns>
+            <exception cref="T:System.NotImplementedException"></exception>
+        </member>
+        <member name="M:CatSAT.Literal.op_GreaterThan(CatSAT.Expression,CatSAT.Literal)">
+            <summary>
+            Returns an implication asserting that the body implied the head, but not vice-versa
+            </summary>
+            <param name="body">A literal or conjunction of literals</param>
+            <param name="head">A literal implied by the body.</param>
+            <returns></returns>
+        </member>
+        <member name="M:CatSAT.Literal.op_Implicit(System.Boolean)~CatSAT.Literal">
+            <summary>
+            Coerces a boolean to a Proposition with a fixed truth value
+            </summary>
+            <param name="b">Boolean</param>
+            <returns>Proposition - either Proposition.True or Proposition.False</returns>
+        </member>
+        <member name="T:CatSAT.Negation">
+            <summary>
+            Represents a negated proposition.
+            </summary>
+        </member>
+        <member name="F:CatSAT.Negation.Proposition">
+            <summary>
+            The proposition being negated
+            </summary>
+        </member>
+        <member name="M:CatSAT.Negation.#ctor(CatSAT.Proposition)">
+            <summary>
+            Creates a Literal representing the negation of the proposition
+            </summary>
+            <param name="proposition">Proposition to negate</param>
+        </member>
+        <member name="P:CatSAT.Negation.BaseProposition">
+            <inheritdoc />
+        </member>
+        <member name="M:CatSAT.Negation.Not(CatSAT.Proposition)">
+            <summary>
+            Creates a Literal representing the negation of the proposition
+            </summary>
+            <param name="p">Proposition to negate</param>
+        </member>
+        <member name="M:CatSAT.Negation.ToString">
+            <inheritdoc />
+        </member>
+        <member name="T:CatSAT.Proposition">
+            <summary>
+            Represents an unnegated proposition, independent of its value in a given solution.
+            </summary>
+        </member>
+        <member name="F:CatSAT.Proposition.True">
+            <summary>
+            A fixed Proposition representing true.
+            This will be recognized by various parts of the compiler and treated accordingly.
+            </summary>
+        </member>
+        <member name="F:CatSAT.Proposition.False">
+            <summary>
+            A fixed proposition representing false.
+            This will be recognized by various parts of the compiler and treated accordingly.
+            </summary>
+        </member>
+        <member name="P:CatSAT.Proposition.BaseProposition">
+            <inheritdoc />
+        </member>
+        <member name="P:CatSAT.Proposition.Name">
+            <summary>
+            Arbitrary object that functions as the name of this proposition.
+            Distinct Propositions should have distinct Names.
+            </summary>
+        </member>
+        <member name="F:CatSAT.Proposition.InitialProbability">
+            <summary>
+            Probability with which this proposition will be true in the solver's starting guess.
+            Should be a number in the range [0,1].
+            </summary>
+        </member>
+        <member name="F:CatSAT.Proposition.Utility">
+            <summary>
+            The utility of this proposition being true
+            </summary>
+        </member>
+        <member name="F:CatSAT.Proposition.Index">
+            <summary>
+            Position in the Problem's Variables[] array of the Variable that tracks the truth value of
+            this Proposition, or zero, if this is one of the constants True or False.
+            The actual truth value in a given Solution is stored at this index in the Solution's 
+            propositions[] array.
+            </summary>
+        </member>
+        <member name="P:CatSAT.Proposition.IsInternal">
+            <summary>
+            This is an internal, compiler-generated proposition.  So don't print it when we print a model.
+            </summary>
+        </member>
+        <member name="P:CatSAT.Proposition.IsAntecedent">
+            <summary>
+            This proposition is the antecedent of a rule or implication
+            </summary>
+        </member>
+        <member name="P:CatSAT.Proposition.IsImplicationConsequent">
+            <summary>
+            This proposition is the consequent of an implication
+            </summary>
+        </member>
+        <member name="P:CatSAT.Proposition.IsRuleHead">
+            <summary>
+            This proposition is the head of a rule
+            </summary>
+        </member>
+        <member name="P:CatSAT.Proposition.IsQuantified">
+            <summary>
+            This proposition appears in a quantification
+            </summary>
+        </member>
+        <member name="P:CatSAT.Proposition.IsDependency">
+            <summary>
+            This proposition being true can force the truth of other propositions
+            </summary>
+        </member>
+        <member name="F:CatSAT.Proposition.RuleBodies">
+            <summary>
+            Bodies of any rules for which this proposition is the head.
+            These get converted at solution time into clauses by Problem.CompileRuleBodies().
+            </summary>
+        </member>
+        <member name="F:CatSAT.Proposition.PositiveDependencies">
+            <summary>
+            Propositions that appear as positive literals in this Proposition's Rules.
+            A depends on B if B helps justify A.
+            </summary>
+        </member>
+        <member name="P:CatSAT.Proposition.IsConstant">
+            <summary>
+            True if this proposition object is one of the constants true or false.
+            This is different from propositions that are real parts of a Problem, but that
+            have had their values predetermined by axioms, optimization, or the user explicitly
+            setting their values.
+            </summary>
+        </member>
+        <member name="M:CatSAT.Proposition.IsCall(System.String)">
+            <summary>
+            True if this proposition's name is a call to the specfied functor name (e.g. predicate name, action name, etc.).
+            </summary>
+            <param name="functorName">Name to check for</param>
+        </member>
+        <member name="M:CatSAT.Proposition.Arg``1(System.Int32)">
+            <summary>
+            For propositions whose names are Calls, returns the index'th argument of the call.
+            </summary>
+            <typeparam name="T">Expected type of the argument</typeparam>
+            <param name="index">Argument index</param>
+        </member>
+        <member name="M:CatSAT.Proposition.#ctor">
+            <summary>
+            Make a proposition.  Does nothing.
+            This is here only to make it protected so that nobody tries to new their own proposition objects.
+            </summary>
+        </member>
+        <member name="M:CatSAT.Proposition.Arg(System.Int32)">
+            <summary>
+            Return the n'th argument of the predicate for which this proposition is a ground instance.
+            </summary>
+            <param name="n">Argument number</param>
+            <returns>Argument to the predicate</returns>
+        </member>
+        <member name="M:CatSAT.Proposition.ToString">
+            <inheritdoc />
+        </member>
+        <member name="M:CatSAT.Proposition.op_Implicit(System.String)~CatSAT.Proposition">
+            <summary>
+            Coerces a string to a proposition.
+            Returns the proposition in Problem.Current with the specified name
+            </summary>
+            <param name="name">Name to search for.</param>
+        </member>
+        <member name="M:CatSAT.Proposition.MakeProposition(System.Object)">
+            <summary>
+            Returns the proposition within Problem.Current with the specified name, creating one if necessary.
+            </summary>
+            <param name="name">Name for the proposition</param>
+        </member>
+        <member name="F:CatSAT.Proposition.State">
+            <summary>
+            Used when checking for circular definitions.
+            State the proposition in a DFS of the graph formed by the Propositions and their PositiveDependencies.
+            </summary>
+        </member>
+        <member name="P:CatSAT.Proposition.SignedIndex">
+            <summary>
+            Position of the Proposition in its Program's Variables[] array and its Solutions' propositions[] array.
+            </summary>
+        </member>
+        <member name="M:CatSAT.Proposition.op_Implicit(System.Boolean)~CatSAT.Proposition">
+            <summary>
+            Coerces a boolean to a proposition
+            </summary>
+            <param name="b">Boolean to check</param>
+            <returns>Proposition.True or Proposition.False</returns>
+        </member>
+        <member name="M:CatSAT.Proposition.op_Explicit(CatSAT.Proposition)~System.Boolean">
+            <summary>
+            Coerces a constant proposition (Proposition.True or Proposition.False) to a boolean
+            </summary>
+            <param name="p">Proposition</param>
+            <returns>Proposition's (fixed) truth value</returns>
+            <exception cref="T:System.ArgumentException">If the proposition isn't Proposition.True or Proposition.False</exception>
+        </member>
+        <member name="M:CatSAT.Proposition.op_LessThanOrEqual(CatSAT.Proposition,CatSAT.Expression)">
+            <summary>
+            Returns a rule representing that the body justifies the truth of the head
+            </summary>
+            <param name="head">Proposition that can be justified by the body</param>
+            <param name="body">Literal or conjunction of literals that would justify the truth of head.</param>
+            <returns></returns>
+        </member>
+        <member name="M:CatSAT.Proposition.op_GreaterThanOrEqual(CatSAT.Proposition,CatSAT.Expression)">
+            <summary>
+            This syntax is not supported.
+            </summary>
+            <param name="head"></param>
+            <param name="body"></param>
+            <returns></returns>
+            <exception cref="T:System.NotImplementedException">This is not supported</exception>
+        </member>
+        <member name="M:CatSAT.Proposition.AddRuleBody(CatSAT.Expression)">
+            <summary>
+            Add another rule to this proposition.
+            </summary>
+            <param name="e"></param>
+        </member>
+        <member name="M:CatSAT.Proposition.AddDependency(CatSAT.Proposition)">
+            <summary>
+            Mark this proposition as depending on another proposition.
+            </summary>
+        </member>
+        <member name="M:CatSAT.Proposition.RequireHaveSupport">
+            <summary>
+            Force supported model semantics for this proposition.
+            If no rules are provided for it, it will always be false.
+            </summary>
+        </member>
+        <member name="T:CatSAT.Rule">
+            <summary>
+            States that Body is a possible justification for the truth of Head.
+            This is different from an implication.  An implication says that Body being true forces Head to be true
+            and nothing more.  A rule gives the Head completion semantics.  It says that the Body being true forces 
+            the Head to be true, but also says that the Head being true forces at least one of its rule bodies to be
+            true.
+            </summary>
+        </member>
+        <member name="F:CatSAT.Rule.Head">
+            <summary>
+            The proposition being concluded by the rule
+            </summary>
+        </member>
+        <member name="F:CatSAT.Rule.Body">
+            <summary>
+            The literal or conjunction that would justify concluding the head.
+            </summary>
+        </member>
+        <member name="M:CatSAT.Rule.#ctor(CatSAT.Proposition,CatSAT.Expression)">
+            <summary>
+            A rule that states that the head is justified by the body
+            </summary>
+            <param name="head">proposition that can be concluded from the body</param>
+            <param name="body">Literal or conjunction that would justify the head</param>
+        </member>
+        <member name="M:CatSAT.Rule.ToString">
+            <inheritdoc />
+        </member>
+        <member name="T:CatSAT.Solution">
+            <summary>
+            The output of a program; a model satisfying the clauses of the Problem.
+            </summary>
+        </member>
+        <member name="F:CatSAT.Solution.Problem">
+            <summary>
+            The Program for which this is a solution.
+            </summary>
+        </member>
+        <member name="P:CatSAT.Solution.Utility">
+            <summary>
+            The total utility of all true propositions in this solution
+            </summary>
+        </member>
+        <member name="F:CatSAT.Solution.Propositions">
+            <summary>
+            States of the different propositions of the Program, indexed by proposition number.
+            </summary>
+        </member>
+        <member name="P:CatSAT.Solution.Model">
+            <summary>
+            A string listing the true propositions in the solution
+            </summary>
+        </member>
+        <member name="P:CatSAT.Solution.Item(CatSAT.Literal)">
+            <summary>
+            Test the truth of the specified literal within the model
+            </summary>
+        </member>
+        <member name="P:CatSAT.Solution.Item(CatSAT.Proposition)">
+            <summary>
+            Test the truth of the specified literal within the model
+            </summary>
+        </member>
+        <member name="M:CatSAT.Solution.IsTrue(System.Int16)">
+            <summary>
+            Test the truth of a literal (positive or negative) in the model.
+            </summary>
+            <param name="literal">Index of the literal (negative value = negative literal)</param>
+            <returns>True if the literal is true in the model</returns>
+        </member>
+        <member name="M:CatSAT.Solution.IsTrue(System.UInt16)">
+            <summary>
+            Test the truth of a proposition/positive literal
+            </summary>
+            <param name="index">Index of the proposition</param>
+            <returns>True if the proposition is true in the model</returns>
+        </member>
+        <member name="M:CatSAT.Solution.IsTrue(CatSAT.Proposition)">
+            <summary>
+            Test the truth of the specified proposition within the model
+            </summary>
+        </member>
+        <member name="M:CatSAT.Solution.IsTrue(CatSAT.Literal)">
+            <summary>
+            Test the truth of the specified literal within the model
+            </summary>
+        </member>
+        <member name="M:CatSAT.Solution.Quantify``1(System.Int32,System.Int32,System.Collections.Generic.IEnumerable{``0},System.Func{``0,CatSAT.Literal})">
+            <summary>
+            Test if the number of true literals is in the specified range
+            </summary>
+            <param name="min">Minimum number</param>
+            <param name="max">Maximum number</param>
+            <param name="domain">Domain over which to quantify</param>
+            <param name="f">Function to map domain element to proposition</param>
+            <typeparam name="T">Element type of domain</typeparam>
+            <returns>True if the right number of elements are true in this solution</returns>
+        </member>
+        <member name="M:CatSAT.Solution.Quantify(System.Int32,System.Int32,CatSAT.Literal[])">
+            <summary>
+            Test if the number of true literals is in the specified range
+            </summary>
+            <param name="min">Minimum number</param>
+            <param name="max">Maximum number</param>
+            <param name="literals">Literals to test</param>
+            <returns>True if the right number of elements are true in this solution</returns>
+        </member>
+        <member name="M:CatSAT.Solution.Quantify(System.Int32,System.Int32,System.Collections.Generic.IEnumerable{CatSAT.Literal})">
+            <summary>
+            Test if the number of true literals is in the specified range
+            </summary>
+            <param name="min">Minimum number</param>
+            <param name="max">Maximum number</param>
+            <param name="literals">Literals to test</param>
+            <returns>True if the right number of elements are true in this solution</returns>
+        </member>
+        <member name="M:CatSAT.Solution.Count(CatSAT.Literal[])">
+            <summary>
+            Returns the number of literals from the specified set that are true in this solution
+            </summary>
+            <param name="literals">Literals to test</param>
+            <returns>Number of literals that are true</returns>
+        </member>
+        <member name="M:CatSAT.Solution.Count``1(System.Collections.Generic.IEnumerable{``0},System.Func{``0,CatSAT.Literal})">
+            <summary>
+            Returns the number of literals from the specified set that are true in this solution
+            </summary>
+            <returns>Number of literals that are true</returns>
+        </member>
+        <member name="M:CatSAT.Solution.Count(System.Collections.Generic.IEnumerable{CatSAT.Literal})">
+            <summary>
+            Returns the number of literals from the specified set that are true in this solution
+            </summary>
+            <param name="literals">Literals to test</param>
+            <returns>Number of literals that are true</returns>
+        </member>
+        <member name="M:CatSAT.Solution.All(CatSAT.Literal[])">
+            <summary>
+            Test if all the specified literals are true in this solution
+            </summary>
+            <param name="literals">Literals to test</param>
+            <returns>True if they're all true</returns>
+        </member>
+        <member name="M:CatSAT.Solution.All``1(System.Collections.Generic.IEnumerable{``0},System.Func{``0,CatSAT.Literal})">
+            <summary>
+            Test if all the specified literals are true in this solution
+            </summary>
+            <returns>True if they're all true</returns>
+        </member>
+        <member name="M:CatSAT.Solution.All(System.Collections.Generic.IEnumerable{CatSAT.Literal})">
+            <summary>
+            Test if all the specified literals are true in this solution
+            </summary>
+            <param name="literals">Literals to test</param>
+            <returns>True if they're all true</returns>
+        </member>
+        <member name="M:CatSAT.Solution.Exists(CatSAT.Literal[])">
+            <summary>
+            True if at least one literal is true from the specified set
+            </summary>
+            <param name="literals">Literals to test</param>
+            <returns>True if at least one literal is true in this solution</returns>
+        </member>
+        <member name="M:CatSAT.Solution.Exists``1(System.Collections.Generic.IEnumerable{``0},System.Func{``0,CatSAT.Literal})">
+            <summary>
+            True if at least one literal is true from the specified set
+            </summary>
+            <returns>True if at least one literal is true in this solution</returns>
+        </member>
+        <member name="M:CatSAT.Solution.Exists(System.Collections.Generic.IEnumerable{CatSAT.Literal})">
+            <summary>
+            True if at least one literal is true from the specified set
+            </summary>
+            <param name="literals">Literals to test</param>
+            <returns>True if at least one literal is true in this solution</returns>
+        </member>
+        <member name="M:CatSAT.Solution.Unique(CatSAT.Literal[])">
+            <summary>
+            True if exactly one literal is true from the specified set
+            </summary>
+            <param name="literals">Literals to test</param>
+            <returns>True if exactly one literal is true in this solution</returns>
+        </member>
+        <member name="M:CatSAT.Solution.Unique``1(System.Collections.Generic.IEnumerable{``0},System.Func{``0,CatSAT.Literal})">
+            <summary>
+            True if exactly one literal is true from the specified set
+            </summary>
+            <returns>True if exactly one literal is true in this solution</returns>
+        </member>
+        <member name="M:CatSAT.Solution.Unique(System.Collections.Generic.IEnumerable{CatSAT.Literal})">
+            <summary>
+            True if exactly one literal is true from the specified set
+            </summary>
+            <param name="literals">Literals to test</param>
+            <returns>True if exactly one literal is true in this solution</returns>
+        </member>
+        <member name="M:CatSAT.Solution.Exactly(System.Int32,CatSAT.Literal[])">
+            <summary>
+            True if exactly the specified number of literals are true from the specified set
+            </summary>
+            <param name="n">Number of elements to test for</param>
+            <param name="literals">Literals to test</param>
+            <returns>True if exactly the specified number is true in this solution</returns>
+        </member>
+        <member name="M:CatSAT.Solution.Exactly``1(System.Int32,System.Collections.Generic.IEnumerable{``0},System.Func{``0,CatSAT.Literal})">
+            <summary>
+            True if exactly the specified number of literals are true from the specified set
+            </summary>
+            <param name="n">Number of elements to test for</param>
+            <param name="domain">Domain to quantify over</param>
+            <param name="f">Maps a domain element to a literal</param>
+            <returns>True if exactly the specified number is true in this solution</returns>
+        </member>
+        <member name="M:CatSAT.Solution.Exactly(System.Int32,System.Collections.Generic.IEnumerable{CatSAT.Literal})">
+            <summary>
+            True if exactly the specified number of literals are true from the specified set
+            </summary>
+            <param name="n">Number of elements to test for</param>
+            <param name="literals">Literals to test</param>
+            <returns>True if exactly the specified number is true in this solution</returns>
+        </member>
+        <member name="M:CatSAT.Solution.AtMost(System.Int32,CatSAT.Literal[])">
+            <summary>
+            True if at most the specified number of literals are true from the specified set
+            </summary>
+            <param name="n">Number of elements to test for</param>
+            <param name="literals">Literals to test</param>
+            <returns>True if at most the specified number is true in this solution</returns>
+        </member>
+        <member name="M:CatSAT.Solution.AtMost``1(System.Int32,System.Collections.Generic.IEnumerable{``0},System.Func{``0,CatSAT.Literal})">
+            <summary>
+            True if at most the specified number of literals are true from the specified set
+            </summary>
+            <param name="n">Number of elements to test for</param>
+            <param name="domain">Domain to quantify over</param>
+            <param name="f">Function to map a domain element to a literal</param>
+            <returns>True if at most the specified number is true in this solution</returns>
+        </member>
+        <member name="M:CatSAT.Solution.AtMost(System.Int32,System.Collections.Generic.IEnumerable{CatSAT.Literal})">
+            <summary>
+            True if at most the specified number of literals are true from the specified set
+            </summary>
+            <param name="n">Number of elements to test for</param>
+            <param name="literals">Literals to test</param>
+            <returns>True if at most the specified number is true in this solution</returns>
+        </member>
+        <member name="M:CatSAT.Solution.AtLeast(System.Int32,CatSAT.Literal[])">
+            <summary>
+            True if at least the specified number of literals are true from the specified set
+            </summary>
+            <param name="n">Number of elements to test for</param>
+            <param name="literals">Literals to test</param>
+            <returns>True if at least the specified number is true in this solution</returns>
+        </member>
+        <member name="M:CatSAT.Solution.AtLeast``1(System.Int32,System.Collections.Generic.IEnumerable{``0},System.Func{``0,CatSAT.Literal})">
+            <summary>
+            True if at least the specified number of literals are true from the specified set
+            </summary>
+            <param name="n">Number of elements to test for</param>
+            <param name="domain">Domain to quantify over</param>
+            <param name="f">Function to map a domain element to a literal</param>
+            <returns>True if at least the specified number is true in this solution</returns>
+        </member>
+        <member name="M:CatSAT.Solution.AtLeast(System.Int32,System.Collections.Generic.IEnumerable{CatSAT.Literal})">
+            <summary>
+            True if at least the specified number of literals are true from the specified set
+            </summary>
+            <param name="n">Number of elements to test for</param>
+            <param name="literals">Literals to test</param>
+            <returns>True if at least the specified number is true in this solution</returns>
+        </member>
+        <member name="M:CatSAT.Solution.DefinesVariable(CatSAT.Variable)">
+            <summary>
+            This solution has a value for the specified variable
+            </summary>
+        </member>
+        <member name="P:CatSAT.Solution.Item(CatSAT.Variable)">
+            <summary>
+            Get untyped value of variable
+            </summary>
+        </member>
+        <member name="M:CatSAT.Solution.SetTheoryVariableValue(CatSAT.Variable,System.Object)">
+            <summary>
+            Set the value of a theory variable within the solution.
+            This should only be called from within theory solvers.
+            </summary>
+            <param name="v">Variable</param>
+            <param name="value">Value</param>
+        </member>
+        <member name="M:CatSAT.Solution.CopyFrom(CatSAT.Solution)">
+            <summary>
+            Copy the data from the specified solution into this solution.
+            </summary>
+            <param name="s">Solution to copy from</param>
+        </member>
+        <member name="T:CatSAT.Language">
+            <summary>
+            Definitions for embedded solver language.
+            </summary>
+        </member>
+        <member name="M:CatSAT.Language.Predicate``1(System.String)">
+            <summary>
+            Make a unary predicate
+            </summary>
+            <typeparam name="T1">Argument type</typeparam>
+            <param name="name">Name of the predicate</param>
+            <returns>The predicate object, i.e. a function from arguments to Propositions</returns>
+        </member>
+        <member name="M:CatSAT.Language.Predicate``2(System.String)">
+            <summary>
+            Make a binary predicate
+            </summary>
+            <typeparam name="T1">Type for argument 1</typeparam>
+            <typeparam name="T2">Type for argument 2</typeparam>
+            <param name="name">Name of the predicate</param>
+            <returns>The predicate object, i.e. a function from arguments to Propositions</returns>
+        </member>
+        <member name="M:CatSAT.Language.PredicateOfType``2(System.String)">
+            <summary>
+            Make a unary predicate
+            </summary>
+            <typeparam name="T1">Argument type</typeparam>
+            <typeparam name="TProp">Type of proposition to return</typeparam>
+            <param name="name">Name of the predicate</param>
+            <returns>The predicate object, i.e. a function from arguments to Propositions</returns>
+        </member>
+        <member name="M:CatSAT.Language.PredicateOfType``3(System.String)">
+            <summary>
+            Make a binary predicate
+            </summary>
+            <typeparam name="T1">Type for argument 1</typeparam>
+            <typeparam name="T2">Type for argument 2</typeparam>
+            <typeparam name="TProp">Type of proposition to return</typeparam>
+            <param name="name">Name of the predicate</param>
+            <returns>The predicate object, i.e. a function from arguments to Propositions</returns>
+        </member>
+        <member name="M:CatSAT.Language.SymmetricPredicate``1(System.String)">
+            <summary>
+            Make a symmetric predicate
+            This will enforce that predicate(a, b) == predicate(b, a)
+            </summary>
+            <typeparam name="T">Argument type</typeparam>
+            <param name="name">Name of the predicate</param>
+            <returns>The predicate object, i.e. a function from arguments to Propositions</returns>
+        </member>
+        <member name="M:CatSAT.Language.SymmetricPredicateOfType``2(System.String)">
+            <summary>
+            Make a symmetric predicate
+            This will enforce that predicate(a, b) == predicate(b, a)
+            </summary>
+            <typeparam name="T">Argument type</typeparam>
+            <typeparam name="TProp">Type of Proposition to create</typeparam>
+            <param name="name">Name of the predicate</param>
+            <returns>The predicate object, i.e. a function from arguments to Propositions</returns>
+        </member>
+        <member name="M:CatSAT.Language.SymmetricPredicateOfType``3(System.String)">
+            <summary>
+            Make a symmetric predicate with an extra argument at the end (used for symmetric fluents)
+            This will enforce that predicate(a, b, c) == predicate(b, a, c)
+            </summary>
+            <typeparam name="T1">Argument type</typeparam>
+            <typeparam name="TProp">Type of Proposition to create</typeparam>
+            <typeparam name="T2">Type of the last argument</typeparam>
+            <param name="name">Name of the predicate</param>
+            <returns>The predicate object, i.e. a function from arguments to Propositions</returns>
+        </member>
+        <member name="M:CatSAT.Language.SymmetricTransitiveRelation``1(System.String)">
+            <summary>
+            Make a symmetric, reflexive predicate
+            This will enforce that predicate(a, b) == predicate(b, a)
+            </summary>
+            <typeparam name="T">Argument type</typeparam>
+            <param name="name">Name of the predicate</param>
+            <returns>The predicate object, i.e. a function from arguments to Propositions</returns>
+        </member>
+        <member name="M:CatSAT.Language.Predicate``3(System.String)">
+            <summary>
+            Make a ternary predicate
+            </summary>
+            <typeparam name="T1">Type for argument 1</typeparam>
+            <typeparam name="T2">Type for argument 2</typeparam>
+            <typeparam name="T3">Type for argument 3</typeparam>
+            <param name="name">Name of the predicate</param>
+            <returns>The predicate object, i.e. a function from arguments to Propositions</returns>
+        </member>
+        <member name="M:CatSAT.Language.PredicateOfType``4(System.String)">
+            <summary>
+            Make a binary predicate
+            </summary>
+            <typeparam name="T1">Type for argument 1</typeparam>
+            <typeparam name="T2">Type for argument 2</typeparam>
+            <typeparam name="T3">Type for argument 3</typeparam>
+            <typeparam name="TProp">Type of proposition to return</typeparam>
+            <param name="name">Name of the predicate</param>
+            <returns>The predicate object, i.e. a function from arguments to Propositions</returns>
+        </member>
+        <member name="M:CatSAT.Language.Predicate``4(System.String)">
+            <summary>
+            Make a quaternary predicate
+            </summary>
+            <typeparam name="T1">Type for argument 1</typeparam>
+            <typeparam name="T2">Type for argument 2</typeparam>
+            <typeparam name="T3">Type for argument 3</typeparam>
+            <typeparam name="T4">Type for argument 4</typeparam>
+            <param name="name">Name of the predicate</param>
+            <returns>The predicate object, i.e. a function from arguments to Propositions</returns>
+        </member>
+        <member name="M:CatSAT.Language.PredicateOfType``5(System.String)">
+            <summary>
+            Make a binary predicate
+            </summary>
+            <typeparam name="T1">Type for argument 1</typeparam>
+            <typeparam name="T2">Type for argument 2</typeparam>
+            <typeparam name="T3">Type for argument 3</typeparam>
+            <typeparam name="T4">Type for argument 4</typeparam>
+            <typeparam name="TProp">Type of proposition to return</typeparam>
+            <param name="name">Name of the predicate</param>
+            <returns>The predicate object, i.e. a function from arguments to Propositions</returns>
+        </member>
+        <member name="M:CatSAT.Language.Predicate``5(System.String)">
+            <summary>
+            Make a 5-argument predicate
+            </summary>
+            <typeparam name="T1">Type for argument 1</typeparam>
+            <typeparam name="T2">Type for argument 2</typeparam>
+            <typeparam name="T3">Type for argument 3</typeparam>
+            <typeparam name="T4">Type for argument 4</typeparam>
+            <typeparam name="T5">Type for argument 5</typeparam>
+            <param name="name">Name of the predicate</param>
+            <returns>The predicate object, i.e. a function from arguments to Propositions</returns>
+        </member>
+        <member name="M:CatSAT.Language.PredicateOfType``6(System.String)">
+            <summary>
+            Make a binary predicate
+            </summary>
+            <typeparam name="T1">Type for argument 1</typeparam>
+            <typeparam name="T2">Type for argument 2</typeparam>
+            <typeparam name="T3">Type for argument 3</typeparam>
+            <typeparam name="T4">Type for argument 4</typeparam>
+            <typeparam name="T5">Type for argument 5</typeparam>
+            <typeparam name="TProp">Type of proposition to return</typeparam>
+            <param name="name">Name of the predicate</param>
+            <returns>The predicate object, i.e. a function from arguments to Propositions</returns>
+        </member>
+        <member name="M:CatSAT.Language.Function``1(System.String)">
+            <summary>
+            Make a unary function in the sense of a term generator
+            </summary>
+            <param name="name">Name of the function</param>
+        </member>
+        <member name="M:CatSAT.Language.Function``2(System.String)">
+            <summary>
+            Make a binary function in the sense of a term generator
+            </summary>
+            <param name="name">Name of the function</param>
+        </member>
+        <member name="M:CatSAT.Language.Function``3(System.String)">
+            <summary>
+            Make a 3-argument function in the sense of a term generator
+            </summary>
+            <param name="name">Name of the function</param>
+        </member>
+        <member name="M:CatSAT.Language.Function``4(System.String)">
+            <summary>
+            Make a 4-argument function in the sense of a term generator
+            </summary>
+            <param name="name">Name of the function</param>
+        </member>
+        <member name="M:CatSAT.Language.Function``5(System.String)">
+            <summary>
+            Make a 5-argument function in the sense of a term generator
+            </summary>
+            <param name="name">Name of the function</param>
+        </member>
+        <member name="M:CatSAT.Language.Not(CatSAT.Literal)">
+            <summary>
+            Returns a negation for the specified proposition
+            </summary>
+            <param name="p">Proposition to negate</param>
+        </member>
+        <member name="T:CatSAT.NonTightProblemException">
+            <summary>
+            Signifies that a problem contains a circular definition.
+            That is, it contains a proposition that can be inferred from itself.
+            </summary>
+        </member>
+        <member name="F:CatSAT.NonTightProblemException.Offender">
+            <summary>
+            Proposition that can be inferred from itself.
+            This is generally not the only such proposition, it's just the first one the solver found.
+            </summary>
+        </member>
+        <member name="T:CatSAT.ContradictionException">
+            <summary>
+            Signifies the Problem contains a contradiction
+            </summary>
+        </member>
+        <member name="F:CatSAT.ContradictionException.Problem">
+            <summary>
+            The Problem containing the contradiction
+            </summary>
+        </member>
+        <member name="T:CatSAT.Struct">
+            <summary>
+            The VariableType (essentially the domain) for CatSAT variables containing other variables
+            </summary>
+        </member>
+        <member name="M:CatSAT.Struct.#ctor(System.String,CatSAT.Member[],System.Action{CatSAT.Problem,CatSAT.StructVar})">
+            <summary>
+            Creates a new Struct  with the specified member variables
+            </summary>
+            <param name="name">Name of the variable</param>
+            <param name="memberVariables">Variables to be created inside this variable</param>
+            <param name="constrainer">Procedure to add constraints to a newly created instance, if desired.</param>
+        </member>
+        <member name="M:CatSAT.Struct.Instantiate(System.Object,CatSAT.Problem,CatSAT.Literal)">
+            <inheritdoc />
+        </member>
+        <member name="T:CatSAT.StructVar">
+            <summary>
+            A CatSAT Variable that constains over Variables
+            </summary>
+        </member>
+        <member name="F:CatSAT.StructVar.variables">
+            <summary>
+            Dictionary holding the member variables
+            </summary>
+        </member>
+        <member name="P:CatSAT.StructVar.Item(System.Object)">
+            <summary>
+            Returns the member variable with the specified name.
+            </summary>
+            <param name="name"></param>
+        </member>
+        <member name="M:CatSAT.StructVar.IsDefinedInInternal(CatSAT.Solution)">
+            <inheritdoc />
+        </member>
+        <member name="M:CatSAT.StructVar.ValueInternal(CatSAT.Solution)">
+            <inheritdoc />
+        </member>
+        <member name="M:CatSAT.StructVar.ValueString(CatSAT.Solution)">
+            <summary>
+            Not implemented.  This operation doesn't make sense for a StructVar.
+            </summary>
+            <param name="s">Solution from which to get value of the variable.</param>
+            <exception cref="T:System.NotImplementedException"></exception>
+        </member>
+        <member name="T:CatSAT.Member">
+            <summary>
+            Represents CatSAT Variable that to be added to all instances of a given CatSAT Struct.
+            </summary>
+        </member>
+        <member name="F:CatSAT.Member.Name">
+            <summary>
+            Name of the Variable
+            </summary>
+        </member>
+        <member name="F:CatSAT.Member.Type">
+            <summary>
+            Type of the Variable
+            </summary>
+        </member>
+        <member name="F:CatSAT.Member.ConditionName">
+            <summary>
+            Optional: specifies a Variable to check to see if this Variable should be defined in a given Solution.
+            </summary>
+        </member>
+        <member name="F:CatSAT.Member.ConditionValue">
+            <summary>
+            Value to compare against ConditionName
+            </summary>
+        </member>
+        <member name="M:CatSAT.Member.#ctor(System.Object,CatSAT.VariableType,System.Object,System.Object)">
+            <summary>
+            Represents CatSAT Variable that to be added to all instances of a given CatSAT Struct.
+            </summary>
+            <param name="name">Name to be given to the Variable inside the Struct</param>
+            <param name="type">CatSAT VariableType of the Variable</param>
+            <param name="conditionName">(optional) another variable to check to test whether this variable should be defined in a given solution</param>
+            <param name="conditionValue">Value to test against ConditionName</param>
+        </member>
+        <member name="M:CatSAT.Member.#ctor(System.String,System.String,System.String[])">
+            <summary>
+            Represents CatSAT FDVariable that to be added to all instances of a given CatSAT Struct.
+            This will create a new FDomain for the value that has the same name as the variable.
+            </summary>
+            <param name="name">Name to be given to the Variable inside the Struct</param>
+            <param name="condition">String encoding of a condition to test whether this variable should be defined in a given solution, e.g. "othervariable=value"</param>
+            <param name="domainElements">Elements of the variables domain.</param>
+        </member>
+        <member name="T:CatSAT.TheoryProposition">
+            <summary>
+            Base class of all propositions used by TheorySolvers.
+            </summary>
+        </member>
+        <member name="T:CatSAT.TheorySolver">
+            <summary>
+            A special purpose solver used to find values of TheoryVariables after the main SAT solver has found a partial model.
+            </summary>
+        </member>
+        <member name="F:CatSAT.TheorySolver.Problem">
+            <summary>
+            Problem on which this TheorySolver is to work.
+            </summary>
+        </member>
+        <member name="M:CatSAT.TheorySolver.MakeTheorySolver``1(CatSAT.Problem)">
+            <summary>
+            Makes a new theory solver
+            This is needed just because of issues with C# generics.
+            </summary>
+            <param name="p">Problem this solver is assigned to</param>
+            <typeparam name="T">Type of TheorySolver to make.</typeparam>
+            <returns></returns>
+        </member>
+        <member name="M:CatSAT.TheorySolver.Preprocess">
+            <summary>
+            Add any necessary clauses before the start of the solving process
+            </summary>
+            <returns>Error message (string), if an inconsistency is detected, otherwise null</returns>
+        </member>
+        <member name="M:CatSAT.TheorySolver.PropagatePredetermined(CatSAT.Solution)">
+            <summary>
+            Evaluate any theory propositions whose truth values can be determined from predetermined variables
+            </summary>
+            <param name="s"></param>
+        </member>
+        <member name="M:CatSAT.TheorySolver.Solve(CatSAT.Solution)">
+            <summary>
+            Find values for the solver variables
+            </summary>
+            <returns>True if successful</returns>
+        </member>
+        <member name="T:CatSAT.TheoryVariable`1">
+            <summary>
+            An SMT variable that's solved for by a special-purpose "theory solver"
+            </summary>
+            <typeparam name="T">Type over which the theory solver reasons</typeparam>
+        </member>
+        <member name="M:CatSAT.TheoryVariable`1.#ctor(System.Object,CatSAT.Problem,CatSAT.Literal)">
+            <inheritdoc />
+        </member>
+        <member name="T:CatSAT.SpecialProposition">
+            <summary>
+            A proposition that involves specialized processing.
+            </summary>
+        </member>
+        <member name="M:CatSAT.SpecialProposition.Initialize(CatSAT.Problem)">
+            <summary>
+            Called automatically after constructor to initialize the special problem instance.
+            </summary>
+            <param name="p">Problem to which this proposition belongs</param>
+        </member>
+        <member name="T:CatSAT.TimeoutException">
+            <summary>
+            Signifies the solver game up.
+            This doesn't mean that the problem is necessarily unsatisfiable (contains a contradiction).
+            It just means that the solver couldn't find a solution in the alloted time.
+            </summary>
+        </member>
+        <member name="F:CatSAT.TimeoutException.Problem">
+            <summary>
+            Problem for which the system couldn't find a solution.
+            </summary>
+        </member>
+        <member name="T:CatSAT.SATVariable">
+            <summary>
+            Run-time representation of the truth assignment of a proposition in a Solution.
+            This is kept separate from the Proposition objects themselves, partly in the hopes of
+            improving cache performance, and partly so that the Proposition objects can be GC'ed once the
+            clauses are computed.
+            
+            Note - the actual truth value of the Variable isn't stored here, it's stored in the Solution
+            object, since we can have multiple solutions that assign different values to the variable.
+            </summary>
+        </member>
+        <member name="F:CatSAT.SATVariable.Proposition">
+            <summary>
+            The Proposition object for which this variable holds the truth value.
+            </summary>
+        </member>
+        <member name="F:CatSAT.SATVariable.PositiveClauses">
+            <summary>
+            Clauses in which this variable appears unnegated.
+            Used to know what clauses to check if we flip this variable
+            </summary>
+        </member>
+        <member name="F:CatSAT.SATVariable.NegativeClauses">
+            <summary>
+            Clauses in which this variable appears negated.
+            Used to know what clauses to check if we flip this variable
+            </summary>
+        </member>
+        <member name="T:CatSAT.SATVariable.DeterminationState">
+            <summary>
+            Tracks whether the variable's value is pre-determined, and why
+            </summary>
+        </member>
+        <member name="F:CatSAT.SATVariable.DeterminationState.Floating">
+            <summary>
+            The solver is free to choose this as it likes
+            </summary>
+        </member>
+        <member name="F:CatSAT.SATVariable.DeterminationState.Inferred">
+            <summary>
+            The optimizer determined this from other set or fixed variables
+            </summary>
+        </member>
+        <member name="F:CatSAT.SATVariable.DeterminationState.Set">
+            <summary>
+            The variable's value was forced by the user, but they could change their mind
+            </summary>
+        </member>
+        <member name="F:CatSAT.SATVariable.DeterminationState.Fixed">
+            <summary>
+            The variable's value was immutably set by an Assertion.
+            </summary>
+        </member>
+        <member name="F:CatSAT.SATVariable.DeterminionState">
+            <summary>
+            Whether the variable's value is predetermined.
+            If floating, then the solver is allowed to choose its value freely.
+            If any other value, the solver has to use the value in PredeterminedValue.
+            </summary>
+        </member>
+        <member name="P:CatSAT.SATVariable.IsPredetermined">
+            <summary>
+            Whether the value of the variable is fixed.
+            </summary>
+        </member>
+        <member name="F:CatSAT.SATVariable.PredeterminedValue">
+            <summary>
+            Value of variable if it is predetermined
+            </summary>
+        </member>
+        <member name="P:CatSAT.SATVariable.RandomInitialState">
+            <summary>
+            Randomly chooses an initial state for this SATVariable based on its Proposition's InitialProbability
+            </summary>
+        </member>
+        <member name="T:CatSAT.Random">
+            <summary>
+            A fast RNG
+            </summary>
+        </member>
+        <member name="P:CatSAT.Random.Boolean">
+            <summary>
+            Performs a random coin flip.
+            </summary>
+        </member>
+        <member name="M:CatSAT.Random.SetSeed(System.UInt32)">
+            <summary>
+            Set the seed to a specified value.
+            </summary>
+        </member>
+        <member name="M:CatSAT.Random.SetSeed">
+            <summary>
+            Set the seed to the current time (System.DateTime.Now.Ticks)
+            </summary>
+        </member>
+        <member name="M:CatSAT.Random.Next">
+            <summary>
+            Returns a randon uint.
+            </summary>
+        </member>
+        <member name="M:CatSAT.Random.InRange(System.UInt32)">
+            <summary>
+            Return a random integer in [0, max)
+            </summary>
+        </member>
+        <member name="M:CatSAT.Random.InRange(System.UInt32,System.UInt32)">
+            <summary>
+            Return a random integer in [min, max]
+            </summary>
+        </member>
+        <member name="M:CatSAT.Random.InRange(System.Int32,System.Int32)">
+            <summary>
+            Return a random integer in [min, max]
+            </summary>
+        </member>
+        <member name="M:CatSAT.Random.RandomElement``1(System.Collections.Generic.List{``0})">
+            <summary>
+            Return a random element of list
+            </summary>
+        </member>
+        <member name="M:CatSAT.Random.RandomElement``1(``0[])">
+            <summary>
+            Return a random element of array
+            </summary>
+        </member>
+        <member name="M:CatSAT.Random.Prime">
+            <summary>
+            Returns a random prime number from a list.
+            </summary>
+        </member>
+        <member name="M:CatSAT.Random.Float(System.Single,System.Single)">
+            <summary>
+            Returns a random single-precision float in the specified range.
+            </summary>
+            <param name="min">Minimum value</param>
+            <param name="max">Maximum value</param>
+            <returns></returns>
+        </member>
+        <member name="M:CatSAT.Random.Shuffle``1(System.Collections.Generic.List{``0})">
+            <summary>
+            Randomly permutes list in place
+            </summary>
+        </member>
+        <member name="T:CatSAT.Problem">
+            <summary>
+            A logic program.
+            Contains a set of prositions, rules for the propositions, and general clauses.
+            </summary>
+        </member>
+        <member name="F:CatSAT.Problem.Current">
+            <summary>
+            Current problem into which to intern propositions.
+            This is needed because when you create a proposition or negation, it needs to be placed in a
+            hash table so that when you look it up in the future, you get the same proposition/literal.
+            That means we need to know which Problem it's a part of, so we can add it to the right table.
+            </summary>
+        </member>
+        <member name="M:CatSAT.Problem.#ctor(System.String)">
+            <summary>
+            Make a new logic program into which we can enter propositions and rules.
+            </summary>
+            <param name="name"></param>
+        </member>
+        <member name="F:CatSAT.Problem.compilationState">
+            <summary>
+            Tracks whether we've already compiled the rules for this program.
+            </summary>
+        </member>
+        <member name="P:CatSAT.Problem.OptimizationTime">
+            <summary>
+            Number of microseconds spent in Boolean Constriant Propagation
+            </summary>
+        </member>
+        <member name="P:CatSAT.Problem.CompilationTime">
+            <summary>
+            Number of microsections spent computing the completions of rules
+            </summary>
+        </member>
+        <member name="P:CatSAT.Problem.CreationTime">
+            <summary>
+            Number of microseconds spent building the problem object itself.
+            This is the time spent making propositions and predicates, calling Assert, etc.
+            It's measured as elapsed time from the calling of the constructor to the calling
+            of the FinishRuleCompilation() method.
+            </summary>
+        </member>
+        <member name="T:CatSAT.Problem.TimingData">
+            <summary>
+            Statistics for a single performance measurement
+            </summary>
+        </member>
+        <member name="F:CatSAT.Problem.TimingData.Min">
+            <summary>
+            Shortest time spent on the operation (microseconds)
+            </summary>
+        </member>
+        <member name="F:CatSAT.Problem.TimingData.Max">
+            <summary>
+            Longest time spent on the operation (microseconds)
+            </summary>
+        </member>
+        <member name="F:CatSAT.Problem.TimingData.sum">
+            <summary>
+            Sum of total time spent on the operation over all solver operations
+            </summary>
+        </member>
+        <member name="F:CatSAT.Problem.TimingData.count">
+            <summary>
+            Number of solver calls over which sum is split
+            </summary>
+        </member>
+        <member name="P:CatSAT.Problem.TimingData.Average">
+            <summary>
+            Average time spent on the operation per solver call (microseconds)
+            </summary>
+        </member>
+        <member name="F:CatSAT.Problem.SolveTimeMicroseconds">
+            <summary>
+            Time spent solving
+            </summary>
+        </member>
+        <member name="F:CatSAT.Problem.SolveFlips">
+            <summary>
+            Number of flips used in the solver
+            </summary>
+        </member>
+        <member name="F:CatSAT.Problem.LogPerformanceDataToConsole">
+            <summary>
+            Always print performance data to the console.
+            </summary>
+        </member>
+        <member name="P:CatSAT.Problem.LogFile">
+            <summary>
+            File to which to log performance data, if any.
+            </summary>
+        </member>
+        <member name="P:CatSAT.Problem.PerformanceStatistics">
+            <summary>
+            String showing solving performance statistics for this problem object
+            </summary>
+        </member>
+        <member name="P:CatSAT.Problem.Stats">
+            <summary>
+            String showing size statistics for this problem object
+            </summary>
+        </member>
+        <member name="F:CatSAT.Problem.Name">
+            <summary>
+            Name of the Problem, for debugging purposes.
+            </summary>
+        </member>
+        <member name="F:CatSAT.Problem.Timeout">
+            <summary>
+            Number of flips of propositions we can try before we give up and start over.
+            </summary>
+        </member>
+        <member name="F:CatSAT.Problem.Tight">
+            <summary>
+            Require the program to be tight, i.e. not allow circular reasoning chains.
+            </summary>
+        </member>
+        <member name="F:CatSAT.Problem.TimeHorizon">
+            <summary>
+            Number of timesteps in history, if fluents are used.
+            </summary>
+        </member>
+        <member name="F:CatSAT.Problem.CallTries">
+            <summary>
+            Hashtable of Call.TrieNodes holding all the different Calls used in this Problem.
+            This is used to keep from having to constantly allocate new Call objects and then look them up in a hash table
+            to get the canonical ones. 
+            </summary>
+        </member>
+        <member name="F:CatSAT.Problem.propositionTable">
+            <summary>
+            The Propositions in the Problem.
+            </summary>
+        </member>
+        <member name="F:CatSAT.Problem.SATVariables">
+            <summary>
+            The Variables in the Problem.
+            There is one Variable for each Proposition.  And the Solution assigns a truth value to that 
+            variable.
+            </summary>
+        </member>
+        <member name="F:CatSAT.Problem.Clauses">
+            <summary>
+            The constraints in the Problem.
+            Most of these are normal clauses (disjunctions), but other cardinality constraints are possible.
+            </summary>
+        </member>
+        <member name="P:CatSAT.Problem.Propositions">
+            <summary>
+            All the Propositions used in the Problem.
+            </summary>
+        </member>
+        <member name="M:CatSAT.Problem.Variables">
+            <summary>
+            All Variables (NBSAT, SMT) attached to this Problem.
+            </summary>
+        </member>
+        <member name="M:CatSAT.Problem.HasVariableNamed(System.Object)">
+            <summary>
+            True if problem contains a variable with the specified name
+            </summary>
+        </member>
+        <member name="M:CatSAT.Problem.VariableNamed(System.Object)">
+            <summary>
+            Returns the variable with the specified name, if any.
+            </summary>
+        </member>
+        <member name="P:CatSAT.Problem.BooleanSolver">
+            <summary>
+            The BooleanSolver used by this Problem.
+            </summary>
+        </member>
+        <member name="M:CatSAT.Problem.GetSolver``1">
+            <summary>
+            Returns the (unique) TheorySolver of type T for this problem, creating it if necessary.
+            </summary>
+            <typeparam name="T">The type of theory solver</typeparam>
+            <returns>The theory solver of type T</returns>
+        </member>
+        <member name="M:CatSAT.Problem.AddVariable(CatSAT.Variable)">
+            <summary>
+            Add a new variable to the problem
+            </summary>
+            <param name="v"></param>
+        </member>
+        <member name="M:CatSAT.Problem.Conjunction(CatSAT.Literal,CatSAT.Literal)">
+            <summary>
+            Get a Literal that is true iff both arguments are true.
+            If called twice with the same arguments, returns the same result.
+            </summary>
+        </member>
+        <member name="M:CatSAT.Problem.AddClause(CatSAT.Literal[])">
+            <summary>
+            Forcibly add a clause to the Problem.
+            </summary>
+        </member>
+        <member name="M:CatSAT.Problem.AddClause(System.UInt16,System.UInt16,CatSAT.Literal[])">
+            <summary>
+            Forcibly add a clause to the Problem.
+            </summary>
+        </member>
+        <member name="M:CatSAT.Problem.AddClause(CatSAT.Clause)">
+            <summary>
+            Forcibly add a clause to the Problem.
+            </summary>
+        </member>
+        <member name="M:CatSAT.Problem.CompileClause(CatSAT.Literal[])">
+            <summary>
+            Map an array of Literals to an array of their signed indices.
+            </summary>
+        </member>
+        <member name="M:CatSAT.Problem.Solve(System.Boolean)">
+            <summary>
+            Return a Solution to the Problem.
+            If not solution can be found, either return null or throw UnsatisfiableException.
+            </summary>
+            <param name="throwOnUnsolvable">If true, will throw UnsatisfiableException when no solution is found.</param>
+            <returns>The Solution object mapping propositions to truth values.</returns>
+        </member>
+        <member name="M:CatSAT.Problem.PrepareToSolve">
+            <summary>
+            Perform preprocessing steps for solver:
+            - Code generation
+            - Finding floating variables
+            </summary>
+        </member>
+        <member name="M:CatSAT.Problem.SolveOne(CatSAT.Solution,System.Int32)">
+            <summary>
+            Generate one solution in the specified solution object.
+            Does not perform preprocessing
+            </summary>
+            <param name="s">Solution object to write result into</param>
+            <param name="timeout">Timeout</param>
+            <returns>True if solution was found</returns>
+        </member>
+        <member name="M:CatSAT.Problem.HighUtilitySolution(System.Int32,System.Boolean)">
+            <summary>
+            Makes a best effort to find a solution with a high utility as specified by the utilities
+            of this problem's propositions.
+            </summary>
+            <param name="flips">Maximum number of flips to spend trying to find better solutions</param>
+            <param name="throwOnUnsolvable">Throw an exception if no solution is found.  Otherwise returns null when no solution is found.</param>
+            <returns>Best solution system could find in the time available, or null if it could find no solution.</returns>
+        </member>
+        <member name="M:CatSAT.Problem.Assert(CatSAT.Assertable[])">
+            <summary>
+            Adds a set of assertions to this problem.
+            Assertions are immutable: they cannot be changed or reset
+            Assertions cannot be edded after the first call to Solve()
+            </summary>
+            <param name="assertions">Assertions to add (literals, rules, implications, etc.)</param>
+            <exception cref="T:System.InvalidOperationException">When the Problem has already been solved once</exception>
+        </member>
+        <member name="M:CatSAT.Problem.Assert(CatSAT.Literal)">
+            <summary>
+            Asserts the literal must always be true in any solution.
+            Assertions are immutable: they cannot be changed or reset
+            Assertions cannot be edded after the first call to Solve()
+            </summary>
+            <param name="literal">Literal tha must always be true</param>
+            <exception cref="T:System.InvalidOperationException">When the Problem has already been solved once</exception>
+        </member>
+        <member name="M:CatSAT.Problem.Assert(CatSAT.Implication)">
+            <summary>
+            Asserts that the head must be true in any solution in which the body is true
+            Assertions are immutable: they cannot be changed or reset
+            Assertions cannot be edded after the first call to Solve()
+            </summary>
+            <param name="implication">Implication that must be true in any solution</param>
+            <exception cref="T:System.InvalidOperationException">When the Problem has already been solved once</exception>
+        </member>
+        <member name="M:CatSAT.Problem.Assert(CatSAT.Rule)">
+            <summary>
+            Adds a rule to the problem.
+            Assertions are immutable: they cannot be changed or reset
+            Assertions cannot be edded after the first call to Solve()
+            </summary>
+            <param name="rule">Rule to add to the problem</param>
+            <exception cref="T:System.InvalidOperationException">When the Problem has already been solved once</exception>
+        </member>
+        <member name="M:CatSAT.Problem.Assert(CatSAT.Biconditional)">
+            <summary>
+            Asserts that in any solution, either the head and body must both be true or both be false
+            Assertions are immutable: they cannot be changed or reset
+            Assertions cannot be edded after the first call to Solve()
+            </summary>
+            <param name="equivalence">Equivalence that must be true in any solution</param>
+            <exception cref="T:System.InvalidOperationException">When the Problem has already been solved once</exception>
+        </member>
+        <member name="M:CatSAT.Problem.Inconsistent(CatSAT.Literal[])">
+            <summary>
+            Declare that these can't simultaneously be true
+            </summary>
+            <param name="lits">outlawed literals</param>
+        </member>
+        <member name="M:CatSAT.Problem.Inconsistent``1(System.Collections.Generic.IEnumerable{``0},System.Func{``0,CatSAT.Literal})">
+            <summary>
+            Declare that these can't simultaneously be true 
+            </summary>
+            <typeparam name="T">Type of the domain</typeparam>
+            <param name="domain">Collection to quantify over</param>
+            <param name="f">Forms a literal from a domain element</param>
+        </member>
+        <member name="M:CatSAT.Problem.Inconsistent(System.Collections.Generic.IEnumerable{CatSAT.Literal})">
+            <summary>
+            Declare that these can't simultaneously be true
+            </summary>
+            <param name="lits">outlawed literals</param>
+        </member>
+        <member name="M:CatSAT.Problem.Quantify``1(System.Int32,System.Int32,System.Collections.Generic.IEnumerable{``0},System.Func{``0,CatSAT.Literal})">
+            <summary>
+            Bounds on the number of literals in the specified set that must be true
+            </summary>
+            <typeparam name="T">Type of the domain elements</typeparam>
+            <param name="min">Minimum number of literals that must be true in a solution</param>
+            <param name="max">Maximum number of literals that may be true in a solution</param>
+            <param name="domain">Domain over which to quantify</param>
+            <param name="f">Function mapping a domain element to a literal</param>
+        </member>
+        <member name="M:CatSAT.Problem.Quantify(System.Int32,System.Int32,CatSAT.Literal[])">
+            <summary>
+            Bounds on the number of literals in the specified set that must be true
+            </summary>
+            <param name="min">Minimum number of literals that must be true in a solution</param>
+            <param name="max">Maximum number of literals that may be true in a solution</param>
+            <param name="literals">Literals being quantified</param>
+        </member>
+        <member name="M:CatSAT.Problem.Quantify(System.Int32,System.Int32,System.Collections.Generic.IEnumerable{CatSAT.Literal})">
+            <summary>
+            Bounds on the number of literals in the specified set that must be true
+            </summary>
+            <param name="min">Minimum number of literals that must be true in a solution</param>
+            <param name="max">Maximum number of literals that may be true in a solution</param>
+            <param name="literals">Literals being quantified</param>
+        </member>
+        <member name="M:CatSAT.Problem.All(CatSAT.Literal[])">
+            <summary>
+            Assert all the literals must be true
+            </summary>
+            <param name="literals">Literals that must be true</param>
+        </member>
+        <member name="M:CatSAT.Problem.All``1(System.Collections.Generic.IEnumerable{``0},System.Func{``0,CatSAT.Literal})">
+            <summary>
+            Assert all the literals must be true
+            </summary>
+        </member>
+        <member name="M:CatSAT.Problem.All(System.Collections.Generic.IEnumerable{CatSAT.Literal})">
+            <summary>
+            Assert all the literals must be true
+            </summary>
+            <param name="literals">Literals that must be true</param>
+        </member>
+        <member name="M:CatSAT.Problem.Exists(CatSAT.Literal[])">
+            <summary>
+            Asserts at least one of the literals must be true in any solution
+            </summary>
+            <param name="literals">Literals being quantified</param>
+        </member>
+        <member name="M:CatSAT.Problem.Exists``1(System.Collections.Generic.IEnumerable{``0},System.Func{``0,CatSAT.Literal})">
+            <summary>
+            Asserts at least one of the literals must be true in any solution
+            </summary>
+        </member>
+        <member name="M:CatSAT.Problem.Exists(System.Collections.Generic.IEnumerable{CatSAT.Literal})">
+            <summary>
+            Asserts at least one of the literals must be true in any solution
+            </summary>
+            <param name="literals">Literals being quantified</param>
+        </member>
+        <member name="M:CatSAT.Problem.Unique(CatSAT.Literal[])">
+            <summary>
+            Asserts exactly one of the literals must be true in any solution
+            </summary>
+            <param name="literals">Literals being quantified</param>
+        </member>
+        <member name="M:CatSAT.Problem.Unique``1(System.Collections.Generic.IEnumerable{``0},System.Func{``0,CatSAT.Literal})">
+            <summary>
+            Asserts exactly one of the literals must be true in any solution
+            </summary>
+        </member>
+        <member name="M:CatSAT.Problem.Unique(System.Collections.Generic.IEnumerable{CatSAT.Literal})">
+            <summary>
+            Asserts exactly one of the literals must be true in any solution
+            </summary>
+            <param name="literals">Literals being quantified</param>
+        </member>
+        <member name="M:CatSAT.Problem.Exactly(System.Int32,CatSAT.Literal[])">
+            <summary>
+            Asserts exactly N of the literals must be true in any solution
+            </summary>
+            <param name="n">Number of literals that must be true</param>
+            <param name="literals">Literals being quantified</param>
+        </member>
+        <member name="M:CatSAT.Problem.Exactly``1(System.Int32,System.Collections.Generic.IEnumerable{``0},System.Func{``0,CatSAT.Literal})">
+            <summary>
+            Asserts exactly N of the literals must be true in any solution
+            </summary>
+            <param name="n">Number of literals that must be true</param>
+            <param name="domain">Domain over which to quantify</param>
+            <param name="f">Function mapping domain element to literal</param>
+        </member>
+        <member name="M:CatSAT.Problem.Exactly(System.Int32,System.Collections.Generic.IEnumerable{CatSAT.Literal})">
+            <summary>
+            Asserts exactly N of the literals must be true in any solution
+            </summary>
+            <param name="n">Number of literals that must be true</param>
+            <param name="literals">Literals being quantified</param>
+        </member>
+        <member name="M:CatSAT.Problem.AtMost(System.Int32,CatSAT.Literal[])">
+            <summary>
+            Asserts at most N of the literals must be true in any solution
+            </summary>
+            <param name="n">Maximum number of literals that may be true</param>
+            <param name="literals">Literals being quantified</param>
+        </member>
+        <member name="M:CatSAT.Problem.AtMost(System.Int32,System.Collections.Generic.IEnumerable{CatSAT.Literal})">
+            <summary>
+            Asserts at most N of the literals must be true in any solution
+            </summary>
+            <param name="n">Maximum number of literals that may be true</param>
+            <param name="literals">Literals being quantified</param>
+        </member>
+        <member name="M:CatSAT.Problem.AtMost``1(System.Int32,System.Collections.Generic.IEnumerable{``0},System.Func{``0,CatSAT.Literal})">
+            <summary>
+            Asserts at most  N of the literals must be true in any solution
+            </summary>
+            <param name="n">Maximum number of literals that may be true</param>
+            <param name="domain">Domain over which to quantify</param>
+            <param name="f">Function mapping domain element to literal</param>
+        </member>
+        <member name="M:CatSAT.Problem.AtLeast(System.Int32,CatSAT.Literal[])">
+            <summary>
+            Asserts at least N of the literals must be true in any solution
+            </summary>
+            <param name="n">Minimum number of literals that must be true</param>
+            <param name="literals">Literals being quantified</param>
+        </member>
+        <member name="M:CatSAT.Problem.AtLeast``1(System.Int32,System.Collections.Generic.IEnumerable{``0},System.Func{``0,CatSAT.Literal})">
+            <summary>
+            Asserts at least N of the literals must be true in any solution
+            </summary>
+            <param name="n">Minimum number of literals that must be true</param>
+            <param name="domain">Domain over which to quantify</param>
+            <param name="f">Function mapping domain element to literal</param>
+        </member>
+        <member name="M:CatSAT.Problem.AtLeast(System.Int32,System.Collections.Generic.IEnumerable{CatSAT.Literal})">
+            <summary>
+            Asserts at least N of the literals must be true in any solution
+            </summary>
+            <param name="literals">Literals being quantified</param>
+            <param name="n">Minimum number of literals that must be true</param>
+        </member>
+        <member name="M:CatSAT.Problem.HasPropositionNamed(System.Object)">
+            <summary>
+            True if the problem has a proposition with the specified name
+            </summary>
+        </member>
+        <member name="M:CatSAT.Problem.GetProposition(System.Object)">
+            <summary>
+            Get a proposition within this Problem, with the specified key
+            </summary>
+            <param name="key">Arbitrary object that acts as a name for this proposition.</param>
+            <returns></returns>
+        </member>
+        <member name="M:CatSAT.Problem.GetInternalProposition(System.Object)">
+            <summary>
+            Gets a proposition and marks it internal
+            </summary>
+        </member>
+        <member name="M:CatSAT.Problem.GetSpecialProposition``1(System.Object)">
+            <summary>
+            Returns the Proposition of with the specified name and type from within the Problem, creating one if necessary.
+            You should probably only be using this if you're writing your own theory solver.
+            </summary>
+            <param name="name">Name of the proposition</param>
+            <typeparam name="T">Type of the proposition</typeparam>
+        </member>
+        <member name="M:CatSAT.Problem.Negation(CatSAT.Proposition)">
+            <summary>
+            Returns the (unique) negation literal of this proposition, creating one if necessary.
+            </summary>
+            <param name="proposition">Proposition to negate</param>
+        </member>
+        <member name="M:CatSAT.Problem.IsAlwaysTrue(CatSAT.Proposition)">
+            <summary>
+            True if proposition is known to be true in all models
+            </summary>
+        </member>
+        <member name="M:CatSAT.Problem.IsAlwaysFalse(CatSAT.Proposition)">
+            <summary>
+            True if proposition is known to be false in all models
+            </summary>
+        </member>
+        <member name="M:CatSAT.Problem.IsConstant(CatSAT.Proposition)">
+            <summary>
+            True if proposition is known to have the same value in all models
+            </summary>
+        </member>
+        <member name="M:CatSAT.Problem.IsConstant(CatSAT.Literal)">
+            <summary>
+            True if this is a Literal with a fix truth value across all Problems and Solutions.
+            The only constant Literals are Proposition.True, Proposition.False, and their negations.
+            </summary>
+            <param name="lit"></param>
+        </member>
+        <member name="M:CatSAT.Problem.IsPredetermined(CatSAT.Proposition)">
+            <summary>
+            Test if this proposition is predetermined (explicitly set, inferred, etc.)
+            </summary>
+            <param name="p"></param>
+        </member>
+        <member name="M:CatSAT.Problem.Optimize">
+            <summary>
+            Performs unit resolution, aka Boolean constraint propagation aka constant folding on the clauses of the problem.
+            </summary>
+            <exception cref="T:CatSAT.ContradictionException">If the optimizer determines the problem is provably unsatisfiable</exception>
+        </member>
+        <member name="M:CatSAT.Problem.UndeterminedDisjunctOf(CatSAT.Clause)">
+            <summary>
+            Find the first (and presumably only) undetermined disjunct of the clause.
+            </summary>
+            <param name="c">The clause</param>
+            <returns>Signed index of the disjunct</returns>
+        </member>
+        <member name="P:CatSAT.Problem.Item(CatSAT.Proposition)">
+            <summary>
+            Gets or sets the predetermined value of the proposition.
+            </summary>
+            <param name="p">Proposition to check</param>
+            <returns>Predetermined value</returns>
+            <exception cref="T:System.InvalidOperationException">If the proposition has not been given a predetermined value</exception>
+        </member>
+        <member name="P:CatSAT.Problem.Item(CatSAT.Literal)">
+            <summary>
+            Gets or sets the predetermined value of the literal.
+            </summary>
+            <param name="l">Literalto check</param>
+            <returns>Predetermined value</returns>
+            <exception cref="T:System.InvalidOperationException">If the literal's proposition has not been given a predetermined value</exception>
+        </member>
+        <member name="M:CatSAT.Problem.ResetInferredPropositions">
+            <summary>
+            Find all the propositions that were previously determined through optimization and set
+            them back to floating status.
+            </summary>
+        </member>
+        <member name="M:CatSAT.Problem.ResetPropositions">
+            <summary>
+            Reset all propositions that had previously been set by the user to floating status.
+            </summary>
+        </member>
+        <member name="M:CatSAT.Problem.ResetProposition(CatSAT.Proposition)">
+            <summary>
+            Reset a previously set proposition ot an undetermined state.
+            </summary>
+            <param name="p">Proposition to reset</param>
+        </member>
+        <member name="T:CatSAT.DomainVariable`1">
+            <summary>
+            Base class for typed, non-Boolean variables, either for NBSAT or for SMT
+            </summary>
+            <typeparam name="T">Type of the variable's value</typeparam>
+        </member>
+        <member name="M:CatSAT.DomainVariable`1.#ctor(System.Object,CatSAT.Problem,CatSAT.Literal)">
+            <inheritdoc />
+        </member>
+        <member name="P:CatSAT.DomainVariable`1.Domain">
+            <summary>
+            Domain specifying the possible values of the variable
+            </summary>
+        </member>
+        <member name="M:CatSAT.DomainVariable`1.Value(CatSAT.Solution)">
+            <summary>
+            Returns the value assigned to the variable in the solution
+            </summary>
+            <param name="s">Solution from which to get the variable's value</param>
+            <returns>Value of the variable</returns>
+        </member>
+        <member name="P:CatSAT.DomainVariable`1.PredeterminedValue">
+            <summary>
+            The value pre-assigned to the variable before attempting to solve the problem, if any.
+            </summary>
+            <returns>Value of the variable</returns>
+        </member>
+        <member name="M:CatSAT.DomainVariable`1.Reset">
+            <summary>
+            Removes any predetermined value for the variable
+            </summary>
+        </member>
+        <member name="T:CatSAT.Variable">
+            <summary>
+            Base class for non-Boolean variables
+            </summary>
+        </member>
+        <member name="F:CatSAT.Variable.Name">
+            <summary>
+            Object that names the variable
+            </summary>
+        </member>
+        <member name="F:CatSAT.Variable.Problem">
+            <summary>
+            Problem to which this variable is attached
+            </summary>
+        </member>
+        <member name="F:CatSAT.Variable.Condition">
+            <summary>
+            Condition under which this variable is defined.
+            If true or if Condition is null, the variable must have a value.
+            If false, it must not have a value.
+            </summary>
+        </member>
+        <member name="M:CatSAT.Variable.#ctor(System.Object,CatSAT.Problem,CatSAT.Literal)">
+            <summary>
+            Make a new variable
+            </summary>
+            <param name="name">"Name" for the variable (arbitrary object)</param>
+            <param name="problem">Problem of which this variable is a part</param>
+            <param name="condition">Condition under which this variable is to have a value; if null, it's always defined.</param>
+        </member>
+        <member name="M:CatSAT.Variable.ValueString(CatSAT.Solution)">
+            <summary>
+            A string of the form "variablename=value", used for debugging
+            </summary>
+            <param name="s">Solution from which to get the variable's value</param>
+        </member>
+        <member name="M:CatSAT.Variable.IsDefinedInInternal(CatSAT.Solution)">
+            <summary>
+            True if the variable has a value defined in the specified solution.
+            This works by directly checking the Condition of the variable, so it works during
+            solve time.
+            </summary>
+            <param name="solution">Solution to check</param>
+        </member>
+        <member name="M:CatSAT.Variable.ValueInternal(CatSAT.Solution)">
+            <summary>
+            DON'T CALL THIS YOURSELF: this should only be called by the solver itself.
+            Returns the value of a variable, immediately after the solver is run.
+            Not guaranteed to be valid afterward.
+            </summary>
+        </member>
+        <member name="M:CatSAT.Variable.ToString">
+            <inheritdoc />
+        </member>
+        <member name="M:CatSAT.Variable.op_Equality(CatSAT.Variable,System.Object)">
+            <summary>
+            A Proposition asserting that the variable has a specified value.
+            </summary>
+            <param name="var">The variable who value should be checked</param>
+            <param name="value">The value to check for</param>
+        </member>
+        <member name="M:CatSAT.Variable.op_Inequality(CatSAT.Variable,System.Object)">
+            <summary>
+            A Proposition asserting that the variable does not have a specified value.
+            </summary>
+            <param name="var">The variable who value should be checked</param>
+            <param name="value">The value to check for</param>
+            <returns></returns>
+        </member>
+        <member name="M:CatSAT.Variable.EqualityProposition(System.Object)">
+            <summary>
+            A literal representing that this variable has the specified value.
+            </summary>
+            <param name="vConditionValue">Value to compare the variable to.</param>
+        </member>
+        <member name="T:CatSAT.VariableProblemExtensions">
+            <summary>
+            Implements various extension methods for Problem that are related to Variables.
+            Also implements a couple of extensions on solutions, when they make the most sense to include here.
+            </summary>
+        </member>
+        <member name="M:CatSAT.VariableProblemExtensions.Instantiate(CatSAT.Problem,System.Object,CatSAT.VariableType,CatSAT.Literal)">
+            <summary>
+            Make a new CatSAT variable within the problem
+            </summary>
+            <param name="p">Problem to add the variable to</param>
+            <param name="name">Name for the variable</param>
+            <param name="t">VariableType (e.g. domain) for the variable</param>
+            <param name="condition">Optional literal specifying in what solutions the variable should be defined.</param>
+            <returns></returns>
+        </member>
+        <member name="M:CatSAT.VariableProblemExtensions.AllDifferent``1(CatSAT.Problem,System.Collections.Generic.IEnumerable{CatSAT.FDVariable{``0}})">
+            <summary>
+            Asserts the specified variables should all have different values in the problem.
+            </summary>
+            <param name="p">Problem to add the assertion to.</param>
+            <param name="vars">Variables that should all be different</param>
+            <typeparam name="T">Type of the variable's values</typeparam>
+            <exception cref="T:System.ArgumentException">When the variables have different domains.</exception>
+        </member>
+        <member name="M:CatSAT.VariableProblemExtensions.Populate(CatSAT.Problem,System.Object,System.Reflection.BindingFlags)">
+            <summary>
+            Fill in  the fields of target with the values of the variables and propositions
+            with the same name, from a new solution to the specified problem.
+            </summary>
+            <param name="p">Problem to solve to get values from</param>
+            <param name="target">Object to fill in</param>
+            <param name="bindingFlags">Binding flags for field lookup (defaults to public)</param>
+        </member>
+        <member name="M:CatSAT.VariableProblemExtensions.Populate(CatSAT.Solution,System.Object,System.Reflection.BindingFlags)">
+            <summary>
+            Fill in  the fields of target with the values of the variables and propositions
+            with the same name, from solution.
+            </summary>
+            <param name="s">Solution to get values from</param>
+            <param name="target">Object to fill in</param>
+            <param name="bindingFlags">Binding flags for field lookup (defaults to public)</param>
+        </member>
+        <member name="T:CatSAT.VariableType">
+            <summary>
+            Base class of all "types" of CatSAT variables.
+            VariableType is a generalization of domains that includes things like the types of CatSAT Structs,
+            that don't really look like domains.
+            </summary>
+        </member>
+        <member name="F:CatSAT.VariableType.Name">
+            <summary>
+            Name of the type, for debugging purposes
+            </summary>
+        </member>
+        <member name="F:CatSAT.VariableType.Types">
+            <summary>
+            Dictionary of all named types
+            </summary>
+        </member>
+        <member name="M:CatSAT.VariableType.#ctor(System.String)">
+            <summary>
+            Make a VariableType and add it to the Types dictionary.
+            </summary>
+            <param name="name"></param>
+        </member>
+        <member name="M:CatSAT.VariableType.TypeNamed(System.String)">
+            <summary>
+            Find the CatSAT VariableType object with the specified name
+            </summary>
+            <param name="n">Name to look for</param>
+        </member>
+        <member name="M:CatSAT.VariableType.TypeExists(System.String)">
+            <summary>
+            True if there is a CatSAT VariableType with this name
+            </summary>
+            <param name="n"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CatSAT.VariableType.Instantiate(System.Object,CatSAT.Problem,CatSAT.Literal)">
+            <summary>
+            Create a new Variable object with this VariableType within the specified Problem.
+            </summary>
+            <param name="name">Name to give to the variable</param>
+            <param name="p">Problem to add the variable to</param>
+            <param name="condition">Optional condition for when the variable should be defined in a given solution.</param>
+        </member>
+        <member name="M:CatSAT.VariableType.Instantiate(System.Object)">
+            <summary>
+            Create a new Variable object with this VariableType within the specified Problem.
+            </summary>
+            <param name="name">Name to give to the variable</param>
+        </member>
+        <member name="M:CatSAT.VariableType.ToString">
+            <inheritdoc />
+        </member>
+    </members>
+</doc>

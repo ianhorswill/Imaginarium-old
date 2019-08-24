@@ -1,0 +1,18 @@
+A cat is a person.
+A cat has a name from cat names
+Persian, tabby, Siamese, manx, Chartreux, and Maine coon are kinds of cat.
+Cats have an age between 1 and 20.
+Cats are male or female.
+Cats are long-haired or short-haired.
+Cats can be big or small.
+Cats can be cuddly or haughty.
+A cat can be staid or crazy.
+The plural of Chartreux is Chartreux.
+The plural of Siamese is Siamese.
+Chartreux are grey.
+Siamese are grey.
+Persians are long-haired.
+Siamese are short-haired.
+Maine coons are large.
+Cats are black, white, grey, or ginger.
+

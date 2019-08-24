@@ -1,0 +1,103 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using CatSAT;
+
+/// <summary>
+/// Represents an object in the model (imagined scenario)
+/// </summary>
+public class Individual : Referent, IComparable
+{
+    /// <summary>
+    /// Makes an Individual that is not part of the ontology itself.
+    /// This individual is local to a particular Invention.
+    /// </summary>
+    /// <param name="concepts">CommonNouns and Adjectives that must apply to the individual</param>
+    /// <param name="name">Default name to give to the individual if no name property can be found.</param>
+    /// <returns></returns>
+    public static Individual Ephemeral(IEnumerable<MonadicConcept> concepts, string[] name)
+    {
+        return new Individual(concepts, name);
+    }
+
+    /// <summary>
+    /// Makes an Individual that is part of the ontology itself.  It will appear in all Inventions.
+    /// </summary>
+    /// <param name="concepts">CommonNouns and Adjectives that must be true of this Individual</param>
+    /// <param name="name">Default name for the individual if not name property can be found.</param>
+    /// <returns></returns>
+    public static Individual Permanent(IEnumerable<MonadicConcept> concepts, string[] name)
+    {
+        var individual = new Individual(concepts, name);
+        AllPermanentIndividuals[name] = individual;
+        return individual;
+    }
+
+    static Individual()
+    {
+        Ontology.AllReferentTables.Add(AllPermanentIndividuals);
+    }
+
+    /// <summary>
+    /// Returns the Property of this Individual named "name", if any
+    /// </summary>
+    /// <returns>The name Property, else null.</returns>
+    public Property NameProperty()
+    {
+        foreach (var pair in Properties)
+            if (pair.Key.IsNamed(NameTokenString))
+                return pair.Key;
+        return null;
+    }
+    private static readonly string[] NameTokenString = new[] {"name"};
+
+    /// <summary>
+    /// The kinds (CommonNouns) of this Individual
+    /// </summary>
+    public readonly List<CommonNoun> Kinds = new List<CommonNoun>();
+
+    /// <summary>
+    /// The Adjectives that might apply to this Individual
+    /// </summary>
+    public readonly List<Adjective> Adjectives = new List<Adjective>();
+
+    /// <summary>
+    /// The Properties of this individual.
+    /// </summary>
+    public readonly Dictionary<Property, Variable> Properties = new Dictionary<Property, Variable>();
+    
+    private Individual(IEnumerable<MonadicConcept> concepts, string[] name)
+    {
+        Name = name;
+        var enumerated = concepts as MonadicConcept[] ?? concepts.ToArray();
+        Kinds.AddRange(enumerated.Where(c => c is CommonNoun).Cast<CommonNoun>());
+        Adjectives.AddRange(enumerated.Where(c => c is Adjective).Cast<Adjective>());
+    }
+
+    public static Dictionary<TokenString, Individual> AllPermanentIndividuals = new Dictionary<TokenString, Individual>();
+    public static Individual Find(params string[] tokens) => AllPermanentIndividuals.LookupOrDefault(tokens);
+
+    /// <summary>
+    /// Name of the object within the ontology, for permanent individuals.
+    /// Also used as a default name for ephemeral individuals, if they don't end up with any assigned
+    /// name property.
+    /// </summary>
+    public readonly string[] Name;
+
+    /// <inheritdoc />
+    public override string[] StandardName => Name;
+
+    public override bool IsNamed(string[] tokens) => Name.SameAs(tokens);
+
+    // ReSharper disable once InconsistentNaming
+    private static int UIDCounter;
+    // ReSharper disable once InconsistentNaming
+    private readonly int UID = UIDCounter++;
+
+    public int CompareTo(object obj)
+    {
+        if (obj is Individual i)
+            return UID.CompareTo(i.UID);
+        return -1;
+    }
+}

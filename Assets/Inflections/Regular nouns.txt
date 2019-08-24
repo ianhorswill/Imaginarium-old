@@ -1,0 +1,16 @@
+man	men
+mouse	mice
+louse	lice
+tooth	teeth
+goose	geese
+foot	feet
+ch	ches
+sh	shes
+ss	sses
+ay	ays
+ey	eys
+iy	iys
+oy	oys
+uy	uys
+y	ies
+	s
