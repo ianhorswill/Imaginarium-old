@@ -100,11 +100,20 @@ public class Graph : MonoBehaviour
 
         var child = new GameObject(nodeName);
         child.transform.parent = gameObject.transform;
-        gameObject.transform.position = new Vector3(
-            Random.Range(ScreenInWorldCoordinates.xMin, ScreenInWorldCoordinates.xMax), 
-            Random.Range(ScreenInWorldCoordinates.yMin, ScreenInWorldCoordinates.yMax)); 
+        child.transform.position = new Vector3(
+            Place(ScreenInWorldCoordinates.xMin, ScreenInWorldCoordinates.xMax), 
+            Place(ScreenInWorldCoordinates.yMin, ScreenInWorldCoordinates.yMax)); 
         
         return nodes[nodeName] = child.AddComponent<GraphNode>();
+    }
+
+    private float Place(float min, float max)
+    {
+        var count = 2;
+        var sum = 0f;
+        for (var i = 0; i < count; i++)
+            sum += Random.Range(min, max);
+        return sum / count;
     }
 
     public static void AddEdge(string from, string to, string label, string color)

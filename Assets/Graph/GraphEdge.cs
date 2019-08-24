@@ -9,11 +9,11 @@ public class GraphEdge : MonoBehaviour
     public bool IsSelfEdge => StartNode == EndNode;
 
     public string Label;
-    public float Length = 35;
+    public float Length = 25;
     public Color Color = Color.green;
     private TextMesh labelText;
 
-    public static float Gain = 0.5f;
+    public static float Gain = 0.2f;
 
     public static Material Shader;
 
