@@ -120,15 +120,14 @@ public class Driver : MonoBehaviour
     {
         Graph.Create();
         foreach (var i in invention.Individuals)
-            Graph.SetColor(invention.NameString(i), "yellow");
+            Graph.SetColor(i, invention.NameString(i), "yellow");
         foreach (var (v, f, t) in invention.Relationships)
-            if (f != t)
-            {
-                var from = invention.NameString(f);
-                var to = invention.NameString(t);
-                var verb = v.Text;
-                Graph.AddEdge(from, to, verb, "green");
-            }
+        {
+            var from = invention.NameString(f);
+            var to = invention.NameString(t);
+            var verb = v.Text;
+            Graph.AddEdge(f, from, t, to, verb, "green");
+        }
     }
 
     private void DoCommand()

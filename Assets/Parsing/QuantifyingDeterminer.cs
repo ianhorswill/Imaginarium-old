@@ -33,6 +33,7 @@ public class QuantifyingDeterminer : Segment
     };
 
     public bool IsPlural => PluralQuantifiers.Contains(Quantifier);
+    public bool IsOther => Quantifier == "other";
     public bool IsInvalid => InvalidQuantifiers.Contains(Quantifier);
 
     public override bool ScanTo(Func<string, bool> endPredicate)

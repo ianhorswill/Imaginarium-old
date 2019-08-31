@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using TMPro;
 using static Parser;
 
 /// <summary>
@@ -61,7 +59,7 @@ public class VerbSegment : ReferringExpression<Verb>
         {
             if (EndOfInput)
                 return true;
-        } else if (base.ScanToEnd())
+        } else if (base.ScanToEnd(failOnConjunction))
             return true;
         return false;
     }

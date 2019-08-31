@@ -72,7 +72,9 @@ public class Generator
         foreach (var v in verbs)
             if (CanBeA(i1, v.SubjectKind) && CanBeA(i2, v.ObjectKind))
             {
-                var relationHolds = Not(Holds(v, i1, i2));
+                var proposition = Holds(v, i1, i2);
+                proposition.InitialProbability = v.Density;
+                var relationHolds = Not(proposition);
                 AddImplication(relationHolds, IsA(i1, v.SubjectKind));
                 AddImplication(relationHolds, IsA(i2, v.ObjectKind));
             }

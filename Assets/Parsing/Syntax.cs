@@ -131,6 +131,10 @@ public class Syntax
     /// </summary>
     private static readonly Func<bool> Has = MatchHave;
 
+    private static readonly ClosedClassSegment RareCommon = new ClosedClassSegment(
+            "rare", "common" )
+        {Name = "rare/common"};
+
     private static readonly ClosedClassSegment CanMust = new ClosedClassSegment(
             "can", "must" )
         {Name = "can/must"};
@@ -221,10 +225,29 @@ public class Syntax
                 verb.SubjectKind = Subject.CommonNoun;
                 verb.ObjectKind = Object.CommonNoun;
                 verb.IsFunction = !Quantifier.IsPlural;
-                verb.IsAntiReflexive = CanMust.Match[0] == "other";
+                verb.IsAntiReflexive = Quantifier.IsOther;
                 verb.IsTotal = CanMust.Match[0] == "must";
             })
             .Check(VerbBaseForm, ObjectUnmodified, ObjectQuantifierAgree),
+
+        new Syntax(Verb, "is", RareCommon)
+            .Action(() =>
+            {
+                var verb = Verb.Verb;
+                switch (RareCommon.Match[0])
+                {
+                    case "rare":
+                        verb.Density = 0.1f;
+                        break;
+
+                    case "common":
+                        verb.Density = 0.9f;
+                        break;
+
+                    default:
+                        throw new Exception("Unknown frequency phrase");
+                }
+            }), 
 
         new Syntax(Subject, CanNot, Verb, Reflexive)
             .Action(() =>

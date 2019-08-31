@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 /// <summary>
 /// Represents a verb, i.e. a binary relation
@@ -23,6 +22,11 @@ public class Verb : Concept
 
     public bool IsAntiSymmetric;
 
+    /// <summary>
+    /// The initial probability of the relation.
+    /// </summary>
+    public float Density = 0.5f;
+
     public static readonly TokenTrie<Verb> Trie = new TokenTrie<Verb>();
 
     public static IEnumerable<Verb> AllVerbs => Trie.Contents;
@@ -31,7 +35,9 @@ public class Verb : Concept
 
     public override string[] StandardName => SingularForm;
 
+    // ReSharper disable InconsistentNaming
     private string[] _singular, _plural;
+    // ReSharper restore InconsistentNaming
 
     /// <summary>
     /// Singular form of the verb
@@ -49,7 +55,18 @@ public class Verb : Concept
             _singular = value;
             Trie.Store(_singular, this);
             EnsurePluralForm();
+            CreateGerundForms();
         }
+    }
+
+    /// <summary>
+    /// Add likely spellings of the gerund of this verb.
+    /// They are stored as if they are plural inflections.
+    /// </summary>
+    private void CreateGerundForms()
+    {
+        foreach (var form in Inflection.GerundOfVerb(_singular))
+            Trie.Store(form, this, true);
     }
 
     /// <summary>
@@ -75,7 +92,7 @@ public class Verb : Concept
         {
             if (_plural != null) Trie.Store(_plural, null);
             _plural = value;
-            Trie.Store(_plural, null, true);
+            Trie.Store(_plural, this, true);
             EnsureSingularForm();
         }
     }

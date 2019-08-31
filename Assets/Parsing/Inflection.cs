@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using File = System.IO.File;
 
@@ -45,8 +46,44 @@ public static class Inflection
         return singular;
     }
 
-    public static string[] SingularOfVerb(string[] plural) => PluralOfNoun(plural);
-    public static string[] PluralOfVerb(string[] singular) => SingularOfNoun(singular);
+    public static string[] SingularOfVerb(string[] plural)
+    {
+        if (ContainsCopula(plural))
+            return ReplaceCopula(plural, "is");        return PluralOfNoun(plural);
+    }
+
+    public static string[] PluralOfVerb(string[] singular)
+    {
+        if (ContainsCopula(singular))
+            return ReplaceCopula(singular, "are");
+        return SingularOfNoun(singular);
+    }
+
+    public static IEnumerable<string[]> GerundOfVerb(string[] singular)
+    {
+        if (ContainsCopula(singular))
+            yield return ReplaceCopula(singular, "being");
+        else if (singular.Length == 1)
+        {
+            var s = singular[0];
+            yield return new[] {s + "ing"};
+            if (EndsWithConsonant(s, out var terminalConsonant))
+                yield return new [] { s + terminalConsonant.ToString() + "ing" };
+        }
+    }
+
+    private static readonly char[] Vowels = {'a', 'e', 'i', 'o', 'u'};
+    private static bool EndsWithConsonant(string s, out char c)
+    {
+        Debug.Assert(s.Length > 0);
+        c = s[s.Length - 1];
+        return !Vowels.Contains(c);
+    }
+
+    private static readonly string[] CopularForms = {"is", "are", "being", "be" };
+    private static bool ContainsCopula(string[] tokens) => tokens.Any(word => CopularForms.Contains(word));
+
+    private static string[] ReplaceCopula(string[] tokens, string replacement) => tokens.Select(word => CopularForms.Contains(word) ? replacement : word).ToArray();
 
     private static readonly Dictionary<string, string> IrregularPlurals = new Dictionary<string, string>();
 

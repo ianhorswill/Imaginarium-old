@@ -33,7 +33,7 @@ public class Graph : MonoBehaviour
     public static Graph Singleton;
     public static GraphNode SelectedNode;
 
-    readonly Dictionary<string, GraphNode> nodes = new Dictionary<string, GraphNode>();
+    readonly Dictionary<object, GraphNode> nodes = new Dictionary<object, GraphNode>();
     public Rect ScreenInWorldCoordinates;
 
     public static void ConstraintToScreen(Rigidbody2D r)
@@ -83,28 +83,28 @@ public class Graph : MonoBehaviour
         Singleton.ScreenInWorldCoordinates = new Rect(lowerLeft, difference);
     }
 
-    public static void AddNode(string name)
+    public static void AddNode(object id, string label)
     {
-        Singleton.FindNode(name);
+        Singleton.FindNode(id, label);
     }
 
-    public static void SetColor(string nodeName, string color)
+    public static void SetColor(object id, string label, string color)
     {
-        Singleton.FindNode(nodeName).SetColor(ColorNamed(color));
+        Singleton.FindNode(id, label).SetColor(ColorNamed(color));
     }
 
-    private GraphNode FindNode(string nodeName)
+    private GraphNode FindNode(object id, string label)
     {
-        if (nodes.ContainsKey(nodeName))
-            return nodes[nodeName];
+        if (nodes.ContainsKey(id))
+            return nodes[id];
 
-        var child = new GameObject(nodeName);
+        var child = new GameObject(label);
         child.transform.parent = gameObject.transform;
         child.transform.position = new Vector3(
             Place(ScreenInWorldCoordinates.xMin, ScreenInWorldCoordinates.xMax), 
             Place(ScreenInWorldCoordinates.yMin, ScreenInWorldCoordinates.yMax)); 
         
-        return nodes[nodeName] = child.AddComponent<GraphNode>();
+        return nodes[id] = child.AddComponent<GraphNode>();
     }
 
     private float Place(float min, float max)
@@ -116,9 +116,9 @@ public class Graph : MonoBehaviour
         return sum / count;
     }
 
-    public static void AddEdge(string from, string to, string label, string color)
+    public static void AddEdge(object from, string fromLabel, object to, string toLabel, string edgeLabel, string color)
     {
-        Singleton.MakeEdge(from, to, label, ColorNamed(color));
+        Singleton.MakeEdge(from, fromLabel, to, toLabel, edgeLabel, ColorNamed(color));
     }
 
     static Color ColorNamed(string name)
@@ -141,14 +141,14 @@ public class Graph : MonoBehaviour
         }
     }
 
-    private void MakeEdge(string from, string to, string label, Color c)
+    private void MakeEdge(object from, string fromLabel, object to, string toLabel, string edgeLabel, Color c)
     {
         var child = new GameObject($"{from}->{to}");
         child.transform.parent = gameObject.transform;
         var edge = child.AddComponent<GraphEdge>();
-        edge.StartNode = FindNode(from);
-        edge.EndNode = FindNode(to);
-        edge.Label = label;
+        edge.StartNode = FindNode(from, fromLabel);
+        edge.EndNode = FindNode(to, toLabel);
+        edge.Label = edgeLabel;
         edge.Color = c;
     }
 
