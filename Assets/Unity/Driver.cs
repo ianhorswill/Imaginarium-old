@@ -116,6 +116,24 @@ public class Driver : MonoBehaviour
         }
     }
 
+    private int verbColorCounter;
+
+    public static readonly string[] ColorNames =
+    {
+        "green", "red", "blue", "gray", "cyan", "magenta", "yellow", "gray"
+    };
+
+    private readonly Dictionary<Verb, string> verbColors = new Dictionary<Verb, string>();
+
+    string VerbColor(Verb v)
+    {
+        if (verbColors.TryGetValue(v, out var c))
+            return c;
+        c = ColorNames[verbColorCounter++ % ColorNames.Length];
+        verbColors[v] = c;
+        return c;
+    }
+
     private void MakeGraph()
     {
         Graph.Create();
@@ -126,7 +144,7 @@ public class Driver : MonoBehaviour
             var from = invention.NameString(f);
             var to = invention.NameString(t);
             var verb = v.Text;
-            Graph.AddEdge(f, from, t, to, verb, "green");
+            Graph.AddEdge(f, from, t, to, verb, VerbColor(v));
         }
     }
 
