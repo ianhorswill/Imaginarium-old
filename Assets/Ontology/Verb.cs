@@ -65,7 +65,7 @@ public class Verb : Concept
     /// </summary>
     private void CreateGerundForms()
     {
-        foreach (var form in Inflection.GerundOfVerb(_singular))
+        foreach (var form in Inflection.GerundOfVerb(_plural))
             Trie.Store(form, this, true);
     }
 

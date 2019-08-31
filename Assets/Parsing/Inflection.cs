@@ -59,16 +59,23 @@ public static class Inflection
         return SingularOfNoun(singular);
     }
 
-    public static IEnumerable<string[]> GerundOfVerb(string[] singular)
+    public static IEnumerable<string[]> GerundOfVerb(string[] plural)
     {
-        if (ContainsCopula(singular))
-            yield return ReplaceCopula(singular, "being");
-        else if (singular.Length == 1)
+        if (ContainsCopula(plural))
+            yield return ReplaceCopula(plural, "being");
+        else if (plural.Length == 1)
         {
-            var s = singular[0];
+            var s = plural[0];
             yield return new[] {s + "ing"};
+
             if (EndsWithConsonant(s, out var terminalConsonant))
+            {
                 yield return new [] { s + terminalConsonant.ToString() + "ing" };
+            }
+            else
+            {
+                yield return new[] {s.Substring(0, s.Length - 1) + "ing"};
+            }
         }
     }
 
