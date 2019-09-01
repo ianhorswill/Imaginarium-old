@@ -9,6 +9,11 @@ public abstract class MonadicConcept : Concept
     public static bool LastMatchPlural => Trie.LastMatchPlural;
 
     /// <summary>
+    /// The initial probability used for the proposition that an individual is of this type.
+    /// </summary>
+    public float InitialProbability = 0.5f;
+
+    /// <summary>
     /// Add this name and concept to the trie of all known names of all known monadic concepts.
     /// </summary>
     /// <param name="tokens">Name to add for the concept</param>

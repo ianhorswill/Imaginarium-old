@@ -256,7 +256,9 @@ public class Generator
         if (k is CommonNoun n && !CanBeA(i, n))
             return false;
 
-        return PredicateOf(k)(i);
+        var p = PredicateOf(k)(i);
+        p.InitialProbability = k.InitialProbability;
+        return p;
     }
 
     public bool CanBeA(Individual i, CommonNoun kind)

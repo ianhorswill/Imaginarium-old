@@ -262,6 +262,26 @@ public class Syntax
                 Verb.Verb.Generalizations.Add(Verb2.Verb);
             }), 
 
+        new Syntax(Subject, "are", RareCommon)
+            .Action(() =>
+                {
+                    var kind = Subject.CommonNoun;
+                    switch (RareCommon.Match[0])
+                    {
+                        case "rare":
+                            kind.InitialProbability = 0.1f;
+                            break;
+
+                        case "common":
+                            kind.InitialProbability = 0.9f;
+                            break;
+
+                        default:
+                            throw new Exception("Unknown frequency phrase");
+                    }
+                })
+            .Check(SubjectPlural, SubjectUnmodified), 
+
         new Syntax(Subject, CanNot, Verb, Reflexive)
             .Action(() =>
             {
@@ -429,6 +449,8 @@ public class Syntax
             Subject.Number = Number.Plural;
         return true;
     }
+
+    private static bool SubjectPlural() => Subject.Number == Number.Plural;
 
     //private static bool ObjectNonSingular() => Object.Number == null || Object.Number == Number.Plural;
 
