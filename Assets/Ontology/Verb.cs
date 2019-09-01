@@ -6,6 +6,16 @@
 public class Verb : Concept
 {
     /// <summary>
+    /// Verbs that are implied by this verb
+    /// </summary>
+    public List<Verb> Generalizations = new List<Verb>();
+
+    /// <summary>
+    /// Verbs that are mutually exclusive with this one: A this B implies not A exclusion B
+    /// </summary>
+    public List<Verb> MutualExclusions = new List<Verb>();
+
+    /// <summary>
     /// There is at most one object for each possible subject
     /// </summary>
     public bool IsFunction;

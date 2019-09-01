@@ -64,6 +64,7 @@ public class Syntax
     public static NP Object = new NP() {Name = "Object"};
 
     public static VerbSegment Verb = new VerbSegment() {Name = "Verb"};
+    public static VerbSegment Verb2 = new VerbSegment() {Name = "Verb2"};
 
     /// <summary>
     /// Used when the subject of a sentences is a list of NPs
@@ -247,6 +248,18 @@ public class Syntax
                     default:
                         throw new Exception("Unknown frequency phrase");
                 }
+            }), 
+
+        new Syntax(Verb, "and", Verb2, "are", "mutually", "exclusive")
+            .Action(() =>
+            {
+                Verb.Verb.MutualExclusions.Add(Verb2.Verb);
+            }), 
+
+        new Syntax(Verb, "implies", Verb2)
+            .Action(() =>
+            {
+                Verb.Verb.Generalizations.Add(Verb2.Verb);
             }), 
 
         new Syntax(Subject, CanNot, Verb, Reflexive)

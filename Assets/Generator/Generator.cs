@@ -64,19 +64,23 @@ public class Generator
         // Do this first so that Problem.Current gets set.
         Problem = new Problem("invention");
         ResetPredicateTables();
+
         foreach (var i in Individuals)
             AddFormalization(i);
+
         var verbs = Verb.AllVerbs.ToArray();
+
         foreach (var i1 in Individuals)
         foreach (var i2 in Individuals)
         foreach (var v in verbs)
+            // v can't hold of i1,i2 unless they're both in the v's domain
             if (CanBeA(i1, v.SubjectKind) && CanBeA(i2, v.ObjectKind))
             {
                 var proposition = Holds(v, i1, i2);
                 proposition.InitialProbability = v.Density;
-                var relationHolds = Not(proposition);
-                AddImplication(relationHolds, IsA(i1, v.SubjectKind));
-                AddImplication(relationHolds, IsA(i2, v.ObjectKind));
+                var relationDoesNotHold = Not(proposition);
+                AddImplication(relationDoesNotHold, Not(IsA(i1, v.SubjectKind)));
+                AddImplication(relationDoesNotHold, Not(IsA(i2, v.ObjectKind)));
             }
 
         foreach (var v in verbs)
@@ -105,7 +109,25 @@ public class Generator
                     if (CanBeA(i, v.SubjectKind))
                         Problem.Assert(Holds(v, i, i));
             }
+
+            if (v.Generalizations.Count > 0 || v.MutualExclusions.Count > 0)
+                foreach (var (s, o) in Domain(v))
+                {
+                    foreach (var g in v.Generalizations)
+                        AddImplication(Holds(g, s, o), Holds(v, s, o));
+                    foreach (var e in v.MutualExclusions)
+                        Problem.AtMost(1, Holds(v, s, o), Holds(e, s, o));
+                }
         }
+    }
+
+    IEnumerable<(Individual, Individual)> Domain(Verb v)
+    {
+        foreach (var i1 in Individuals)
+            if (CanBeA(i1, v.SubjectKind))
+                foreach (var i2 in Individuals)
+                    if (CanBeA(i1, v.ObjectKind))
+                        yield return (i1, i2);
     }
 
     /// <summary>
@@ -229,7 +251,13 @@ public class Generator
     /// <summary>
     /// The proposition representing that concept k applies to individual i
     /// </summary>
-    public Proposition IsA(Individual i, MonadicConcept k) => PredicateOf(k)(i);
+    public Proposition IsA(Individual i, MonadicConcept k)
+    {
+        if (k is CommonNoun n && !CanBeA(i, n))
+            return false;
+
+        return PredicateOf(k)(i);
+    }
 
     public bool CanBeA(Individual i, CommonNoun kind)
     {
@@ -329,7 +357,7 @@ public class Generator
     /// </summary>
     void AddImplication(Literal consequent, params Literal[] antecedents)
     {
-        AddClause(antecedents.Append(Not(consequent)));
+        AddClause(antecedents.Select(Not).Append(consequent));
     }
 
     /// <summary>
