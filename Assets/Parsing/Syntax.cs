@@ -25,6 +25,7 @@
 
 using static Parser;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -132,8 +133,12 @@ public class Syntax
     /// </summary>
     private static readonly Func<bool> Has = MatchHave;
 
-    private static readonly ClosedClassSegment RareCommon = new ClosedClassSegment(
-            "rare", "common" )
+    private static readonly ClosedClassSegmentWithValue<float> RareCommon =
+        new ClosedClassSegmentWithValue<float>(
+            new KeyValuePair<object, float>(new[] {"very", "rare"}, 0.05f),
+                new KeyValuePair<object, float>("rare", 0.15f),
+            new KeyValuePair<object, float>("common", 0.85f),
+            new KeyValuePair<object, float>(new[] {"very", "common"}, 0.95f) )
         {Name = "rare/common"};
 
     private static readonly ClosedClassSegment CanMust = new ClosedClassSegment(
@@ -232,23 +237,7 @@ public class Syntax
             .Check(VerbBaseForm, ObjectUnmodified, ObjectQuantifierAgree),
 
         new Syntax(Verb, "is", RareCommon)
-            .Action(() =>
-            {
-                var verb = Verb.Verb;
-                switch (RareCommon.Match[0])
-                {
-                    case "rare":
-                        verb.Density = 0.1f;
-                        break;
-
-                    case "common":
-                        verb.Density = 0.9f;
-                        break;
-
-                    default:
-                        throw new Exception("Unknown frequency phrase");
-                }
-            }), 
+            .Action(() => Verb.Verb.Density = RareCommon.Value), 
 
         new Syntax(Verb, "and", Verb2, "are", "mutually", "exclusive")
             .Action(() =>
@@ -263,23 +252,7 @@ public class Syntax
             }), 
 
         new Syntax(Subject, "are", RareCommon)
-            .Action(() =>
-                {
-                    var kind = Subject.CommonNoun;
-                    switch (RareCommon.Match[0])
-                    {
-                        case "rare":
-                            kind.InitialProbability = 0.1f;
-                            break;
-
-                        case "common":
-                            kind.InitialProbability = 0.9f;
-                            break;
-
-                        default:
-                            throw new Exception("Unknown frequency phrase");
-                    }
-                })
+            .Action(() => Subject.CommonNoun.InitialProbability = RareCommon.Value)
             .Check(SubjectPlural, SubjectUnmodified), 
 
         new Syntax(Subject, CanNot, Verb, Reflexive)
