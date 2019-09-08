@@ -64,5 +64,35 @@ namespace Tests
                 Assert.IsTrue(ageValue >= 1 && ageValue <= 20);
             }
         }
+
+        [TestMethod]
+        public void ProperNameTest()
+        {
+            Ontology.EraseConcepts();
+            ParseAndExecute("a cat is a kind of person",
+                "a persian is a kind of cat",
+                "a tabby is a kind of cat",
+                "a siamese is a kind of cat",
+                "a cat can be haughty",
+                "a cat can be cuddly",
+                "a cat can be crazy",
+                "a persian can be matted",
+                "thaumaturgy is a form of magic",
+                "necromancy is a form of magic",
+                "a magic user must practice one form of magic");
+            var cat = (CommonNoun)Noun.Find("cat");
+            var magicUser = (CommonNoun)Noun.Find("magic", "user");
+            var thaumaturgy = Individual.AllPermanentIndividuals["thaumaturgy"];
+            var necromancy = Individual.AllPermanentIndividuals["necromancy"];
+            var g = new Generator(cat, magicUser);
+            for (var n = 0; n < 100; n++)
+            {
+                var i = g.Solve();
+                Assert.IsTrue(i.Holds("practices", i.Individuals[0], thaumaturgy)
+                              || i.Holds("practices", i.Individuals[0], necromancy));
+                Console.WriteLine(i.Model.Model);
+                Console.WriteLine(i.Description(i.Individuals[0]));
+            }
+        }
     }
 }

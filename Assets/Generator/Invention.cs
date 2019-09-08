@@ -171,6 +171,8 @@ public class Invention
 
     public bool Holds(Verb v, Individual i1, Individual i2) => Model[Generator.Holds(v, i1, i2)];
 
+    public bool Holds(string verb, Individual i1, Individual i2) => Holds(Verb.Find(verb), i1, i2);
+
     public IEnumerable<Tuple<Verb, Individual, Individual>>  Relationships
     {
         get

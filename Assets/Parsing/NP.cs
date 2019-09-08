@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using TMPro;
 using static Parser;
 
 /// <summary>
@@ -35,6 +34,15 @@ public class NP : ReferringExpression<Noun>
     /// </summary>
     public List<MonadicConcept> Modifiers = new List<MonadicConcept>();
 
+    /// <summary>
+    /// True if the segment starts with a determiner
+    /// </summary>
+    private bool beginsWithDeterminer;
+    /// <summary>
+    /// True if we've been told by our syntax rule that this has to be a common noun.
+    /// </summary>
+    public bool ForceCommonNoun;
+
     #region Scanning
     /// <summary>
     /// Scan forward to the next occurence of token.
@@ -44,8 +52,7 @@ public class NP : ReferringExpression<Noun>
     public override bool ScanTo(string token)
     {
         var old = State;
-        if (Match("a") || Match("an"))
-            Number = Syntax.Number.Singular;
+        ScanDeterminer();
         if (ScanComplexNP())
         {
             if (CurrentToken == token)
@@ -64,8 +71,7 @@ public class NP : ReferringExpression<Noun>
     public override bool ScanTo(Func<string, bool> endPredicate)
     {
         var old = State;
-        if (Match("a") || Match("an"))
-            Number = Syntax.Number.Singular;
+        ScanDeterminer();
         if (ScanComplexNP())
         {
             if (endPredicate(CurrentToken))
@@ -84,6 +90,24 @@ public class NP : ReferringExpression<Noun>
     public override bool ScanToEnd(bool failOnConjunction = true)
     {
         var old = State;
+        ScanDeterminer();
+
+        if (ScanComplexNP())
+        {
+            if (EndOfInput)
+                return true;
+        } else  if (base.ScanToEnd(failOnConjunction))
+            return true;
+        ResetTo(old);
+        return false;
+    }
+
+    /// <summary>
+    /// Skip over a determiner if we see one, and update state variables.
+    /// </summary>
+    private void ScanDeterminer()
+    {
+        beginsWithDeterminer = true;
         if (Match("a") || Match("an"))
             Number = Syntax.Number.Singular;
         else if (Match("all"))
@@ -113,15 +137,8 @@ public class NP : ReferringExpression<Noun>
             ExplicitCount = count;
             SkipToken();
         }
-
-        if (ScanComplexNP())
-        {
-            if (EndOfInput)
-                return true;
-        } else  if (base.ScanToEnd(failOnConjunction))
-            return true;
-        ResetTo(old);
-        return false;
+        else
+            beginsWithDeterminer = false;
     }
 
     /// <summary>
@@ -173,7 +190,21 @@ public class NP : ReferringExpression<Noun>
     protected override Noun GetConcept()
     {
         var text = Text;
-        var noun = Noun.Find(text);
+
+        if (Number == Syntax.Number.Plural || beginsWithDeterminer || ForceCommonNoun)
+            return GetCommonNoun(text);
+
+        return GetProperNoun(text);
+    }
+
+    private Noun GetProperNoun(string[] text)
+    {
+        return Noun.Find(text) ?? new ProperNoun(text);
+    }
+
+    private Noun GetCommonNoun(string[] text)
+    {
+        var noun = (CommonNoun)Noun.Find(text);
         if (noun != null)
         {
             var singular = noun.SingularForm.SameAs(text);
@@ -216,6 +247,7 @@ public class NP : ReferringExpression<Noun>
                 Number = _explicitCount == 1 ? Syntax.Number.Singular : Syntax.Number.Plural;
         }
     }
+    // ReSharper disable once InconsistentNaming
     private int? _explicitCount;
 
     private string DebugText => Text.Untokenize();
@@ -227,5 +259,7 @@ public class NP : ReferringExpression<Noun>
         Modifiers.Clear();
         Number = null;
         ExplicitCount = null;
+        beginsWithDeterminer = false;
+        ForceCommonNoun = false;
     }
 }

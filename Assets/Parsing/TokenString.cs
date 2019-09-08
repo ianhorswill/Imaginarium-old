@@ -14,7 +14,7 @@ public struct TokenString
     // ReSharper disable once IdentifierTypo
     private readonly string[] downcased;
 
-    public TokenString(string[] tokens)
+    public TokenString(params string[] tokens)
     {
         Tokens = tokens;
         downcased = new string[Tokens.Length];
@@ -48,6 +48,11 @@ public struct TokenString
     public static implicit operator TokenString(string[] tokens)
     {
         return new TokenString(tokens);
+    }
+
+    public static implicit operator TokenString(string word)
+    {
+        return new TokenString(word);
     }
 
     public static implicit operator string[](TokenString t)

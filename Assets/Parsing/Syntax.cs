@@ -176,6 +176,7 @@ public class Syntax
     /// </summary>
     private static bool ForceBaseForm(NP np)
     {
+        np.ForceCommonNoun = true;
         if (np.Number == Number.Plural)
             return false;
         np.Number = Number.Singular;
@@ -234,7 +235,7 @@ public class Syntax
                 verb.IsAntiReflexive = Quantifier.IsOther;
                 verb.IsTotal = CanMust.Match[0] == "must";
             })
-            .Check(VerbBaseForm, ObjectUnmodified, ObjectQuantifierAgree),
+            .Check(VerbBaseForm, ObjectUnmodified, ObjectQuantifierAgree, SubjectCommonNoun, ObjectCommonNoun),
 
         new Syntax(Verb, "is", RareCommon)
             .Action(() => Verb.Verb.Density = RareCommon.Value), 
@@ -262,7 +263,7 @@ public class Syntax
                 verb.SubjectKind = verb.ObjectKind = Subject.CommonNoun;
                 verb.IsAntiReflexive = true;
             })
-            .Check(VerbBaseForm, ObjectUnmodified, ObjectQuantifierAgree),
+            .Check(VerbBaseForm, SubjectCommonNoun),
 
         new Syntax(Subject, Always, Verb, Reflexive)
             .Action(() =>
@@ -271,7 +272,7 @@ public class Syntax
                 verb.SubjectKind = verb.ObjectKind = Subject.CommonNoun;
                 verb.IsReflexive = true;
             })
-            .Check(VerbBaseForm, ObjectUnmodified, ObjectQuantifierAgree),
+            .Check(VerbBaseForm, SubjectCommonNoun),
 
         new Syntax(Subject, "can", Verb, EachOther)
             .Action(() =>
@@ -280,7 +281,7 @@ public class Syntax
                 verb.SubjectKind = verb.ObjectKind = Subject.CommonNoun;
                 verb.IsSymmetric = true;
             })
-            .Check(VerbBaseForm, ObjectUnmodified, ObjectQuantifierAgree),
+            .Check(VerbBaseForm, SubjectCommonNoun),
 
         new Syntax(Subject, Is, "a", "kind", "of", Object)
             .Action(() =>
@@ -289,7 +290,7 @@ public class Syntax
                 foreach (var mod in Object.Modifiers)
                     Subject.CommonNoun.ImpliedAdjectives.Add(new CommonNoun.ConditionalAdjective(null, mod));
             })
-            .Check(SubjectVerbAgree, ObjectSingular, SubjectUnmodified)
+            .Check(SubjectVerbAgree, ObjectSingular, SubjectUnmodified, SubjectCommonNoun, ObjectCommonNoun)
             .Documentation("Declares that all Subjects are also Objects.  For example, 'cat is a kind of animal' says anythign that is a cat is also an animal."),
 
         new Syntax(SubjectNounList, Is, "kinds", "of", Object)
@@ -299,14 +300,14 @@ public class Syntax
                 {
                     var c = noun as CommonNoun;
                     if (c == null)
-                        throw new GrammaticalError("This noun is a proper noun (a name of a specific thing), but I need a common noun (a kind of thing) here", noun.SingularForm);
+                        throw new GrammaticalError("This noun is a proper noun (a name of a specific thing), but I need a common noun (a kind of thing) here", noun.StandardName);
                     c.DeclareSuperclass(Object.CommonNoun);
                     foreach (var mod in Object.Modifiers)
                         c.ImpliedAdjectives.Add(new CommonNoun.ConditionalAdjective(null, mod));
 
                 }
             })
-            .Check(ObjectSingular)
+            .Check(ObjectSingular, ObjectCommonNoun)
             .Documentation("Declares that all the different nouns in the subject list are also kinds of the object noun.  So 'dogs and cats are kinds of animal' states that all dogs and all cats are also animals."),
 
         new Syntax("the", "plural", "of", Subject, "is", Object)
@@ -316,7 +317,7 @@ public class Syntax
                 Object.Number = Number.Plural;
                 Subject.CommonNoun.PluralForm = Object.Text;
             })
-            .Check(SubjectUnmodified, ObjectUnmodified)
+            .Check(SubjectUnmodified, ObjectUnmodified, SubjectCommonNoun, ObjectCommonNoun)
             .Documentation("Lets you correct the system's guess as to the plural of a noun."),
 
         new Syntax("the", "singular", "of", Subject, "is", Object)
@@ -326,12 +327,12 @@ public class Syntax
                 Object.Number = Number.Singular;
                 Subject.CommonNoun.SingularForm = Object.Text;
             })
-            .Check(SubjectUnmodified, ObjectUnmodified)
+            .Check(SubjectUnmodified, ObjectUnmodified, SubjectCommonNoun, ObjectCommonNoun)
             .Documentation("Lets you correct the system's guess as to the singular of a noun."),
 
         new Syntax(Subject, Is, "identified", "as", "\"", Text, "\"")
             .Action( () => Subject.CommonNoun.NameTemplate = Text.Text)
-            .Check(SubjectUnmodified)
+            .Check(SubjectUnmodified, SubjectCommonNoun)
             .Documentation("Tells the system how to print the name of an object."),
 
         new Syntax(Subject, "can", "be", PredicateAP)
@@ -343,6 +344,13 @@ public class Syntax
             .Check(SubjectUnmodified)
             .Documentation("Declares that Subjects can be Adjectives, but don't have to be."),
 
+        new Syntax(Subject, "is", Object)
+            .Action(() =>
+            {
+                var proper = (ProperNoun) Subject.Noun;
+                proper.Kinds.Add(Object.CommonNoun);
+            })
+            .Check(ObjectCommonNoun), 
         new Syntax(Subject, Is, PredicateAP)
             .Action(() =>
             {
@@ -461,6 +469,18 @@ public class Syntax
     {
         if (Object.Modifiers.Count > 0)
             throw new GrammaticalError("Object noun cannot take adjectives", Subject.Text);
+        return true;
+    }
+
+    private static bool ObjectCommonNoun()
+    {
+        Object.ForceCommonNoun = true;
+        return true;
+    }
+
+    private static bool SubjectCommonNoun()
+    {
+        Subject.ForceCommonNoun = true;
         return true;
     }
 
@@ -651,7 +671,7 @@ public class Syntax
         }
     }
 
-    private string ConstituentName(object c)
+    private static string ConstituentName(object c)
     {
         switch (c)
         {
@@ -676,6 +696,8 @@ public class Syntax
                 return $"<i>{c}</i>";
         }
     }
+
+    public static bool SingularDeterminer(string word) => word == "a" || word == "an";
 
     /// <summary>
     /// Grammatical number feature

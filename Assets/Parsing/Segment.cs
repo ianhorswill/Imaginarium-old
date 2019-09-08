@@ -14,6 +14,8 @@ public class Segment
     /// <returns>True on success</returns>
     public virtual bool ScanTo(string token)
     {
+        if (EndOfInput || !ValidBeginning(CurrentToken))
+            return false;
         var beginning = State;
         while (!EndOfInput)
             if (Syntax.ListConjunction(CurrentToken))
@@ -38,6 +40,8 @@ public class Segment
     /// <returns>True on success</returns>
     public virtual bool ScanTo(Func<string, bool> endPredicate)
     {
+        if (EndOfInput || !ValidBeginning(CurrentToken))
+            return false;
         var beginning = State;
         while (!EndOfInput)
             if (Match(endPredicate))
@@ -65,6 +69,8 @@ public class Segment
     {
         if (EndOfInput)
             return false;
+        if (!ValidBeginning(CurrentToken))
+            return false;
         var beginning = State;
         if (failOnConjunction)
             // Have to check to make sure there's no embedded conjunction
@@ -80,6 +86,13 @@ public class Segment
         SetText(beginning);
         return true;
     }
+
+    /// <summary>
+    /// Tests whether the first token of a segment is a valid start to the segment.
+    /// </summary>
+    /// <param name="firstToken">first token of the segment</param>
+    /// <returns>True if this is a valid start to the sentence.</returns>
+    public virtual bool ValidBeginning(string firstToken) => true;
 
     private void SetText(ParserState from)
     {

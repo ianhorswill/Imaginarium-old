@@ -15,8 +15,9 @@ namespace Tests
         [TestMethod]
         public void PluralDeclarationTest()
         {
+            Ontology.EraseConcepts();
             ParseAndExecute("the plural of person is people");
-            Assert.AreEqual("people",Noun.Find("person").PluralForm[0]);
+            Assert.AreEqual("people",((CommonNoun)Noun.Find("person")).PluralForm[0]);
         }
 
         [TestMethod]

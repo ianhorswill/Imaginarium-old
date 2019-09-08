@@ -17,7 +17,12 @@ public class Generator
 
     #region Instance variables
     /// <summary>
-    /// The object whose attributes are to be generated
+    /// The object(s) being constructed by this generator
+    /// </summary>
+    public List<Individual> EphemeralIndividuals = new List<Individual>();
+
+    /// <summary>
+    /// All Individuals in the model being constructed (ephemeral and permanent)
     /// </summary>
     public List<Individual> Individuals = new List<Individual>();
 
@@ -51,7 +56,7 @@ public class Generator
         Count = count;
         var ca = concepts.ToArray();
         for (var i = 0; i < Count; i++)
-            Individuals.Add(Individual.Ephemeral(ca.Append(noun), noun.SingularForm.Append(i.ToString()).ToArray()));
+            EphemeralIndividuals.Add(Individual.Ephemeral(ca.Append(noun), noun.SingularForm.Append(i.ToString()).ToArray()));
 
         Rebuild();
     }
@@ -63,6 +68,9 @@ public class Generator
     {
         // Do this first so that Problem.Current gets set.
         Problem = new Problem("invention");
+        Individuals.Clear();
+        Individuals.AddRange(EphemeralIndividuals);
+        Individuals.AddRange(Individual.AllPermanentIndividuals.Select(pair => pair.Value));
         ResetPredicateTables();
 
         foreach (var i in Individuals)
