@@ -34,6 +34,7 @@ public class Invention
     /// </summary>
     public string Description(Individual i, string startEmphasis="", string endEmphasis="")
     {
+        // Properties we shouldn't surface because they're implicit or already surfaced.
         var suppressedProperties = new List<Property>();
         var name = NameString(i, suppressedProperties);
 
@@ -41,7 +42,7 @@ public class Invention
         // Add commas after all but the last adjectival phrase
         for (int n = 0; n < adjectivalPhrases.Count - 1; n++)
             adjectivalPhrases[n] = adjectivalPhrases[n].Append(",");
-        var result = adjectivalPhrases.SelectMany(list => list).Append(startEmphasis).Concat(MostSpecificNoun(i).StandardName).Append(endEmphasis).Prepend("a").Untokenize();
+        var result = adjectivalPhrases.SelectMany(list => list).Append(startEmphasis).Concat(MostSpecificNouns(i).SelectMany(n => n.StandardName)).Append(endEmphasis).Prepend("a").Untokenize();
         foreach (var pair in i.Properties)
         {
             var property = pair.Key;
@@ -80,19 +81,50 @@ public class Invention
     }
 
     /// <summary>
-    /// The most specific noun true of the individual within Model
+    /// Finds the minima of the sub-lattice of nouns satisfied by this individual.
+    /// Translation: every noun that's true of ind but that doesn't have a more specific noun that's
+    /// also true of it.  We suppress the more general nouns because they're implied by the truth of
+    /// the more specified ones.
     /// </summary>
-    public CommonNoun MostSpecificNoun(Individual ind)
+    public IEnumerable<CommonNoun> MostSpecificNouns(Individual ind)
     {
-        CommonNoun MostSpecificNounFromSet(Individual i, List<CommonNoun> kinds)
+        var nouns = new HashSet<CommonNoun>();
+
+        void MaybeAddNoun(CommonNoun n)
         {
-            var kind = kinds.First(k => IsA(i, k));
-            if (kind.Subkinds.Count > 0)
-                return MostSpecificNounFromSet(i, kind.Subkinds);
-            return kind;
+            if (!IsA(ind, n) || nouns.Contains(n))
+                return;
+
+            nouns.Add(n);
+            foreach (var sub in n.Subkinds)
+                MaybeAddNoun(sub);
         }
 
-        return MostSpecificNounFromSet(ind, ind.Kinds);
+        foreach (var n in ind.Kinds)
+            MaybeAddNoun(n);
+
+        // All the nouns that already have a more specific noun in nouns
+        // We make a separate table of these rather than removing them from nouns
+        // in order to avoid mutating a table while iterating over it, which is outlawed by
+        // foreach and likely to be very buggy in this instance even if foreach would let us do it.
+        var redundant = new HashSet<CommonNoun>();
+
+        void MarkRedundant(CommonNoun n)
+        {
+            if (redundant.Contains(n))
+                return;
+
+            redundant.Add(n);
+
+            foreach (var sup in n.Superkinds)
+                MarkRedundant(sup);
+        }
+
+        foreach (var n in nouns)
+            foreach (var sup in n.Superkinds)
+                MarkRedundant(sup);
+
+        return nouns.Where(n => !redundant.Contains(n));
     }
 
     public string NameString(Individual i, List<Property> suppressedProperties = null)

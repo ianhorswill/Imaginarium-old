@@ -34,6 +34,34 @@ namespace Tests
         }
 
         [TestMethod]
+        public void  CompoundNounTest()
+        {
+            Ontology.EraseConcepts();
+            ParseAndExecute("a cat is a kind of person",
+                "a persian is a kind of cat",
+                "a tabby is a kind of cat",
+                "a siamese is a kind of cat",
+                "a cat can be haughty",
+                "a cat can be cuddly",
+                "a cat can be crazy",
+                "a persian can be matted",
+                "thaumaturge and necromancer are kinds of magic user");
+            var cat = (CommonNoun)Noun.Find("cat");
+            var magicUser = (CommonNoun)Noun.Find("magic", "user");
+            var g = new Generator(cat, magicUser);
+            for (var n = 0; n < 100; n++)
+            {
+                var i = g.Solve();
+                Assert.IsTrue(i.IsA(i.Individuals[0], cat));
+                Assert.IsTrue(i.IsA(i.Individuals[0], "persian")
+                              || i.IsA(i.Individuals[0], "tabby")
+                              || i.IsA(i.Individuals[0], "siamese"));
+                Console.WriteLine(i.Model.Model);
+                Console.WriteLine(i.Description(i.Individuals[0]));
+            }
+        }
+
+        [TestMethod]
         public void ImpliedAdjectiveTest()
         {
             Ontology.EraseConcepts();
