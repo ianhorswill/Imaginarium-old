@@ -1,4 +1,4 @@
-A cat is a person.
+A cat is a kind of person.
 Persian, tabby, Siamese, manx, Chartreux, and Maine coon are kinds of cat.
 Cats have an age between 1 and 20.
 Cats are male or female.

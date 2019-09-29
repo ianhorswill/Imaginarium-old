@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using static Parser;
 
 /// <summary>
@@ -23,7 +24,8 @@ public class Segment
             else if (token == CurrentToken)
             {
                 SetText(beginning);
-                return true;
+                if (start < end) // Must have consumed at least one token
+                    return true;
             }
             else
                 SkipToken();
@@ -94,12 +96,12 @@ public class Segment
     /// <returns>True if this is a valid start to the sentence.</returns>
     public virtual bool ValidBeginning(string firstToken) => true;
 
-    private void SetText(ParserState from)
+    private void SetText(ScannerState from)
     {
         SetText(from, State);
     }
 
-    private void SetText(ParserState from, ParserState to)
+    private void SetText(ScannerState from, ScannerState to)
     {
         start = from.CurrentTokenIndex;
         end = to.CurrentTokenIndex;

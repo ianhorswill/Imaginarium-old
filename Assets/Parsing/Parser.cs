@@ -53,11 +53,10 @@ public static class Parser
     /// </summary>
     public static void ResetParser()
     {
-        Syntax.ResetConstituentInformation();
+        Current.ResetConstituentInformation();
 
         // Initialize state
         currentTokenIndex = 0;
-        UndoStack.Clear();
     }
 
     #region Token matching
@@ -199,7 +198,7 @@ public static class Parser
         where TReferent : Referent
     {
         var old = State;
-        var concept = trie.Lookup(Input, ref currentTokenIndex);
+        var concept = trie.Lookup(Input, ref Current.CurrentTokenIndex);
         if (concept != null)
             return concept;
         ResetTo(old);
@@ -237,12 +236,17 @@ public static class Parser
     /// <summary>
     /// List of tokens to be parsed
     /// </summary>
-    public static readonly List<string> Input = new List<string>();
+    public static List<string> Input => Current.TokenStream;
 
     /// <summary>
     /// Index within input of the next token to be matched
     /// </summary>
-    private static int currentTokenIndex;
+    // ReSharper disable once InconsistentNaming
+    private static int currentTokenIndex
+    {
+        get => Current.CurrentTokenIndex;
+        set { Current.CurrentTokenIndex = value; }
+    }
 
     /// <summary>
     /// True if all tokens have already been read
@@ -256,36 +260,123 @@ public static class Parser
     #endregion
 
     #region State maintenance
-    private static readonly Stack<Action> UndoStack = new Stack<Action>();
-
-    public static void UndoAction(Action a)
-    {
-        UndoStack.Push(a);
-    }
-
     /// <summary>
     /// Current state of the parser.
     /// </summary>
-    public static ParserState State => new ParserState(currentTokenIndex, UndoStack.Count);
+    public static ScannerState State => new ScannerState(currentTokenIndex);
 
-    public struct ParserState
+    public struct ScannerState
     {
         public readonly int CurrentTokenIndex;
-        public readonly int UndoStackDepth;
 
-        public ParserState(int currentTokenIndex, int undoStackDepth)
+        public ScannerState(int currentTokenIndex)
         {
             CurrentTokenIndex = currentTokenIndex;
-            UndoStackDepth = undoStackDepth;
         }
     }
 
-    public static void ResetTo(ParserState s)
+    public static void ResetTo(ScannerState s)
     {
         currentTokenIndex = s.CurrentTokenIndex;
-        while (UndoStack.Count != s.UndoStackDepth)
-            UndoStack.Pop()();
     }
+
+    public static Stack<ParserState> Parsers = new Stack<ParserState>();
+
+    public static ParserState Current = new ParserState();
+
+    public static void Push()
+    {
+        Parsers.Push(Current);
+        Current = new ParserState();
+    }
+
+    public static void Pop()
+    {
+        Current = Parsers.Pop();
+    }
+
+    public class ParserState
+    {
+        public ParserState()
+        {
+            ResetConstituentInformation();
+        }
+
+        /// <summary>
+        /// Reinitialize global variables that track the values of constituents.
+        /// Called each time a new syntax rule is tried.
+        /// </summary>
+        public void ResetConstituentInformation()
+        {
+            Subject.Reset();
+            Verb.Reset();
+            Verb2.Reset();
+            Object.Reset();
+            PredicateAP.Reset();
+            SubjectNounList.Reset();
+            PredicateAPList.Reset();
+            VerbNumber = null;
+        }
+
+        public readonly List<string> TokenStream = new List<string>();
+        public int CurrentTokenIndex;
+
+        /// <summary>
+        /// Segment for the subject of a sentence
+        /// </summary>
+        public NP Subject = new NP() {Name = "Subject"};
+
+        /// <summary>
+        /// Segment for the object of a sentence
+        /// </summary>
+        public NP Object = new NP() {Name = "Object"};
+
+        public VerbSegment Verb = new VerbSegment() {Name = "Verb"};
+        public VerbSegment Verb2 = new VerbSegment() {Name = "Verb2"};
+
+        /// <summary>
+        /// Used when the subject of a sentences is a list of NPs
+        /// </summary>
+        public ReferringExpressionList<NP, Noun> SubjectNounList = new ReferringExpressionList<NP, Noun>()
+            {SanityCheck = Syntax.ForceBaseForm, Name = "Subjects"};
+
+        /// <summary>
+        /// Used when the predicate of a sentences is a list of APs
+        /// </summary>
+        public ReferringExpressionList<AP, Adjective> PredicateAPList =
+            new ReferringExpressionList<AP, Adjective>()
+                {Name = "Adjectives"};
+
+        /// <summary>
+        /// Segment for the AP forming the predicate of a sentences
+        /// </summary>
+        public AP PredicateAP = new AP() {Name = "Adjective"};
+
+        /// <summary>
+        /// Segment for the file name of a list of values (e.g. for possible names of characters)
+        /// </summary>
+        public Segment ListName = new Segment() {Name = "ListName"};
+
+        /// <summary>
+        /// Free-form text, e.g. from a quotation.
+        /// </summary>
+        public Segment Text = new Segment() {Name = "Text"};
+
+        public QuantifyingDeterminer Quantifier = new QuantifyingDeterminer() {Name = "Quantifier"};
+
+        /// <summary>
+        /// The lower bound of a range appearing in the definition of a numeric property
+        /// </summary>
+        public float LowerBound;
+
+        /// <summary>
+        /// The upper bound of a range appearing in the definition of a numeric property
+        /// </summary>
+        public float UpperBound;
+        
+        public Syntax.Number? VerbNumber;
+    }
+
     #endregion
 
     #region Definition files
@@ -327,12 +418,16 @@ public static class Parser
     /// </summary>
     public static void LoadDefinitions(Referent referent)
     {
+        Push();
+
         foreach (var def in File.ReadAllLines(DefinitionFilePath(referent)))
         {
             var trimmed = def.Trim();
             if (trimmed != "" && !trimmed.StartsWith("#"))
                 ParseAndExecute(trimmed);
         }
+
+        Pop();
     }
     #endregion
 }

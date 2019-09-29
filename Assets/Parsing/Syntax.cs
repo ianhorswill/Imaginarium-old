@@ -26,6 +26,7 @@
 using static Parser;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -40,89 +41,65 @@ public class Syntax
     #region Constituent information
 
     /// <summary>
-    /// Reinitialize global variables that track the values of constituents.
-    /// Called each time a new syntax rule is tried.
-    /// </summary>
-    public static void ResetConstituentInformation()
-    {
-        Subject.Reset();
-        Verb.Reset();
-        Object.Reset();
-        PredicateAP.Reset();
-        SubjectNounList.Reset();
-        PredicateAPList.Reset();
-        _verbNumber = null;
-    }
-
-    /// <summary>
     /// Segment for the subject of a sentence
     /// </summary>
-    public static NP Subject = new NP() {Name = "Subject"};
+    public static NP Subject => Current.Subject;
 
     /// <summary>
     /// Segment for the object of a sentence
     /// </summary>
-    public static NP Object = new NP() {Name = "Object"};
+    public static NP Object => Current.Object;
 
-    public static VerbSegment Verb = new VerbSegment() {Name = "Verb"};
-    public static VerbSegment Verb2 = new VerbSegment() {Name = "Verb2"};
+    public static VerbSegment Verb => Current.Verb;
+    public static VerbSegment Verb2 => Current.Verb2;
 
     /// <summary>
     /// Used when the subject of a sentences is a list of NPs
     /// </summary>
-    public static ReferringExpressionList<NP, Noun> SubjectNounList = new ReferringExpressionList<NP, Noun>()
-        {SanityCheck = ForceBaseForm, Name = "Subjects"};
+    public static ReferringExpressionList<NP, Noun> SubjectNounList => Current.SubjectNounList;
 
     /// <summary>
     /// Used when the predicate of a sentences is a list of APs
     /// </summary>
-    public static ReferringExpressionList<AP, Adjective> PredicateAPList = new ReferringExpressionList<AP, Adjective>()
-        {Name = "Adjectives"};
+    public static ReferringExpressionList<AP, Adjective> PredicateAPList => Current.PredicateAPList;
 
     /// <summary>
     /// Segment for the AP forming the predicate of a sentences
     /// </summary>
-    public static AP PredicateAP = new AP() {Name = "Adjective"};
+    public static AP PredicateAP => Current.PredicateAP;
 
     /// <summary>
     /// Segment for the file name of a list of values (e.g. for possible names of characters)
     /// </summary>
-    public static Segment ListName = new Segment() {Name = "ListName"};
+    public static Segment ListName => Current.ListName;
 
     /// <summary>
     /// Free-form text, e.g. from a quotation.
     /// </summary>
-    public static Segment Text = new Segment() {Name = "Text"};
+    public static Segment Text => Current.Text;
 
-    public static QuantifyingDeterminer Quantifier = new QuantifyingDeterminer() { Name = "Quantifier" };
+    public static QuantifyingDeterminer Quantifier => Current.Quantifier;
 
     /// <summary>
     /// The lower bound of a range appearing in the definition of a numeric property
     /// </summary>
-    private static float lowerBound;
+    // ReSharper disable once InconsistentNaming
+    private static float lowerBound => Current.LowerBound;
 
     /// <summary>
     /// The upper bound of a range appearing in the definition of a numeric property
     /// </summary>
-    private static float upperBound;
+    // ReSharper disable once InconsistentNaming
+    private static float upperBound => Current.UpperBound;
 
     /// <summary>
     /// The number feature (singular, plural) of the verb of a sentence, or null if unknown
     /// </summary>
     public static Number? VerbNumber
     {
-        get => _verbNumber;
-        set
-        {
-            if (value != _verbNumber)
-            {
-                var old = _verbNumber;
-                UndoAction(() => _verbNumber = old);
-                _verbNumber = value;
-            }
-        }
+        get => Current.VerbNumber;
+        set => Current.VerbNumber = value;
     }
-    private static Number? _verbNumber;
 
     /// <summary>
     /// Recognizes conjugations of the verb to be.
@@ -165,16 +142,16 @@ public class Syntax
     /// <summary>
     /// Recognizes numbers and stores them in lowerBound
     /// </summary>
-    private static readonly Func<bool> LowerBound = () => MatchNumber(out lowerBound);
+    private static readonly Func<bool> LowerBound = () => MatchNumber(out Parser.Current.LowerBound);
     /// <summary>
     /// Recognizes numbers and stores them in upperBound
     /// </summary>
-    private static readonly Func<bool> UpperBound = () => MatchNumber(out upperBound);
+    private static readonly Func<bool> UpperBound = () => MatchNumber(out Parser.Current.UpperBound);
 
     /// <summary>
     /// Used in SubjectNounList to ensure all NPs are in base form (singular but no determiner)
     /// </summary>
-    private static bool ForceBaseForm(NP np)
+    public static bool ForceBaseForm(NP np)
     {
         np.ForceCommonNoun = true;
         if (np.Number == Number.Plural)
@@ -205,7 +182,7 @@ public class Syntax
             })
             .Documentation("Prints this list of commands"),
 
-        new Syntax("imagine", Object)
+        new Syntax(() => new object[] { "imagine", Object })
             .Action(() =>
             {
                 var countRequest = Object.ExplicitCount;
@@ -225,7 +202,7 @@ public class Syntax
             .Command()
             .Documentation("Tells the system to forget everything you've told it about the world."), 
         
-        new Syntax(Subject, CanMust, Verb, Quantifier, Object)
+        new Syntax(() => new object[] { Subject, CanMust, Verb, Quantifier, Object })
             .Action(() =>
             {
                 var verb = Verb.Verb;
@@ -237,26 +214,26 @@ public class Syntax
             })
             .Check(VerbBaseForm, ObjectUnmodified, ObjectQuantifierAgree, SubjectCommonNoun, ObjectCommonNoun),
 
-        new Syntax(Verb, "is", RareCommon)
+        new Syntax(() => new object[] { Verb, "is", RareCommon })
             .Action(() => Verb.Verb.Density = RareCommon.Value), 
 
-        new Syntax(Verb, "and", Verb2, "are", "mutually", "exclusive")
+        new Syntax(() => new object[] { Verb, "and", Verb2, "are", "mutually", "exclusive" })
             .Action(() =>
             {
                 Verb.Verb.MutualExclusions.Add(Verb2.Verb);
             }), 
 
-        new Syntax(Verb, "implies", Verb2)
+        new Syntax(() => new object[] { Verb, "implies", Verb2 })
             .Action(() =>
             {
                 Verb.Verb.Generalizations.Add(Verb2.Verb);
             }), 
 
-        new Syntax(Subject, "are", RareCommon)
+        new Syntax(() => new object[] { Subject, "are", RareCommon })
             .Action(() => Subject.CommonNoun.InitialProbability = RareCommon.Value)
             .Check(SubjectPlural, SubjectUnmodified), 
 
-        new Syntax(Subject, CanNot, Verb, Reflexive)
+        new Syntax(() => new object[] { Subject, CanNot, Verb, Reflexive })
             .Action(() =>
             {
                 var verb = Verb.Verb;
@@ -265,7 +242,7 @@ public class Syntax
             })
             .Check(VerbBaseForm, SubjectCommonNoun),
 
-        new Syntax(Subject, Always, Verb, Reflexive)
+        new Syntax(() => new object[] { Subject, Always, Verb, Reflexive })
             .Action(() =>
             {
                 var verb = Verb.Verb;
@@ -274,7 +251,7 @@ public class Syntax
             })
             .Check(VerbBaseForm, SubjectCommonNoun),
 
-        new Syntax(Subject, "can", Verb, EachOther)
+        new Syntax(() => new object[] { Subject, "can", Verb, EachOther })
             .Action(() =>
             {
                 var verb = Verb.Verb;
@@ -283,7 +260,7 @@ public class Syntax
             })
             .Check(VerbBaseForm, SubjectCommonNoun),
 
-        new Syntax(Subject, Is, "a", "kind", "of", Object)
+        new Syntax(() => new object[] { Subject, Is, "a", "kind", "of", Object })
             .Action(() =>
             {
                 Subject.CommonNoun.DeclareSuperclass(Object.CommonNoun);
@@ -293,7 +270,7 @@ public class Syntax
             .Check(SubjectVerbAgree, ObjectSingular, SubjectUnmodified, SubjectCommonNoun, ObjectCommonNoun)
             .Documentation("Declares that all Subjects are also Objects.  For example, 'cat is a kind of animal' says anythign that is a cat is also an animal."),
 
-        new Syntax(SubjectNounList, Is, "kinds", "of", Object)
+        new Syntax(() => new object[] { SubjectNounList, Is, "kinds", "of", Object })
             .Action(() =>
             {
                 foreach (var noun in SubjectNounList.Concepts)
@@ -310,7 +287,7 @@ public class Syntax
             .Check(ObjectSingular, ObjectCommonNoun)
             .Documentation("Declares that all the different nouns in the subject list are also kinds of the object noun.  So 'dogs and cats are kinds of animal' states that all dogs and all cats are also animals."),
 
-        new Syntax("the", "plural", "of", Subject, "is", Object)
+        new Syntax(() => new object[] { "the", "plural", "of", Subject, "is", Object })
             .Action(() =>
             {
                 Subject.Number = Number.Singular;
@@ -320,7 +297,7 @@ public class Syntax
             .Check(SubjectUnmodified, ObjectUnmodified, SubjectCommonNoun, ObjectCommonNoun)
             .Documentation("Lets you correct the system's guess as to the plural of a noun."),
 
-        new Syntax("the", "singular", "of", Subject, "is", Object)
+        new Syntax(() => new object[] { "the", "singular", "of", Subject, "is", Object })
             .Action(() =>
             {
                 Subject.Number = Number.Plural;
@@ -330,12 +307,12 @@ public class Syntax
             .Check(SubjectUnmodified, ObjectUnmodified, SubjectCommonNoun, ObjectCommonNoun)
             .Documentation("Lets you correct the system's guess as to the singular of a noun."),
 
-        new Syntax(Subject, Is, "identified", "as", "\"", Text, "\"")
+        new Syntax(() => new object[] { Subject, Is, "identified", "as", "\"", Text, "\"" })
             .Action( () => Subject.CommonNoun.NameTemplate = Text.Text)
             .Check(SubjectUnmodified, SubjectCommonNoun)
             .Documentation("Tells the system how to print the name of an object."),
 
-        new Syntax(Subject, "can", "be", PredicateAP)
+        new Syntax(() => new object[] { Subject, "can", "be", PredicateAP })
             .Action(() =>
             {
                 if (!PredicateAP.Adjective.RelevantTo(Subject.CommonNoun))
@@ -344,14 +321,21 @@ public class Syntax
             .Check(SubjectUnmodified)
             .Documentation("Declares that Subjects can be Adjectives, but don't have to be."),
 
-        new Syntax(Subject, "is", Object)
+        new Syntax(() => new object[] { Subject, "is", Object })
             .Action(() =>
             {
                 var proper = (ProperNoun) Subject.Noun;
                 proper.Kinds.Add(Object.CommonNoun);
             })
-            .Check(ObjectCommonNoun), 
-        new Syntax(Subject, Is, PredicateAP)
+            .Check(SubjectProperNoun, ObjectCommonNoun),
+        //new Syntax(() => new object[] { Subject, Is, Object })
+        //    .Action(() =>
+        //    {
+        //        var n = (CommonNoun) Subject.Noun;
+        //        n.ImpliedAdjectives.Add(new CommonNoun.ConditionalAdjective(Subject.Modifiers.ToArray(), Object.CommonNoun));
+        //    })
+        //    .Check(SubjectCommonNoun, ObjectCommonNoun, SubjectVerbAgree),
+        new Syntax(() => new object[] { Subject, Is, PredicateAP })
             .Action(() =>
             {
                 Subject.CommonNoun.ImpliedAdjectives.Add(new CommonNoun.ConditionalAdjective(Subject.Modifiers.ToArray(), PredicateAP.Adjective));
@@ -359,7 +343,7 @@ public class Syntax
             .Check(SubjectVerbAgree)
             .Documentation("Declares that Subjects are always Adjective.  For example, 'cats are fuzzy' declares that all cats are also fuzzy."),
 
-        new Syntax(Subject, Is, PredicateAPList)
+        new Syntax(() => new object[] { Subject, Is, PredicateAPList })
             .Action(() =>
             {
                     Subject.CommonNoun.AlternativeSets.Add(new CommonNoun.AlternativeSet(PredicateAPList.Concepts.ToArray(), true));
@@ -367,7 +351,7 @@ public class Syntax
             .Check(SubjectVerbAgree, SubjectUnmodified)
             .Documentation("Declares that Subjects must be one of the Adjectives.  So 'cats are big or small' says cats are always either big or small, but not both or neither."),
 
-        new Syntax(Subject, "can", "be", PredicateAPList)
+        new Syntax(() => new object[] { Subject, "can", "be", PredicateAPList })
             .Action(() =>
             {
                 Subject.CommonNoun.AlternativeSets.Add(new CommonNoun.AlternativeSet(PredicateAPList.Concepts.ToArray(), false));
@@ -375,7 +359,7 @@ public class Syntax
             .Check(SubjectDefaultPlural, SubjectUnmodified)
             .Documentation("Declares that Subjects can be any one of the Adjectives, but don't have to be.  So 'cats can be big or small' says cats can be big, small, or neither, but not both."),
 
-        new Syntax(Subject, Has, Object, "between", LowerBound, "and", UpperBound)
+        new Syntax(() => new object[] { Subject, Has, Object, "between", LowerBound, "and", UpperBound })
             .Action(() =>
                 {
                     Subject.CommonNoun.Properties.Add(new Property(Object.Text, new FloatDomain(Object.Text.Untokenize(), lowerBound, upperBound)));
@@ -383,7 +367,7 @@ public class Syntax
             .Check(SubjectVerbAgree, SubjectUnmodified, ObjectUnmodified)
             .Documentation("Says Subjects have a property, Object, that is a number in the specified range.  For example, 'cats have an age between 1 and 20'"),
         
-        new Syntax(Subject, Has, Object, "from", ListName)
+        new Syntax(() => new object[] { Subject, Has, Object, "from", ListName })
             .Action(() =>
             {
                 var menuName = ListName.Text.Untokenize();
@@ -478,6 +462,11 @@ public class Syntax
         return true;
     }
 
+    
+    private static bool SubjectProperNoun()
+    {
+        return Subject.Noun is ProperNoun;
+    }
     private static bool SubjectCommonNoun()
     {
         Subject.ForceCommonNoun = true;
@@ -488,9 +477,11 @@ public class Syntax
     #endregion
 
     #region Constructors
-    public Syntax(params object[] constituents)
+    public Syntax(params string[] tokens) : this(() => tokens) { }
+
+    public Syntax(Func<object[]> makeConstituents)
     {
-        this.constituents = constituents;
+        this.makeConstituents = makeConstituents;
     }
 
     /// <summary>
@@ -540,9 +531,12 @@ public class Syntax
     /// <returns>True if successful</returns>
     private bool MatchConstituents()
     {
+        var constituents = makeConstituents();
         for (int i = 0; i < constituents.Length; i++)
         {
             var c = constituents[i];
+            if (BreakOnMatch)
+                Debugger.Break();
             if (c is string str)
             {
                 if (!Match(str))
@@ -613,7 +607,7 @@ public class Syntax
     /// Matching routines for the constituents of the sentential form, in order.
     /// For example: Subject, Is, Object
     /// </summary>
-    private readonly object[] constituents;
+    private readonly Func<object[]> makeConstituents;
     /// <summary>
     /// Procedure to run if this sentential form matches the input.
     /// This procedure should update the ontology based on the data stored in the constituents
@@ -626,6 +620,13 @@ public class Syntax
     private Func<bool>[] validityTests;
 
     public bool IsCommand;
+    public bool BreakOnMatch;
+
+    public Syntax DebugMatch()
+    {
+        BreakOnMatch = true;
+        return this;
+    }
 
     public Syntax Command()
     {
@@ -655,7 +656,7 @@ public class Syntax
             Buffer.Length = 0;
             var firstOne = true;
             Buffer.Append("<b>");
-            foreach (var c in constituents)
+            foreach (var c in makeConstituents())
             {
                 if (firstOne)
                     firstOne = false;

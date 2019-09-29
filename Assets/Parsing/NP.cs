@@ -51,6 +51,7 @@ public class NP : ReferringExpression<Noun>
     /// <returns>True if token found and it marks a non-empty NP.</returns>
     public override bool ScanTo(string token)
     {
+        UnityEngine.Debug.Assert(CachedConcept == null);
         var old = State;
         ScanDeterminer();
         if (ScanComplexNP())
@@ -149,11 +150,11 @@ public class NP : ReferringExpression<Noun>
     /// <returns>True on success</returns>
     private bool ScanComplexNP()
     {
+        UnityEngine.Debug.Assert(CachedConcept == null);
         var old = State;
         MonadicConcept next;
         MonadicConcept last = null;
         Modifiers.Clear();
-        CachedConcept = null;
         do
         {
             next = MatchTrie(MonadicConcept.Trie);
