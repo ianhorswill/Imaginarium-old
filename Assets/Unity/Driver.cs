@@ -39,10 +39,16 @@ public class Driver : MonoBehaviour
         GUILayout.Label("<b>Imaginarium</b>", CommandStyle);
         DrawCreation();
         DrawCommandLine();
+        DrawLogControl();
 
         DrawOntology();
 
         GUILayout.EndArea();
+    }
+
+    private void DrawLogControl()
+    {
+        LogFile.Enabled = GUILayout.Toggle(LogFile.Enabled, "Debug log");
     }
 
     /// <summary>
@@ -96,7 +102,11 @@ public class Driver : MonoBehaviour
             ((e.keyCode == KeyCode.KeypadEnter) || (e.keyCode == KeyCode.Return)))
         {
             if (command == "")
+            {
+                LogFile.Separate();
+                LogFile.Log("REGENERATING");
                 ReSolve();
+            }
             else
                 DoCommand();
         }
@@ -109,6 +119,17 @@ public class Driver : MonoBehaviour
             var count = Generator.Current.Count;
             inventionDescriptions = new string[count];
             invention = Generator.Current.Solve();
+            if (LogFile.Enabled)
+            {
+                LogFile.Separate();
+                LogFile.Log("MODEL");
+                LogFile.Log(invention.Model.Model);
+                LogFile.Separate();
+                LogFile.Log("DESCRIPTION");
+                foreach (var i in Generator.Current.Individuals)
+                    LogFile.Log(invention.Description(i));
+            }
+
             for (var i = 0; i < Generator.Current.Individuals.Count; i++)
                 inventionDescriptions[i] =
                     invention.Description(Generator.Current.Individuals[i], "<b><color=grey>", "</color></b>");
@@ -150,6 +171,9 @@ public class Driver : MonoBehaviour
 
     private void DoCommand()
     {
+        LogFile.Separate();
+        LogFile.Log("USER COMMAND");
+        LogFile.Log("> "+command);
         CommandResponse = "";
         try
         {
@@ -164,6 +188,8 @@ public class Driver : MonoBehaviour
         catch (GrammaticalError ex)
         {
             CommandResponse = ex.Message;
+            LogFile.Log(ex.Message);
+            LogFile.Log(ex.StackTrace);
         }
     }
 

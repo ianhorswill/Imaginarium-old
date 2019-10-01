@@ -477,6 +477,7 @@ public class Syntax
     #endregion
 
     #region Constructors
+    // ReSharper disable once CoVariantArrayConversion
     public Syntax(params string[] tokens) : this(() => tokens) { }
 
     public Syntax(Func<object[]> makeConstituents)

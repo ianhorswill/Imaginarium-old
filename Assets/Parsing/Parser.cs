@@ -418,9 +418,11 @@ public static class Parser
     /// </summary>
     public static void LoadDefinitions(Referent referent)
     {
+        var path = DefinitionFilePath(referent);
+        LogFile.Log("Loading "+path);
         Push();
 
-        foreach (var def in File.ReadAllLines(DefinitionFilePath(referent)))
+        foreach (var def in File.ReadAllLines(path))
         {
             var trimmed = def.Trim();
             if (trimmed != "" && !trimmed.StartsWith("#"))
@@ -428,6 +430,7 @@ public static class Parser
         }
 
         Pop();
+        LogFile.Log("Finished loading of "+path);
     }
     #endregion
 }
