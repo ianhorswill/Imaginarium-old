@@ -1,4 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.IO;
+using UnityEngine.Windows;
+using File = System.IO.File;
 
 /// <summary>
 /// Maintains a log of declarations entered by the user.
@@ -43,6 +46,22 @@ public static class History
         Ontology.EraseConcepts();
         foreach (var decl in Declarations)
             Parser.ParseAndExecute(decl);
+    }
+
+    public static void Save(string path)
+    {
+        File.WriteAllLines(path, Declarations);
+        LogFile.Log("Saving to "+path);
+        foreach (var line in Declarations)
+            LogFile.Log("   "+ line);
+    }
+
+    public static void Edit(string path)
+    {
+        //Ontology.EraseConcepts();
+        //Parser.LoadDefinitions(path);
+        Declarations.Clear();
+        Declarations.AddRange(File.ReadAllLines(path));
     }
 
     public static void Clear()

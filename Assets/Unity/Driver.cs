@@ -109,6 +109,8 @@ public class Driver : MonoBehaviour
             }
             else
                 DoCommand();
+
+            LogFile.Flush();
         }
     }
 

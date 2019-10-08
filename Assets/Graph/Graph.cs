@@ -36,7 +36,7 @@ public class Graph : MonoBehaviour
     readonly Dictionary<object, GraphNode> nodes = new Dictionary<object, GraphNode>();
     public Rect ScreenInWorldCoordinates;
 
-    public static void ConstraintToScreen(Rigidbody2D r)
+    public static void ConstrainToScreen(Rigidbody2D r)
     {
         var screen = Singleton.ScreenInWorldCoordinates;
         var p = r.position;

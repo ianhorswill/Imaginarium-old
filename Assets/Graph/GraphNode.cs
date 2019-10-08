@@ -58,7 +58,7 @@ public class GraphNode : MonoBehaviour
 
     public void FixedUpdate()
     {
-        Graph.ConstraintToScreen(rBody);
+        Graph.ConstrainToScreen(rBody);
 
         if (mouseDrag)
             rBody.MovePosition(Camera.main.ScreenToWorldPoint(Input.mousePosition));

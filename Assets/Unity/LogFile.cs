@@ -11,6 +11,11 @@ public static class LogFile
     private static TextWriter logFile;
     private static bool handlersInstalled;
 
+    public static void Flush()
+    {
+        logFile?.FlushAsync();
+    }
+
     public static bool Enabled
     {
         get => logFile != null;

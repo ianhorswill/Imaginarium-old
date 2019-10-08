@@ -202,6 +202,26 @@ public class Syntax
             .Command()
             .Documentation("Tells the system to forget everything you've told it about the world."), 
         
+        new Syntax(() => new object[] { "save", ListName })
+            .Action(() =>
+            {
+                History.Save(Parser.DefinitionFilePath(ListName.Text.Untokenize()));
+            })
+            .Command()
+            .Documentation("Saves assertions to a file."),
+
+        new Syntax(() => new object[] { "edit", ListName })
+            .Action(() =>
+            {
+                var definitionFilePath = Parser.DefinitionFilePath(ListName.Text.Untokenize());
+
+                Ontology.EraseConcepts();
+                Parser.LoadDefinitions(definitionFilePath);
+                History.Edit(definitionFilePath);
+            })
+            .Command()
+            .Documentation("Add new assertions to a file.  Use save command to save changes."),
+        
         new Syntax(() => new object[] { Subject, CanMust, Verb, Quantifier, Object })
             .Action(() =>
             {
