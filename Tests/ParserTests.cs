@@ -73,8 +73,8 @@ namespace Tests
         {
             Ontology.EraseConcepts();
             ParseAndExecute("Tabby, Persian, and Maine Coon are kinds of cat");
-            Assert.IsNotNull(Noun.Find(new[] {"Persian"}));
-            Assert.IsNotNull(Noun.Find(new[] {"Persians"}));
+            Assert.IsNotNull(Noun.Find("Persian"));
+            Assert.IsNotNull(Noun.Find("Persians"));
         }
     }
 }

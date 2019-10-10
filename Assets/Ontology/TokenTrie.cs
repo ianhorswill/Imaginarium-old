@@ -1,6 +1,6 @@
 ﻿#region Copyright
 // --------------------------------------------------------------------------------------------------------------------
-// <copyright file="TrieNode.cs" company="Ian Horswill">
+// <copyright file="TokenTrie.cs" company="Ian Horswill">
 // Copyright (C) 2019 Ian Horswill
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -23,7 +23,6 @@
 // --------------------------------------------------------------------------------------------------------------------
 #endregion
 
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 

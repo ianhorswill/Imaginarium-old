@@ -1,15 +1,15 @@
 ﻿#region Copyright
 // --------------------------------------------------------------------------------------------------------------------
 // <copyright file="Syntax.cs" company="Ian Horswill">
-// Copyright (C) 2018, 2019 Ian Horswill
-//  
+// Copyright (C) 2019 Ian Horswill
+// 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of
 // this software and associated documentation files (the "Software"), to deal in the
 // Software without restriction, including without limitation the rights to use, copy,
 // modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
 // and to permit persons to whom the Software is furnished to do so, subject to the
 // following conditions:
-//  
+// 
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
 // 
@@ -288,7 +288,7 @@ public class Syntax
                     Subject.CommonNoun.ImpliedAdjectives.Add(new CommonNoun.ConditionalAdjective(null, mod));
             })
             .Check(SubjectVerbAgree, ObjectSingular, SubjectUnmodified, SubjectCommonNoun, ObjectCommonNoun)
-            .Documentation("Declares that all Subjects are also Objects.  For example, 'cat is a kind of animal' says anythign that is a cat is also an animal."),
+            .Documentation("Declares that all Subjects are also Objects.  For example, 'cat is a kind of animal' says anything that is a cat is also an animal."),
 
         new Syntax(() => new object[] { SubjectNounList, Is, "kinds", "of", Object })
             .Action(() =>
