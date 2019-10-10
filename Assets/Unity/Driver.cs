@@ -118,8 +118,6 @@ public class Driver : MonoBehaviour
     {
         if (Generator.Current != null)
         {
-            var count = Generator.Current.Count;
-            inventionDescriptions = new string[count];
             invention = Generator.Current.Solve();
             if (LogFile.Enabled)
             {
@@ -132,6 +130,7 @@ public class Driver : MonoBehaviour
                     LogFile.Log(invention.Description(i));
             }
 
+            inventionDescriptions = new string[Generator.Current.Individuals.Count];
             for (var i = 0; i < Generator.Current.Individuals.Count; i++)
                 inventionDescriptions[i] =
                     invention.Description(Generator.Current.Individuals[i], "<b><color=grey>", "</color></b>");
