@@ -1,20 +1,21 @@
+using JetBrains.Annotations;
 using UnityEngine;
-using System.Collections;
 
 public class FileSelectorStyles : MonoBehaviour {
 	
-	public GUIStyle windowStyle;
-	public GUIStyle buttonStyle;
-	public GUIStyle titleStyle;
-	public GUIStyle labelStyle;
-	public GUIStyle textFieldStyle;
+	public GUIStyle WindowStyle;
+	public GUIStyle ButtonStyle;
+	public GUIStyle TitleStyle;
+	public GUIStyle LabelStyle;
+	public GUIStyle TextFieldStyle;
 	
-	void Start () 
+	[UsedImplicitly]
+    void Start () 
 	{
-		FileSelector.windowStyle = windowStyle;
-		FileSelector.buttonStyle = buttonStyle;
-		FileSelector.titleStyle = titleStyle;
-		FileSelector.labelStyle = labelStyle;
-		FileSelector.textFieldStyle = textFieldStyle;
+		FileSelector.WindowStyle = WindowStyle;
+		FileSelector.ButtonStyle = ButtonStyle;
+		FileSelector.TitleStyle = TitleStyle;
+		FileSelector.LabelStyle = LabelStyle;
+		FileSelector.TextFieldStyle = TextFieldStyle;
 	}
 }

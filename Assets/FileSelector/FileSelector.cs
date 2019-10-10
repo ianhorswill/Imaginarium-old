@@ -1,9 +1,9 @@
 #region UsingStatements
 
 using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using JetBrains.Annotations;
 
 #endregion
 
@@ -35,7 +35,7 @@ public class FileSelector : MonoBehaviour
 	/// <summary>
 	/// 	- What file type we are searching for.
 	/// </summary>
-	public string extension = ".*";
+	public string Extension = ".*";
 	
 	/// <summary>
 	/// 	- The function to be called when the window closes.
@@ -45,22 +45,22 @@ public class FileSelector : MonoBehaviour
 	/// <summary>
 	/// 	- Gets or sets a value indicating whether the window is open.
 	/// </summary>
-	public bool open { get; private set; }
+	public bool IsOpen { get; private set; }
 	
 	/// <summary>
 	/// 	- If set to true, the window will be centered every OnGUI call.
 	/// </summary>
-	public bool center = true;
+	public bool Center = true;
 	
 	/// <summary>
 	/// 	- If set to true, this instance will destroy itself when the window closes.
 	/// </summary>
-	public bool destroyOnClose = false;
+	public bool DestroyOnClose;
 	
 	/// <summary>
 	/// 	- The window dimensions.
 	/// </summary>
-	public Rect windowDimensions = new Rect(0,0,600,600);
+	public Rect WindowDimensions = new Rect(0,0,600,600);
 	
 	#endregion
 	
@@ -70,71 +70,51 @@ public class FileSelector : MonoBehaviour
 	/// 	- The window style.
 	/// </summary>
 	private static GUIStyle _windowStyle;
-	public static GUIStyle windowStyle
+	public static GUIStyle WindowStyle
 	{
-		get
-		{
-			if(_windowStyle == null) _windowStyle = GUI.skin.window;
-			return _windowStyle;
-		}
-		set { _windowStyle = value ?? GUI.skin.window; }
-	}
+		get => _windowStyle ?? (_windowStyle = GUI.skin.window);
+        set => _windowStyle = value ?? GUI.skin.window;
+    }
 	
 	/// <summary>
 	/// 	- The style for buttons in the window.
 	/// </summary>
 	private static GUIStyle _buttonStyle;
-	public static GUIStyle buttonStyle
+	public static GUIStyle ButtonStyle
 	{
-		get
-		{
-			if(_buttonStyle == null) _buttonStyle = GUI.skin.button;
-			return _buttonStyle;
-		}
-		set { _buttonStyle = value ?? GUI.skin.button; }
-	}
+		get => _buttonStyle ?? (_buttonStyle = GUI.skin.button);
+        set => _buttonStyle = value ?? GUI.skin.button;
+    }
 	
 	/// <summary>
 	/// 	- The style for labels in the window.
 	/// </summary>
 	private static GUIStyle _labelStyle;
-	public static GUIStyle labelStyle
+	public static GUIStyle LabelStyle
 	{
-		get 
-		{ 
-			if(_labelStyle == null) _labelStyle = GUI.skin.label;
-			return _labelStyle;
-		}
-		set { _labelStyle = value ?? GUI.skin.label; }
-	}
+		get => _labelStyle ?? (_labelStyle = GUI.skin.label);
+        set => _labelStyle = value ?? GUI.skin.label;
+    }
 	
 	/// <summary>
 	/// 	- The style for titles in the window.
 	/// </summary>
 	private static GUIStyle _titleStyle;
-	public static GUIStyle titleStyle
+	public static GUIStyle TitleStyle
 	{
-		get 
-		{ 
-			if(_titleStyle == null) _titleStyle = GUI.skin.label;
-			return _titleStyle;
-		}
-		set { _titleStyle = value ?? GUI.skin.label; }
-	}
+		get => _titleStyle ?? (_titleStyle = GUI.skin.label);
+        set => _titleStyle = value ?? GUI.skin.label;
+    }
 	
 	/// <summary>
 	/// 	- The style for text fields in the window.
 	/// </summary>
 	private static GUIStyle _textFieldStyle;
-	public static GUIStyle textFieldStyle
+	public static GUIStyle TextFieldStyle
 	{
-		get 
-		{ 
-			if(_textFieldStyle == null) _textFieldStyle = GUI.skin.textField;
-			return _textFieldStyle;
-		}
-		set { _textFieldStyle = value ?? GUI.skin.textField; }
-	}
+		get => _textFieldStyle ?? (_textFieldStyle = GUI.skin.textField);
+        set => _textFieldStyle = value ?? GUI.skin.textField;
+    }
 
 	#endregion
 	
@@ -165,18 +145,20 @@ public class FileSelector : MonoBehaviour
 
 	#region MonoBehaviourFunctions
 	
-	private void OnGUI()
+	[UsedImplicitly]
+    private void OnGUI()
 	{	
-		if(open)
+		if(IsOpen)
 		{
-			if(center) windowDimensions.center = new Vector2(Screen.width*0.5f, Screen.height*0.5f);
-			GUI.Window(0, windowDimensions, DrawFileSelector, "Select a "+extension+" File");
+			if(Center) WindowDimensions.center = new Vector2(Screen.width*0.5f, Screen.height*0.5f);
+			GUI.Window(0, WindowDimensions, DrawFileSelector, "Select a "+Extension+" File");
 		}
 	}
 	
-	private void OnDestroy()
+	[UsedImplicitly]
+    private void OnDestroy()
 	{
-		if(open && Callback != null) Callback(Status.Destroyed, "");
+		if(IsOpen) Callback?.Invoke(Status.Destroyed, "");
 	}
 	
 	#endregion
@@ -188,7 +170,7 @@ public class FileSelector : MonoBehaviour
 	/// </summary>
 	public void Open()
 	{
-		open = true;
+		IsOpen = true;
 	}
 	
 	/// <summary>
@@ -200,7 +182,7 @@ public class FileSelector : MonoBehaviour
 	public void Open(string startingDirectory)
 	{
 		path = startingDirectory;
-		open = true;
+		IsOpen = true;
 	}
 	
 	/// <summary>
@@ -208,9 +190,9 @@ public class FileSelector : MonoBehaviour
 	/// </summary>
 	public void Close()
 	{
-		if(open && Callback != null) Callback(Status.Failed, "");
-		open = false;
-		if(destroyOnClose) Destroy(this);
+		if(IsOpen) Callback?.Invoke(Status.Failed, "");
+		IsOpen = false;
+		if(DestroyOnClose) Destroy(this);
 	}
 	
 	#endregion
@@ -223,68 +205,68 @@ public class FileSelector : MonoBehaviour
 	/// <param name='startingDirectory'>
 	/// 	- The directory to start the search in.
 	/// </param>
-	/// <param name='Callback'>
+	/// <param name='callback'>
 	/// 	- The function to call when the file has been selected.
 	/// </param>
 	/// <param name='extension'>
 	/// 	- The extension of the desired file type.
 	/// </param>
-	public static void GetFile(string startingDirectory, SelectFileFunction Callback = null, string extension = ".*")
+	public static void GetFile(string startingDirectory, SelectFileFunction callback = null, string extension = ".*")
 	{
 		if(updater == null) 
 		{
 			updater = new GameObject("Select File");
-			updater.AddComponent<FS_Cleanup>();
+			updater.AddComponent<FsCleanup>();
 			updater.hideFlags = HideFlags.HideInHierarchy;
 		}
 		
 		FileSelector instance = updater.AddComponent<FileSelector>();
 		
-		instance.Callback = Callback;
-		instance.extension = extension;
+		instance.Callback = callback;
+		instance.Extension = extension;
 		instance.path = startingDirectory;
-		instance.destroyOnClose = true;
-		instance.open = true;
+		instance.DestroyOnClose = true;
+		instance.IsOpen = true;
 	}
 	
 	/// <summary>
 	/// 	- Gets a file with a specified extension.
 	/// </summary>
-	/// <param name='Callback'>
+	/// <param name='callback'>
 	/// 	- The function to call when the file has been selected.
 	/// </param>
 	/// <param name='extension'>
 	/// 	- The extension of the desired file type.
 	/// </param>
-	public static void GetFile(SelectFileFunction Callback = null, string extension = ".*")
+	public static void GetFile(SelectFileFunction callback = null, string extension = ".*")
 	{
-		GetFile(Application.dataPath, Callback, extension);
+		GetFile(Application.dataPath, callback, extension);
 	}
 	
 	#endregion
 	
 	#region PrivateFunctions
 	
-	private void DrawFileSelector(int ID)
+	private void DrawFileSelector(int id)
 	{
 		scrollPosition = GUILayout.BeginScrollView(scrollPosition);
 		
 		//Path Buttons
-		GUILayout.Label("Path : ", titleStyle);
+		GUILayout.Label("Path : ", TitleStyle);
 		
 		GUILayout.BeginHorizontal();
 		
 			string[] parentDirectories = GetParentDirectories(path);
 			
-			float maximumWidth = windowDimensions.width - 30;
+			float maximumWidth = WindowDimensions.width - 30;
 			float totalWidth = 0;
-			float width = 0;
+			float width;
 			float spacingWidth = 11; //public variable?
-			float arrowWidth = labelStyle.CalcSize(new GUIContent(" > ")).x;
+			float arrowWidth = LabelStyle.CalcSize(new GUIContent(" > ")).x;
 			float arrowSpacing = arrowWidth + spacingWidth;
 		
 			for(int i = 0; i < parentDirectories.Length; i++){
-				width = buttonStyle.CalcSize(new GUIContent(parentDirectories[i])).x;
+				width = ButtonStyle.CalcSize(new GUIContent(parentDirectories[i])).x;
 				
 				totalWidth += (width + spacingWidth);
 				if(totalWidth > maximumWidth)
@@ -294,13 +276,13 @@ public class FileSelector : MonoBehaviour
 					GUILayout.BeginHorizontal();
 				}
 				
-				if(GUILayout.Button(parentDirectories[i], buttonStyle, GUILayout.Width(width)))
+				if(GUILayout.Button(parentDirectories[i], ButtonStyle, GUILayout.Width(width)))
 				{
 					path = GetParentDirectories(path, true)[i];
 					break;
 				}
 	
-				GUILayout.Label(" > ", labelStyle, GUILayout.Width(arrowWidth));
+				GUILayout.Label(" > ", LabelStyle, GUILayout.Width(arrowWidth));
 				totalWidth += (arrowSpacing);
 			
 				if(totalWidth > maximumWidth)
@@ -312,23 +294,23 @@ public class FileSelector : MonoBehaviour
 			}
 			
 			string currentDirectory = new FileInfo(path).Name;
-			width = buttonStyle.CalcSize(new GUIContent(currentDirectory)).x;
-			GUILayout.Label(currentDirectory, buttonStyle, GUILayout.Width(width));
+			width = ButtonStyle.CalcSize(new GUIContent(currentDirectory)).x;
+			GUILayout.Label(currentDirectory, ButtonStyle, GUILayout.Width(width));
 		
 		GUILayout.EndHorizontal();
 		
 		GUILayout.Space(1);
 		
 		//Directory Buttons
-		GUILayout.Label("Directories : ", titleStyle);
+		GUILayout.Label("Directories : ", TitleStyle);
 		
 		GUILayout.BeginHorizontal();
 		
 			string[] childDirectories = GetChildDirectories(path);
-			float buttonWidth = (windowDimensions.width - 80) / 4f;
+			float buttonWidth = (WindowDimensions.width - 80) / 4f;
 			
 			for(int i = 0; i < childDirectories.Length; i++){
-				if(GUILayout.Button(childDirectories[i], buttonStyle, GUILayout.Width(buttonWidth)))
+				if(GUILayout.Button(childDirectories[i], ButtonStyle, GUILayout.Width(buttonWidth)))
 				{
 					path = GetChildDirectories(path, true)[i];
 					break;
@@ -348,14 +330,14 @@ public class FileSelector : MonoBehaviour
 		GUILayout.Space(1);
 		
 		//File Buttons
-		GUILayout.Label("Files : ", titleStyle);
+		GUILayout.Label("Files : ", TitleStyle);
 		
 		GUILayout.BeginHorizontal();
 		
-			string[] files = GetFiles(path, extension : extension);
+			string[] files = GetFiles(path, extension : Extension);
 			
 			for(int i = 0; i < files.Length; i++){
-				if(GUILayout.Button(files[i], buttonStyle, GUILayout.Width(buttonWidth)))
+				if(GUILayout.Button(files[i], ButtonStyle, GUILayout.Width(buttonWidth)))
 				{
 					file = files[i];
 					break;
@@ -377,28 +359,28 @@ public class FileSelector : MonoBehaviour
 		//Returning values
 		GUILayout.BeginHorizontal();
 		
-			GUILayout.Label("Selected File : ", titleStyle, GUILayout.Width(titleStyle.CalcSize(new GUIContent("Selected File : ")).x));
+			GUILayout.Label("Selected File : ", TitleStyle, GUILayout.Width(TitleStyle.CalcSize(new GUIContent("Selected File : ")).x));
 			file = GUILayout.TextField(file);
 		
 		GUILayout.EndHorizontal();
 		
-		if(File.Exists(path+@"\"+file) && Path.GetExtension(path+@"\"+file) == extension)
+		if(File.Exists(path+@"\"+file) && Path.GetExtension(path+@"\"+file) == Extension)
 		{
 			if(GUILayout.Button("Select"))
 			{
-				if(Callback != null) Callback(Status.Successful, path+@"\"+file);
-				open = false;
+                Callback?.Invoke(Status.Successful, path+@"\"+file);
+                IsOpen = false;
 				
-				if(destroyOnClose) Destroy(this);
+				if(DestroyOnClose) Destroy(this);
 			}
 		}
 		
 		if(GUILayout.Button("Cancel"))
 		{
-			if(Callback != null) Callback(Status.Cancelled, "");
-			open = false;
+            Callback?.Invoke(Status.Cancelled, "");
+            IsOpen = false;
 		
-			if(destroyOnClose) Destroy(this);
+			if(DestroyOnClose) Destroy(this);
 		}
 		
 		GUILayout.EndScrollView();
@@ -411,14 +393,14 @@ public class FileSelector : MonoBehaviour
 	private static string[] GetParentDirectories(string filePath, bool includePaths = false)
 	{
 		List<string> parents = new List<string>();
-		FileInfo fileInfo;
-		
-		while(true){
+
+        while(true){
 			try{
-				fileInfo = new FileInfo(filePath);
-				if(!includePaths) parents.Add(fileInfo.Directory.Name);
-				else parents.Add(fileInfo.Directory.FullName);
-				
+				var fileInfo = new FileInfo(filePath);
+                // ReSharper disable PossibleNullReferenceException
+                parents.Add(!includePaths ? fileInfo.Directory.Name : fileInfo.Directory.FullName);
+                // ReSharper restore PossibleNullReferenceException
+
 				filePath = fileInfo.Directory.FullName;
 			}
 			
@@ -443,13 +425,16 @@ public class FileSelector : MonoBehaviour
 		List<string> children = new List<string>();
 		
 		try{
-			DirectoryInfo[] directories = directory.GetDirectories();
+            if (directory != null)
+            {
+                DirectoryInfo[] directories = directory.GetDirectories();
 			
-			foreach(DirectoryInfo childDir in directories){
-				if(!includePaths) children.Add(childDir.Name);
-				else children.Add(childDir.FullName);
-			}			
-		}
+                foreach(DirectoryInfo childDir in directories)
+                {
+                    children.Add(!includePaths ? childDir.Name : childDir.FullName);
+                }
+            }
+        }
 		
 		catch{
 			children = new List<string>();
@@ -472,12 +457,13 @@ public class FileSelector : MonoBehaviour
 		List<string> files = new List<string>();
 		
 		try{
-			FileInfo[] fileInfos = directory.GetFiles("*"+extension);
+            // ReSharper disable once PossibleNullReferenceException
+            FileInfo[] fileInfos = directory.GetFiles("*"+extension);
 			
-			foreach(FileInfo fileInfo in fileInfos){
-				if(!includePaths) files.Add(fileInfo.Name);	
-				else files.Add(fileInfo.FullName);	
-			}
+			foreach(FileInfo fileInfo in fileInfos)
+            {
+                files.Add(!includePaths ? fileInfo.Name : fileInfo.FullName);
+            }
 		}
 		
 		catch{
@@ -493,14 +479,16 @@ public class FileSelector : MonoBehaviour
 /// <summary>
 /// 	- A small class used to clean up the updater object when we change scenes or the application quits.
 /// </summary>
-public class FS_Cleanup : MonoBehaviour
+public class FsCleanup : MonoBehaviour
 {
-	void OnApplicationQuit()
+	[UsedImplicitly]
+    void OnApplicationQuit()
 	{
 		Destroy(gameObject);
 	}
 	
-	void OnLevelLoaded()
+	[UsedImplicitly]
+    void OnLevelLoaded()
 	{
 		Destroy(gameObject);
 	}
