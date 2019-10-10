@@ -8,6 +8,10 @@
 /Tests/obj/
 /Packages/
 *~
+\#*
+\#*\#*
+*.txt#.meta
+.\#*
 
 # Standard
 /[Ll]ibrary/
@@ -68,4 +72,5 @@ sysinfo.txt
 
 # Crashlytics generated file
 crashlytics-build.properties
+
 
