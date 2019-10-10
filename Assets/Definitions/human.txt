@@ -1,4 +1,5 @@
-a human is a person.
+a human is a kind of person.
+Humans have an age between 1 and 70.
 a human is male, female or non-binary.
 a human is masculine-named or feminine-named.
 a male human is masculine-named.

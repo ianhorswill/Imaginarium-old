@@ -1,0 +1,4 @@
+necromancer, thaumaturge, shaman, technopagan, and neopagan are kinds of magic user.
+magic users can be dark or light.
+necromancers are dark.
+thaumaturges are light.
