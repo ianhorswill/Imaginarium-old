@@ -1,6 +1,0 @@
-a room can connect to other rooms
-a corridor is a kind of room
-an entrance is a kind of room
-a trap is a kind of room
-a boss is a kind of room
-a reward is a kind of room
