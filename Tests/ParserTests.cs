@@ -76,5 +76,25 @@ namespace Tests
             Assert.IsNotNull(Noun.Find("Persian"));
             Assert.IsNotNull(Noun.Find("Persians"));
         }
+
+        [TestMethod]
+        public void ParseAntiReflexiveTest()
+        {
+            Ontology.EraseConcepts();
+            ParseAndExecute("Cats are a kind of person.",
+                "Cats cannot love themselves");
+            var love = Verb.Find("love");
+            Assert.IsNotNull(love);
+        }
+
+        [TestMethod]
+        public void ParseReflexiveTest()
+        {
+            Ontology.EraseConcepts();
+            ParseAndExecute("Cats are a kind of person.",
+                "Cats must love themselves");
+            var love = Verb.Find("love");
+            Assert.IsNotNull(love);
+        }
     }
 }

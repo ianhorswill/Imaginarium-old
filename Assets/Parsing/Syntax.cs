@@ -241,7 +241,13 @@ public class Syntax
             .Action(() =>
             {
                 Verb.Verb.MutualExclusions.Add(Verb2.Verb);
-            }), 
+            }),
+        
+        new Syntax(() => new object[] { Verb, "is", "mutually", "exclusive", "with", Verb2 })
+            .Action(() =>
+            {
+                Verb.Verb.MutualExclusions.Add(Verb2.Verb);
+            }),
 
         new Syntax(() => new object[] { Verb, "implies", Verb2 })
             .Action(() =>
@@ -553,9 +559,26 @@ public class Syntax
     private bool MatchConstituents()
     {
         var constituents = makeConstituents();
+
+        if (LogMatch)
+        {
+            Console.Write("Try parse rule: ");
+            foreach (var c in constituents)
+            {
+                Console.Write((ConstiuentToString(c)));
+                Console.Write(' ');
+            }
+        }
+
         for (int i = 0; i < constituents.Length; i++)
         {
             var c = constituents[i];
+            if (LogMatch)
+            {
+                var conName = ConstiuentToString(c);
+                Console.WriteLine($"Constituent {conName}");
+                Console.WriteLine($"Remaining input: {Parser.RemainingInput}");
+            }
             if (BreakOnMatch)
                 Debugger.Break();
             if (c is string str)
@@ -611,6 +634,13 @@ public class Syntax
                     }
                     else throw new ArgumentException("Don't know how to scan to the next constituent type");
                 }
+
+                if (LogMatch)
+                {
+                    var text = seg.Text;
+                    var untok = text != null ? text.Untokenize() : "(null)";
+                    Console.WriteLine($"{seg.Name} matches {untok}");
+                }
             }
             else if (c is Func<bool> test)
             {
@@ -621,7 +651,23 @@ public class Syntax
 
         }
 
+        if (LogMatch)
+        {
+            Console.Write("Succeeded parsing rule: ");
+            foreach (var c in constituents)
+            {
+                Console.Write((ConstiuentToString(c)));
+                Console.Write(' ');
+            }
+        }
         return true;
+    }
+
+    private static object ConstiuentToString(object c)
+    {
+        var seg = c as Segment;
+        var conName = seg != null ? seg.Name : c;
+        return conName;
     }
 
     /// <summary>
@@ -642,10 +688,17 @@ public class Syntax
 
     public bool IsCommand;
     public bool BreakOnMatch;
+    public bool LogMatch;
 
     public Syntax DebugMatch()
     {
         BreakOnMatch = true;
+        return this;
+    }
+
+    public Syntax Log()
+    {
+        LogMatch = true;
         return this;
     }
 

@@ -159,7 +159,7 @@ public class Segment
     /// <summary>
     /// The token string matched by this segment.
     /// </summary>
-    public string[] Text
+    public virtual string[] Text
     {
         get
         {

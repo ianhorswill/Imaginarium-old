@@ -27,6 +27,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 
 /// <summary>
 /// Implements methods for scanning input tokens and backtracking.
@@ -289,6 +290,21 @@ public static class Parser
     /// Current state of the parser.
     /// </summary>
     public static ScannerState State => new ScannerState(currentTokenIndex);
+
+    public static string RemainingInput
+    {
+        get
+        {
+            var b = new StringBuilder();
+            for (var i = currentTokenIndex; i < Input.Count; i++)
+            {
+                b.Append(Input[i]);
+                b.Append(' ');
+            }
+
+            return b.ToString();
+        }
+    }
 
     public struct ScannerState
     {

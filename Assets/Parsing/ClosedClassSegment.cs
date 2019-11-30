@@ -77,7 +77,7 @@ public class ClosedClassSegment : Segment
             ResetTo(old);
         }
 
-        return !EndOfInput && endPredicate(CurrentToken);
+        return Match != null && !EndOfInput && endPredicate(CurrentToken);
     }
 
     public override bool ScanTo(string token)
@@ -117,4 +117,6 @@ public class ClosedClassSegment : Segment
 
         return EndOfInput;
     }
+
+    public override string[] Text => Match;
 }
