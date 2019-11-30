@@ -77,7 +77,8 @@ public class ClosedClassSegment : Segment
             ResetTo(old);
         }
 
-        return Match != null && !EndOfInput && endPredicate(CurrentToken);
+        // Check against apostrophe is to keep from matching just the beginning of a contraction.
+        return Match != null && !EndOfInput && CurrentToken != "'" && endPredicate(CurrentToken);
     }
 
     public override bool ScanTo(string token)

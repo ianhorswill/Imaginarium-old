@@ -229,6 +229,7 @@ public class Syntax
                 verb.SubjectKind = Subject.CommonNoun;
                 verb.ObjectKind = Object.CommonNoun;
                 verb.IsFunction = !Quantifier.IsPlural;
+                // "Cats can love other cats" means antireflexive, whereas "cats can love many cats" doesn't.
                 verb.IsAntiReflexive = Quantifier.IsOther;
                 verb.IsTotal = CanMust.Match[0] == "must";
             })
