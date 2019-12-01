@@ -168,7 +168,8 @@ public class Generator
     /// </summary>
     public Invention Solve()
     {
-        return new Invention(this, Problem.Solve());
+        var solution = Problem.Solve(false);
+        return solution == null? null:new Invention(this, solution);
     }
 
     /// <summary>

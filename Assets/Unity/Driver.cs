@@ -146,20 +146,37 @@ public class Driver : MonoBehaviour
             invention = Generator.Current.Solve();
             if (LogFile.Enabled)
             {
-                LogFile.Separate();
-                LogFile.Log("MODEL");
-                LogFile.Log(invention.Model.Model);
-                LogFile.Separate();
-                LogFile.Log("DESCRIPTION");
-                foreach (var i in Generator.Current.Individuals)
-                    LogFile.Log(invention.Description(i));
+                if (invention == null)
+                {
+                    LogFile.Separate();
+                    LogFile.Log("UNSATISFIABLE");
+                    LogFile.Separate();
+                }
+                else
+                {
+                    LogFile.Separate();
+                    LogFile.Log("MODEL");
+                    LogFile.Log(invention.Model.Model);
+                    LogFile.Separate();
+                    LogFile.Log("DESCRIPTION");
+                    foreach (var i in Generator.Current.Individuals)
+                        LogFile.Log(invention.Description(i));
+                }
             }
 
-            inventionDescriptions = new string[Generator.Current.Individuals.Count];
-            for (var i = 0; i < Generator.Current.Individuals.Count; i++)
-                inventionDescriptions[i] =
-                    invention.Description(Generator.Current.Individuals[i], "<b><color=grey>", "</color></b>");
-            MakeGraph();
+            if (invention == null)
+            {
+                Graph.Create();  // Remove existing graph, if any
+                inventionDescriptions = new string[] { "Can't think of any - maybe there's a contradiction?"};
+            }
+            else
+            {
+                inventionDescriptions = new string[Generator.Current.Individuals.Count];
+                for (var i = 0; i < Generator.Current.Individuals.Count; i++)
+                    inventionDescriptions[i] =
+                        invention.Description(Generator.Current.Individuals[i], "<b><color=grey>", "</color></b>");
+                MakeGraph();
+            }
         }
     }
 
