@@ -1,0 +1,289 @@
+﻿#region Copyright
+// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="Rules.cs" company="Ian Horswill">
+// Copyright (C) 2019 Ian Horswill
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of
+// this software and associated documentation files (the "Software"), to deal in the
+// Software without restriction, including without limitation the rights to use, copy,
+// modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
+// and to permit persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+// PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+// OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+// SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+// </copyright>
+// --------------------------------------------------------------------------------------------------------------------
+#endregion
+
+using static Parser;
+using System.IO;
+using System.Linq;
+using System.Text;
+using CatSAT.NonBoolean.SMT.Float;
+using CatSAT.NonBoolean.SMT.MenuVariables;
+
+/// <summary>
+/// Rules for parsing the top-level syntax of sentences.
+/// </summary>
+public partial class Syntax
+{
+    /// <summary>
+    /// Rules for the different sentential forms understood by the system.
+    /// Each consists of a pattern to recognize the form and store its components in static fields such
+    /// as Subject, Object, and VerbNumber, and an Action to perform updates to the ontology based on
+    /// the data stored in those static fields.  The Check option is used to insure features are properly
+    /// set.
+    /// </summary>
+    public static readonly Syntax[] AllRules =
+    {
+        new Syntax("help")
+            .Action(() =>
+            {
+                var b = new StringBuilder();
+                b.Append("<size=14><color=white>");
+                foreach (var r in AllRules) b.Append(r.HelpDescription);
+                b.Append("</color></size>");
+
+                Driver.CommandResponse = b.ToString();
+            })
+            .Documentation("Prints this list of commands"),
+
+        new Syntax(() => new object[] { "imagine", Object })
+            .Action(() =>
+            {
+                var countRequest = Object.ExplicitCount;
+                var count = countRequest ?? (Object.Number == Number.Plural?9:1);
+                Generator.Current = new Generator(Object.CommonNoun, Object.Modifiers, count);
+            })
+            .Command()
+            .Documentation("Generates one or more Objects.  For example, 'imagine a cat' or 'imagine long-haired cats'."),
+
+        new Syntax("undo")
+            .Action( () => History.Undo() )
+            .Command()
+            .Documentation("Undoes the last change to the ontology."), 
+
+        new Syntax("start", "over")
+            .Action( History.Clear )
+            .Command()
+            .Documentation("Tells the system to forget everything you've told it about the world."), 
+        
+        new Syntax(() => new object[] { "save", ListName })
+            .Action(() =>
+            {
+                History.Save(Parser.DefinitionFilePath(ListName.Text.Untokenize()));
+            })
+            .Command()
+            .Documentation("Saves assertions to a file."),
+
+        new Syntax(() => new object[] { "edit", ListName })
+            .Action(() =>
+            {
+                var definitionFilePath = Parser.DefinitionFilePath(ListName.Text.Untokenize());
+
+                Ontology.EraseConcepts();
+                Parser.LoadDefinitions(definitionFilePath);
+                History.Edit(definitionFilePath);
+            })
+            .Command()
+            .Documentation("Add new assertions to a file.  Use save command to save changes."),
+        
+        new Syntax(() => new object[] { Subject, CanMust, Verb, Quantifier, Object })
+            .Action(() =>
+            {
+                var verb = Verb.Verb;
+                verb.SubjectKind = Subject.CommonNoun;
+                verb.ObjectKind = Object.CommonNoun;
+                verb.IsFunction = !Quantifier.IsPlural;
+                // "Cats can love other cats" means antireflexive, whereas "cats can love many cats" doesn't.
+                verb.IsAntiReflexive = Quantifier.IsOther;
+                verb.IsTotal = CanMust.Match[0] == "must";
+            })
+            .Check(VerbBaseForm, ObjectUnmodified, ObjectQuantifierAgree, SubjectCommonNoun, ObjectCommonNoun),
+
+        new Syntax(() => new object[] { Verb, "is", RareCommon })
+            .Action(() => Verb.Verb.Density = RareCommon.Value), 
+
+        new Syntax(() => new object[] { Verb, "and", Verb2, "are", "mutually", "exclusive" })
+            .Action(() =>
+            {
+                Verb.Verb.MutualExclusions.Add(Verb2.Verb);
+            }),
+        
+        new Syntax(() => new object[] { Verb, "is", "mutually", "exclusive", "with", Verb2 })
+            .Action(() =>
+            {
+                Verb.Verb.MutualExclusions.Add(Verb2.Verb);
+            }),
+
+        new Syntax(() => new object[] { Verb, "implies", Verb2 })
+            .Action(() =>
+            {
+                Verb.Verb.Generalizations.Add(Verb2.Verb);
+            }), 
+
+        new Syntax(() => new object[] { Subject, "are", RareCommon })
+            .Action(() => Subject.CommonNoun.InitialProbability = RareCommon.Value)
+            .Check(SubjectPlural, SubjectUnmodified), 
+
+        new Syntax(() => new object[] { Subject, CanNot, Verb, Reflexive })
+            .Action(() =>
+            {
+                var verb = Verb.Verb;
+                verb.SubjectKind = verb.ObjectKind = Subject.CommonNoun;
+                verb.IsAntiReflexive = true;
+            })
+            .Check(VerbBaseForm, SubjectCommonNoun),
+
+        new Syntax(() => new object[] { Subject, Always, Verb, Reflexive })
+            .Action(() =>
+            {
+                var verb = Verb.Verb;
+                verb.SubjectKind = verb.ObjectKind = Subject.CommonNoun;
+                verb.IsReflexive = true;
+            })
+            .Check(VerbBaseForm, SubjectCommonNoun),
+
+        new Syntax(() => new object[] { Subject, "can", Verb, EachOther })
+            .Action(() =>
+            {
+                var verb = Verb.Verb;
+                verb.SubjectKind = verb.ObjectKind = Subject.CommonNoun;
+                verb.IsSymmetric = true;
+            })
+            .Check(VerbBaseForm, SubjectCommonNoun),
+
+        new Syntax(() => new object[] { Subject, Is, "a", "kind", "of", Object })
+            .Action(() =>
+            {
+                Subject.CommonNoun.DeclareSuperclass(Object.CommonNoun);
+                foreach (var mod in Object.Modifiers)
+                    Subject.CommonNoun.ImpliedAdjectives.Add(new CommonNoun.ConditionalAdjective(null, mod));
+            })
+            .Check(SubjectVerbAgree, ObjectSingular, SubjectUnmodified, SubjectCommonNoun, ObjectCommonNoun)
+            .Documentation("Declares that all Subjects are also Objects.  For example, 'cat is a kind of animal' says anything that is a cat is also an animal."),
+
+        new Syntax(() => new object[] { SubjectNounList, Is, "kinds", "of", Object })
+            .Action(() =>
+            {
+                foreach (var noun in SubjectNounList.Concepts)
+                {
+                    var c = noun as CommonNoun;
+                    if (c == null)
+                        throw new GrammaticalError("This noun is a proper noun (a name of a specific thing), but I need a common noun (a kind of thing) here", noun.StandardName);
+                    c.DeclareSuperclass(Object.CommonNoun);
+                    foreach (var mod in Object.Modifiers)
+                        c.ImpliedAdjectives.Add(new CommonNoun.ConditionalAdjective(null, mod));
+
+                }
+            })
+            .Check(ObjectSingular, ObjectCommonNoun)
+            .Documentation("Declares that all the different nouns in the subject list are also kinds of the object noun.  So 'dogs and cats are kinds of animal' states that all dogs and all cats are also animals."),
+
+        new Syntax(() => new object[] { "the", "plural", "of", Subject, "is", Object })
+            .Action(() =>
+            {
+                Subject.Number = Number.Singular;
+                Object.Number = Number.Plural;
+                Subject.CommonNoun.PluralForm = Object.Text;
+            })
+            .Check(SubjectUnmodified, ObjectUnmodified, SubjectCommonNoun, ObjectCommonNoun)
+            .Documentation("Lets you correct the system's guess as to the plural of a noun."),
+
+        new Syntax(() => new object[] { "the", "singular", "of", Subject, "is", Object })
+            .Action(() =>
+            {
+                Subject.Number = Number.Plural;
+                Object.Number = Number.Singular;
+                Subject.CommonNoun.SingularForm = Object.Text;
+            })
+            .Check(SubjectUnmodified, ObjectUnmodified, SubjectCommonNoun, ObjectCommonNoun)
+            .Documentation("Lets you correct the system's guess as to the singular of a noun."),
+
+        new Syntax(() => new object[] { Subject, Is, "identified", "as", "\"", Text, "\"" })
+            .Action( () => Subject.CommonNoun.NameTemplate = Text.Text)
+            .Check(SubjectUnmodified, SubjectCommonNoun)
+            .Documentation("Tells the system how to print the name of an object."),
+
+        new Syntax(() => new object[] { Subject, "can", "be", PredicateAP })
+            .Action(() =>
+            {
+                if (!PredicateAP.Adjective.RelevantTo(Subject.CommonNoun))
+                    Subject.CommonNoun.RelevantAdjectives.Add(PredicateAP.Adjective);
+            })
+            .Check(SubjectUnmodified)
+            .Documentation("Declares that Subjects can be Adjectives, but don't have to be."),
+
+        new Syntax(() => new object[] { Subject, "is", Object })
+            .Action(() =>
+            {
+                var proper = (ProperNoun) Subject.Noun;
+                proper.Kinds.Add(Object.CommonNoun);
+            })
+            .Check(SubjectProperNoun, ObjectCommonNoun),
+        //new Syntax(() => new object[] { Subject, Is, Object })
+        //    .Action(() =>
+        //    {
+        //        var n = (CommonNoun) Subject.Noun;
+        //        n.ImpliedAdjectives.Add(new CommonNoun.ConditionalAdjective(Subject.Modifiers.ToArray(), Object.CommonNoun));
+        //    })
+        //    .Check(SubjectCommonNoun, ObjectCommonNoun, SubjectVerbAgree),
+        new Syntax(() => new object[] { Subject, Is, PredicateAP })
+            .Action(() =>
+            {
+                Subject.CommonNoun.ImpliedAdjectives.Add(new CommonNoun.ConditionalAdjective(Subject.Modifiers.ToArray(), PredicateAP.Adjective));
+            })
+            .Check(SubjectVerbAgree)
+            .Documentation("Declares that Subjects are always Adjective.  For example, 'cats are fuzzy' declares that all cats are also fuzzy."),
+
+        new Syntax(() => new object[] { Subject, Is, PredicateAPList })
+            .Action(() =>
+            {
+                    Subject.CommonNoun.AlternativeSets.Add(new CommonNoun.AlternativeSet(PredicateAPList.Concepts.ToArray(), true));
+            })
+            .Check(SubjectVerbAgree, SubjectUnmodified)
+            .Documentation("Declares that Subjects must be one of the Adjectives.  So 'cats are big or small' says cats are always either big or small, but not both or neither."),
+
+        new Syntax(() => new object[] { Subject, "can", "be", PredicateAPList })
+            .Action(() =>
+            {
+                Subject.CommonNoun.AlternativeSets.Add(new CommonNoun.AlternativeSet(PredicateAPList.Concepts.ToArray(), false));
+            })
+            .Check(SubjectDefaultPlural, SubjectUnmodified)
+            .Documentation("Declares that Subjects can be any one of the Adjectives, but don't have to be.  So 'cats can be big or small' says cats can be big, small, or neither, but not both."),
+
+        new Syntax(() => new object[] { Subject, Has, Object, "between", LowerBound, "and", UpperBound })
+            .Action(() =>
+                {
+                    Subject.CommonNoun.Properties.Add(new Property(Object.Text, new FloatDomain(Object.Text.Untokenize(), lowerBound, upperBound)));
+                })
+            .Check(SubjectVerbAgree, SubjectUnmodified, ObjectUnmodified)
+            .Documentation("Says Subjects have a property, Object, that is a number in the specified range.  For example, 'cats have an age between 1 and 20'"),
+        
+        new Syntax(() => new object[] { Subject, Has, Object, "from", ListName })
+            .Action(() =>
+            {
+                var menuName = ListName.Text.Untokenize();
+                var menu = new Menu<string>(menuName, File.ReadAllLines(DefinitionFilePath(menuName)));
+                var propertyName = Object.Text;
+                var prop = Subject.CommonNoun.Properties.FirstOrDefault(p => p.IsNamed(propertyName));
+                if (prop == null)
+                {
+                    prop = new Property(propertyName, null);
+                    Subject.CommonNoun.Properties.Add(prop);
+                }
+
+                prop.MenuRules.Add(new Property.MenuRule(Subject.Modifiers.ToArray(), menu));
+            })
+            .Check(SubjectVerbAgree, ObjectUnmodified)
+            .Documentation("Say Subjects have a property whose possible values are given in the specified file.  For example 'cats have a name from cat names', or 'French cats have a name from French cat names'"),
+    };
+}
