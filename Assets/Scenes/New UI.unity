@@ -270,9 +270,9 @@ RectTransform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 1999.9999, y: -1499.5}
-  m_SizeDelta: {x: 3713.3, y: 2784.1}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 15.490967, y: -1499.5}
+  m_SizeDelta: {x: -315.56, y: 2784}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &95388683
 MonoBehaviour:
@@ -324,7 +324,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d2452234259ec7a4f841e494143f9ea6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CommandResponse: 
   InputField: {fileID: 245161850}
   OutputField: {fileID: 996344458}
   OutputScrollRect: {fileID: 1060781531}
@@ -415,9 +414,9 @@ RectTransform:
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 1856.3, y: 217.6}
-  m_SizeDelta: {x: 3487.3, y: 228.8}
+  m_AnchorMax: {x: 1, y: 0}
+  m_AnchoredPosition: {x: -0.19995117, y: 217.6}
+  m_SizeDelta: {x: -225.69995, y: 228.8}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &245161850
 MonoBehaviour:
@@ -597,7 +596,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Enter command here...
+  m_Text: Enter command, or type "help"
 --- !u!222 &246133644
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -985,9 +984,9 @@ RectTransform:
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 1730, y: -976.6002}
-  m_SizeDelta: {x: 3460, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 10, y: 0.00018310547}
+  m_SizeDelta: {x: 20, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &996344458
 MonoBehaviour:
@@ -1009,7 +1008,7 @@ MonoBehaviour:
       m_Calls: []
   m_FontData:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 120
+    m_FontSize: 100
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 1
@@ -1169,9 +1168,9 @@ RectTransform:
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 1856.655, y: -1394.1}
-  m_SizeDelta: {x: 3487.3, y: 1953.2}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: -0.022460938, y: -1389.1}
+  m_SizeDelta: {x: -226.05, y: 1963.1}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1060781531
 MonoBehaviour:
@@ -1736,7 +1735,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 632478634}
   m_Direction: 0
   m_Value: 0
-  m_Size: 0.9943063
+  m_Size: 0.9941744
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
