@@ -24,10 +24,11 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using static Parser;
 
-public class QuantifyingDeterminer : Segment
+public class QuantifyingDeterminer : ClosedClassSegment
 {
     /// <summary>
     /// The token that was used as a determiner;
@@ -51,6 +52,17 @@ public class QuantifyingDeterminer : Segment
         "many",
         "other"
     };
+
+    public override IEnumerable<string> Keywords
+    {
+        get
+        {
+            foreach (var s in SingularQuantifiers)
+                yield return s;
+            foreach (var s in PluralQuantifiers)
+                yield return s;
+        }
+    }
 
     private static readonly string[] InvalidQuantifiers =
     {

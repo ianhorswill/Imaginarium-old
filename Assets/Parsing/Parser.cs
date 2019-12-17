@@ -401,9 +401,9 @@ public static class Parser
         /// <summary>
         /// Free-form text, e.g. from a quotation.
         /// </summary>
-        public Segment Text = new Segment() {Name = "Text"};
+        public Segment Text = new Segment() {Name = "AnyText"};
 
-        public QuantifyingDeterminer Quantifier = new QuantifyingDeterminer() {Name = "Quantifier"};
+        public QuantifyingDeterminer Quantifier = new QuantifyingDeterminer() {Name = "one/many/other"};
 
         /// <summary>
         /// The lower bound of a range appearing in the definition of a numeric property

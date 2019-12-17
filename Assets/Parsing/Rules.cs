@@ -105,32 +105,38 @@ public partial class Syntax
                 verb.IsAntiReflexive = Quantifier.IsOther;
                 verb.IsTotal = CanMust.Match[0] == "must";
             })
-            .Check(VerbBaseForm, ObjectUnmodified, ObjectQuantifierAgree, SubjectCommonNoun, ObjectCommonNoun),
+            .Check(VerbBaseForm, ObjectUnmodified, ObjectQuantifierAgree, SubjectCommonNoun, ObjectCommonNoun)
+            .Documentation("Specifies how many Objects a given Subject can Verb."),
 
         new Syntax(() => new object[] { Verb, "is", RareCommon })
-            .Action(() => Verb.Verb.Density = RareCommon.Value), 
+            .Action(() => Verb.Verb.Density = RareCommon.Value)
+            .Documentation("States that Verb'ing is rare/common."), 
 
         new Syntax(() => new object[] { Verb, "and", Verb2, "are", "mutually", "exclusive" })
             .Action(() =>
             {
                 Verb.Verb.MutualExclusions.Add(Verb2.Verb);
-            }),
+            })
+            .Documentation("States that two objects can be related by both verbs at once."),
         
         new Syntax(() => new object[] { Verb, "is", "mutually", "exclusive", "with", Verb2 })
             .Action(() =>
             {
                 Verb.Verb.MutualExclusions.Add(Verb2.Verb);
-            }),
+            })
+            .Documentation("States that two objects can be related by both verbs at once."),
 
         new Syntax(() => new object[] { Verb, "implies", Verb2 })
             .Action(() =>
             {
                 Verb.Verb.Generalizations.Add(Verb2.Verb);
-            }), 
+            })
+            .Documentation("States that two objects being related by the first verb means they must also be related by the second."), 
 
         new Syntax(() => new object[] { Subject, "are", RareCommon })
             .Action(() => Subject.CommonNoun.InitialProbability = RareCommon.Value)
-            .Check(SubjectPlural, SubjectUnmodified), 
+            .Check(SubjectPlural, SubjectUnmodified)
+            .Documentation("States that the specified kind of object is rare/common."), 
 
         new Syntax(() => new object[] { Subject, CanNot, Verb, Reflexive })
             .Action(() =>
@@ -139,7 +145,8 @@ public partial class Syntax
                 verb.SubjectKind = verb.ObjectKind = Subject.CommonNoun;
                 verb.IsAntiReflexive = true;
             })
-            .Check(VerbBaseForm, SubjectCommonNoun),
+            .Check(VerbBaseForm, SubjectCommonNoun)
+            .Documentation("States that the verb can't hold between an object and itself."),
 
         new Syntax(() => new object[] { Subject, Always, Verb, Reflexive })
             .Action(() =>
@@ -148,7 +155,8 @@ public partial class Syntax
                 verb.SubjectKind = verb.ObjectKind = Subject.CommonNoun;
                 verb.IsReflexive = true;
             })
-            .Check(VerbBaseForm, SubjectCommonNoun),
+            .Check(VerbBaseForm, SubjectCommonNoun)
+            .Documentation("States that the verb always holds between objects and themselves."),
 
         new Syntax(() => new object[] { Subject, "can", Verb, EachOther })
             .Action(() =>
@@ -157,7 +165,8 @@ public partial class Syntax
                 verb.SubjectKind = verb.ObjectKind = Subject.CommonNoun;
                 verb.IsSymmetric = true;
             })
-            .Check(VerbBaseForm, SubjectCommonNoun),
+            .Check(VerbBaseForm, SubjectCommonNoun)
+            .Documentation("Introduces a new verb and states that it's symmetric: if a verbs b, then b verbs a."),
 
         new Syntax(() => new object[] { Subject, Is, "a", "kind", "of", Object })
             .Action(() =>
@@ -226,7 +235,9 @@ public partial class Syntax
                 var proper = (ProperNoun) Subject.Noun;
                 proper.Kinds.Add(Object.CommonNoun);
             })
-            .Check(SubjectProperNoun, ObjectCommonNoun),
+            .Check(SubjectProperNoun, ObjectCommonNoun)
+            .Documentation("States that person or thing Subject is of the specified type."),
+
         //new Syntax(() => new object[] { Subject, Is, Object })
         //    .Action(() =>
         //    {

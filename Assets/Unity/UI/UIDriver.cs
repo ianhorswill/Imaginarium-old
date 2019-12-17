@@ -150,7 +150,9 @@ public class UIDriver : MonoBehaviour
         }
         catch (GrammaticalError ex)
         {
-            Driver.CommandResponse = ex.Message;
+            Driver.CommandResponse = $"{ex.Message}\nPerhaps you meant one of these sentence patterns:\n\n";
+            foreach (var r in Syntax.RulesMatchingKeywords(Parser.Input))
+                Driver.CommandResponse += $"{r.HelpDescription}";
             LogFile.Log(ex.Message);
             LogFile.Log(ex.StackTrace);
         }

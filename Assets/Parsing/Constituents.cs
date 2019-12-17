@@ -113,24 +113,24 @@ public partial class Syntax
                 new KeyValuePair<object, float>(new[] {"very", "common"}, 0.95f))
             {Name = "rare/common"};
 
-    private static readonly ClosedClassSegment CanMust = new ClosedClassSegment(
+    private static readonly SimpleClosedClassSegment CanMust = new SimpleClosedClassSegment(
             "can", "must")
         {Name = "can/must"};
 
-    private static readonly ClosedClassSegment CanNot = new ClosedClassSegment(
+    private static readonly SimpleClosedClassSegment CanNot = new SimpleClosedClassSegment(
             "cannot", "never", new[] {"can", "not"}, new[] {"can", "'", "t"},
             new[] {"do", "not"}, new[] {"do", "'", "t"})
         {Name = "cannot"};
 
-    private static readonly ClosedClassSegment Reflexive = new ClosedClassSegment(
+    private static readonly SimpleClosedClassSegment Reflexive = new SimpleClosedClassSegment(
             "itself", "himself", "herself", "themselves")
         {Name = "itself"};
 
-    private static readonly ClosedClassSegment Always = new ClosedClassSegment(
+    private static readonly SimpleClosedClassSegment Always = new SimpleClosedClassSegment(
             "must", "always")
         {Name = "always"};
 
-    private static readonly ClosedClassSegment EachOther = new ClosedClassSegment(
+    private static readonly SimpleClosedClassSegment EachOther = new SimpleClosedClassSegment(
             new[] {"each", "other"}, new[] {"one", "another"})
         {Name = "each other"};
 

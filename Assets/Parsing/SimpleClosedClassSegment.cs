@@ -1,6 +1,6 @@
 ﻿#region Copyright
 // --------------------------------------------------------------------------------------------------------------------
-// <copyright file="ClosedClassSegmentWithValue.cs" company="Ian Horswill">
+// <copyright file="ClosedClassSegment.cs" company="Ian Horswill">
 // Copyright (C) 2019 Ian Horswill
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -28,28 +28,26 @@ using System.Collections.Generic;
 using System.Linq;
 using static Parser;
 
-public class ClosedClassSegmentWithValue<T> : ClosedClassSegment
+public class SimpleClosedClassSegment : ClosedClassSegment
 {
-    public T Value;
-
-    public readonly KeyValuePair<string[], T>[] PossibleMatches;
-
-    public ClosedClassSegmentWithValue(params KeyValuePair<object, T>[] possibleMatches)
+    public string[][] PossibleMatches;
+    
+    public SimpleClosedClassSegment(params object[] possibleMatches)
     {
         PossibleMatches = possibleMatches.Select(m =>
         {
-            switch (m.Key)
+            switch (m)
             {
                 case string s:
-                    return new KeyValuePair<string[], T>(new[] {s}, m.Value);
+                    return new[] {s};
 
                 case string[] array:
-                    return new KeyValuePair<string[], T>(array, m.Value);
+                    return array;
 
                 default: throw new ArgumentException($"Invalid match argument {m}");
             }
         }).ToArray();
-        PossibleBeginnings = PossibleMatches.Select(p => p.Key[0]).Distinct().ToArray();
+        PossibleBeginnings = PossibleMatches.Select(a => a[0]).Distinct().ToArray();
         IsPossibleStart = token => PossibleBeginnings.Contains(token);
     }
 
@@ -61,16 +59,16 @@ public class ClosedClassSegmentWithValue<T> : ClosedClassSegment
         Match = null;
         foreach (var candidate in PossibleMatches)
         {
-            if (Match(candidate.Key))
+            if (Match(candidate))
             {
-                Match = candidate.Key;
-                Value = candidate.Value;
+                Match = candidate;
                 break;
             }
             ResetTo(old);
         }
 
-        return !EndOfInput && endPredicate(CurrentToken);
+        // Check against apostrophe is to keep from matching just the beginning of a contraction.
+        return Match != null && !EndOfInput && CurrentToken != "'" && endPredicate(CurrentToken);
     }
 
     public override bool ScanTo(string token)
@@ -81,10 +79,9 @@ public class ClosedClassSegmentWithValue<T> : ClosedClassSegment
         Match = null;
         foreach (var candidate in PossibleMatches)
         {
-            if (Match(candidate.Key))
+            if (Match(candidate))
             {
-                Match = candidate.Key;
-                Value = candidate.Value;
+                Match = candidate;
                 break;
             }
             ResetTo(old);
@@ -101,10 +98,9 @@ public class ClosedClassSegmentWithValue<T> : ClosedClassSegment
         Match = null;
         foreach (var candidate in PossibleMatches)
         {
-            if (Match(candidate.Key))
+            if (Match(candidate))
             {
-                Match = candidate.Key;
-                Value = candidate.Value;
+                Match = candidate;
                 break;
             }
             ResetTo(old);
@@ -113,12 +109,14 @@ public class ClosedClassSegmentWithValue<T> : ClosedClassSegment
         return EndOfInput;
     }
 
+    public override string[] Text => Match;
+
     public override IEnumerable<string> Keywords
     {
         get
         {
             foreach (var a in PossibleMatches)
-            foreach (var s in a.Key)
+            foreach (var s in a)
                 yield return s;
         }
     }

@@ -25,6 +25,7 @@
 
 using static Parser;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
@@ -169,6 +170,43 @@ public partial class Syntax
     #endregion
 
     /// <summary>
+    /// Closed class words used in this sentence template
+    /// </summary>
+    public IEnumerable<string> Keywords
+    {
+        get
+        {
+            foreach (var c in makeConstituents())
+                switch (c)
+                {
+                    case string s:
+                        yield return s;
+                        break;
+
+                    case ClosedClassSegment ccs:
+                        foreach (var s in ccs.Keywords)
+                            yield return s;
+                        break;
+                }
+        }
+    }
+
+    /// <summary>
+    /// True if the tokens have a word in common with the keywords of this rule
+    /// </summary>
+    /// <param name="tokens">Words to check against the keywords of this rule.</param>
+    /// <returns>True if there is a word in common</returns>
+    public bool HasCommonKeywords(IEnumerable<string> tokens) => tokens.Any(t => Keywords.Contains(t));
+
+    /// <summary>
+    /// Return all rules whose keywords overlap the specified set of tokens
+    /// </summary>
+    /// <param name="tokens">Words to check against rule keywords</param>
+    /// <returns>Rules with keywords in common</returns>
+    public static IEnumerable<Syntax> RulesMatchingKeywords(IEnumerable<string> tokens) =>
+        AllRules.Where(r => r.HasCommonKeywords(tokens));
+
+    /// <summary>
     /// Try to make a syntax rule and run its action if successful.
     /// </summary>
     /// <returns>True on success</returns>
@@ -246,12 +284,12 @@ public partial class Syntax
                         if (!seg.ScanTo(IsHave))
                             return false;
                     }
-                    else if (next is ClosedClassSegment s)
+                    else if (next is SimpleClosedClassSegment s)
                     {
                         if (!seg.ScanTo(s.IsPossibleStart))
                             return false;
                     }
-                    else if (seg is ClosedClassSegment)
+                    else if (seg is SimpleClosedClassSegment)
                     {
                         if (!seg.ScanTo(tok => true))
                             return false;
@@ -399,9 +437,9 @@ public partial class Syntax
                 if (f == Has)
                     return "have/has";
                 if (f == LowerBound)
-                    return "<i>LowerBound</i>";
+                    return "<i><color=grey>LowerBound</color></i>";
                 if (f == UpperBound)
-                    return "<i>UpperBound</i>";
+                    return "<i><color=grey>UpperBound</color></i>";
                 return $"<i>{f}</i>";
 
             default:
