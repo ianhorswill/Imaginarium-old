@@ -134,7 +134,7 @@ public class UIDriver : MonoBehaviour
         {
             if (Input != "")
                 Parser.UserCommand(Input);
-            if (Generator.Current != null)
+            if (Driver.CommandResponse == "" && Generator.Current != null)
             {
                 Generator.Current.Rebuild();
                 ReSolve();
