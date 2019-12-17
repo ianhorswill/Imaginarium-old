@@ -373,9 +373,9 @@ public partial class Syntax
                 Buffer.Append(ConstituentName(c));
             }
 
-            Buffer.Append("</b>\n    ");
+            Buffer.Append("</b>\n");
             Buffer.Append(docString??"");
-            Buffer.Append('\n');
+            Buffer.Append("\n\n");
             return Buffer.ToString();
         }
     }
@@ -387,8 +387,11 @@ public partial class Syntax
             case string s:
                 return s;
 
+            case ClosedClassSegment ccs:
+                return ccs.Name;
+
             case Segment seg:
-                return $"<i>{seg.Name}</i>";
+                return $"<i><color=grey>{seg.Name}</color></i>";
 
             case Func<bool> f:
                 if (f == Is)

@@ -48,10 +48,8 @@ public partial class Syntax
             .Action(() =>
             {
                 var b = new StringBuilder();
-                b.Append("<size=14><color=white>");
                 foreach (var r in AllRules) b.Append(r.HelpDescription);
-                b.Append("</color></size>");
-
+                
                 Driver.CommandResponse = b.ToString();
             })
             .Documentation("Prints this list of commands"),

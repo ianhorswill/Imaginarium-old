@@ -8,36 +8,52 @@ public class UIDriver : MonoBehaviour
     private Invention invention;
     private string[] inventionDescriptions;
     private readonly StringBuilder buffer = new StringBuilder();
-    public string CommandResponse = "";
     public InputField InputField;
     public Text OutputField;
     public ScrollRect OutputScrollRect;
     public Scrollbar OutputVerticalScroll;
     public ContentSizeFitter OutputFitter;
 
+    /// <summary>
+    /// Called at startup.
+    /// Initialize UI system.
+    /// </summary>
     public void Start()
     {
         Parser.DefinitionsDirectory = Application.dataPath + "/Definitions";
         SelectInput();
     }
 
+    /// <summary>
+    /// Called when this UI mode is activated
+    /// </summary>
     public void OnEnable()
     {
+        // Move keyboard focus to input
         SelectInput();
     }
 
+    /// <summary>
+    /// Move keyboard focus to input field
+    /// </summary>
     private void SelectInput()
     {
         InputField.Select();
         InputField.ActivateInputField();
     }
 
+    /// <summary>
+    /// Input typed by user
+    /// </summary>
     private string Input
     {
         get => InputField.text;
         set => InputField.text = value;
     }
 
+    /// <summary>
+    /// Output to present to user
+    /// </summary>
     private string Output
     {
         set
@@ -47,18 +63,37 @@ public class UIDriver : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Scroll the output area to the top of the screen
+    /// </summary>
+    /// <returns></returns>
     IEnumerator ScrollToTop()
     {
+        // Wait for ContentSizeFitter to recalculate size of Output
         yield return null;
+        // Wait for ScrollRect to notice size has changed
         yield return null;
+        // Update scroll
         OutputScrollRect.verticalNormalizedPosition = 1;
+        // Wait a frame for because scrolling moves focus
         yield return null;
+        // Move focus back to input
         SelectInput();
     }
 
+    /// <summary>
+    /// Height of the ScrollRect
+    /// </summary>
     private float ViewportSize => OutputScrollRect.GetComponent<RectTransform>().rect.height;
+    /// <summary>
+    /// Total height of the text being displayed
+    /// </summary>
     private float OutputSize => OutputField.GetComponent<RectTransform>().rect.height;
 
+    /// <summary>
+    /// Scroll down the specified number of pages
+    /// </summary>
+    /// <param name="pages"></param>
     public void ScrollPages(int pages)
     {
         var pageSize = ViewportSize / OutputSize;
@@ -68,7 +103,8 @@ public class UIDriver : MonoBehaviour
     /// <summary>
     /// There must be a better way of doing this in the new UI
     /// </summary>
-    void OnGUI()
+    // ReSharper disable once UnusedMember.Local
+    private void OnGUI()
     {
         var e = Event.current;
 
@@ -92,7 +128,7 @@ public class UIDriver : MonoBehaviour
         LogFile.Separate();
         LogFile.Log("USER COMMAND");
         LogFile.Log("> "+Input);
-        CommandResponse = "";
+        Driver.CommandResponse = "";
 
         try
         {
@@ -108,18 +144,18 @@ public class UIDriver : MonoBehaviour
                     buffer.AppendLine(s);
                 }
 
-                CommandResponse = buffer.ToString();
+                Driver.CommandResponse = buffer.ToString();
             }
             Input = "";
         }
         catch (GrammaticalError ex)
         {
-            CommandResponse = ex.Message;
+            Driver.CommandResponse = ex.Message;
             LogFile.Log(ex.Message);
             LogFile.Log(ex.StackTrace);
         }
 
-        Output = CommandResponse;
+        Output = Driver.CommandResponse;
     }
 
     private void ReSolve()

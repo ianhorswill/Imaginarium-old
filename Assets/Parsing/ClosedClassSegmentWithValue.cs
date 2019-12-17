@@ -28,7 +28,7 @@ using System.Collections.Generic;
 using System.Linq;
 using static Parser;
 
-public class ClosedClassSegmentWithValue<T> : Segment
+public class ClosedClassSegmentWithValue<T> : ClosedClassSegment
 {
     /// <summary>
     /// The token that was used as a determiner;
