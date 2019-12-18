@@ -101,7 +101,7 @@ public class ReferringExpressionList<TE, TR> : Segment
     {
         var lastOne = false;
         var done = false;
-        while (!endPredicate(CurrentToken))
+        while (!EndOfInput && !endPredicate(CurrentToken))
         {
             var item = new TE();
             if (!item.ScanTo(ListItemTerminator(endPredicate)))

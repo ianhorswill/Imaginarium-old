@@ -50,10 +50,13 @@ public class Segment
                 SetText(beginning);
                 if (start < end) // Must have consumed at least one token
                     return true;
+                else
+                    goto fail;
             }
             else
                 SkipToken();
 
+        fail:
         ResetTo(beginning);
         return false;
     }
@@ -77,7 +80,10 @@ public class Segment
                 return true;
             }
             else if (Syntax.ListConjunction(CurrentToken))
+            {
+                ResetTo(beginning);
                 return false;
+            }
             else
                 SkipToken();
 
