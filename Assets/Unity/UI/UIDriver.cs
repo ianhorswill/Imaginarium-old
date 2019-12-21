@@ -2,6 +2,8 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using System.Collections.Generic;
+using GraphVisualization;
 
 public class UIDriver : MonoBehaviour
 {
@@ -13,6 +15,7 @@ public class UIDriver : MonoBehaviour
     public ScrollRect OutputScrollRect;
     public Scrollbar OutputVerticalScroll;
     public ContentSizeFitter OutputFitter;
+    public GraphVisualization.Graph RelationshipGraph;
 
     /// <summary>
     /// Called at startup.
@@ -125,6 +128,12 @@ public class UIDriver : MonoBehaviour
 
     public void DoCommand()
     {
+        // Not sure how it is this can get called from SetActive,
+        // but it turns out that it can and that breaks the attempt to launch
+        // the focus coroutine.
+        if (!gameObject.activeSelf)
+            return;
+
         LogFile.Separate();
         LogFile.Log("USER COMMAND");
         LogFile.Log("> "+Input);
@@ -143,6 +152,8 @@ public class UIDriver : MonoBehaviour
                 {
                     buffer.AppendLine(s);
                 }
+
+                MakeGraph();
 
                 Driver.CommandResponse = buffer.ToString();
             }
@@ -208,4 +219,42 @@ public class UIDriver : MonoBehaviour
             }
         }
     }
+
+    #region Relationship graph
+    private int verbColorCounter;
+
+    public static readonly Color[] Colors =
+    {
+        Color.green, Color.red, Color.blue, Color.gray, Color.cyan, Color.magenta, Color.yellow, Color.gray
+    };
+
+    private readonly Dictionary<Verb, EdgeStyle> verbColors = new Dictionary<Verb, EdgeStyle>();
+
+    EdgeStyle VerbStyle(Verb v)
+    {
+        if (verbColors.TryGetValue(v, out var style))
+            return style;
+        style = RelationshipGraph.EdgeStyles[0].Clone();
+        style.Color = Colors[verbColorCounter++ % Colors.Length];
+        verbColors[v] = style;
+        return style;
+    }
+
+    private void MakeGraph()
+    {
+        RelationshipGraph.Clear();
+        foreach (var i in invention.Individuals)
+            RelationshipGraph.AddNode(i, invention.NameString(i));
+        foreach (var relationship in invention.Relationships)
+        {
+            var v = relationship.Item1;
+            var f = relationship.Item2;
+            var t = relationship.Item3;
+            var from = invention.NameString(f);
+            var to = invention.NameString(t);
+            var verb = v.Text;
+            RelationshipGraph.AddEdge(f, t, verb, 2000, VerbStyle(v));
+        }
+    }
+    #endregion
 }

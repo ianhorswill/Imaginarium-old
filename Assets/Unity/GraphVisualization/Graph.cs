@@ -27,153 +27,249 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
+using UnityEngine.UI;
 
 namespace GraphVisualization
 {
-
-    public class Graph : MonoBehaviour
+    public class Graph : Graphic
     {
-        public static Graph Singleton;
-        public static GraphNode SelectedNode;
+        /// <summary>
+        /// Styles available for drawing nodes in this graph
+        /// </summary>
+        public List<NodeStyle> NodeStyles = new List<NodeStyle>();
+        /// <summary>
+        /// Styles available for drawing edges in this graph
+        /// </summary>
+        public List<EdgeStyle> EdgeStyles = new List<EdgeStyle>();
+        /// <summary>
+        /// Prefab to use for making nodes
+        /// </summary>
+        public GameObject NodePrefab;
+        /// <summary>
+        /// Prefab to use for making edges
+        /// </summary>
+        public GameObject EdgePrefab;
 
-        readonly Dictionary<object, GraphNode> nodes = new Dictionary<object, GraphNode>();
-        public Rect ScreenInWorldCoordinates;
+        public float SpringStiffness = 1f;
+        public float NodeDamping = 0.5f;
 
-        public static void ConstrainToScreen(Rigidbody2D r)
+        public float GreyOutFactor = 0.5f;
+
+        private readonly List<GraphNode> nodes = new List<GraphNode>();
+        private readonly List<GraphEdge> edges = new List<GraphEdge>();
+
+        private readonly Dictionary<object, GraphNode> nodeDict = new Dictionary<object, GraphNode>();
+        GraphNode _selected;
+        private bool selectionChanged;
+        public GraphNode SelectedNode
         {
-            var screen = Singleton.ScreenInWorldCoordinates;
-            var p = r.position;
-            var changed = false;
-            if (p.x > screen.xMax)
+            get => _selected;
+            set
             {
-                p.x = screen.xMax;
-                changed = true;
-            }
-
-            if (p.x < screen.xMin)
-            {
-                p.x = screen.xMin;
-                changed = true;
-            }
-
-            if (p.y > screen.yMax)
-            {
-                p.y = screen.yMax;
-                changed = true;
-            }
-
-            if (p.y < screen.yMin)
-            {
-                p.y = screen.yMin;
-                changed = true;
-            }
-
-            if (changed)
-                r.MovePosition(p);
-        }
-
-        public static void Create()
-        {
-            if (Singleton != null)
-                Singleton.Exit();
-            var go = new GameObject("Graph visualization");
-            Singleton = go.AddComponent<Graph>();
-            var screenRect = FindObjectOfType<Driver>().GraphAreaRect;
-            var lowerLeft = Camera.main.ScreenToWorldPoint(new Vector2(screenRect.xMin + 50, 50));
-            var upperRight = Camera.main.ScreenToWorldPoint(new Vector3(Screen.width - 50, Screen.height - 50, 0));
-            var difference = upperRight - lowerLeft;
-            //var middle = lowerLeft + 0.5f * difference;
-            Singleton.ScreenInWorldCoordinates = new Rect(lowerLeft, difference);
-        }
-
-        public static void AddNode(object id, string label)
-        {
-            Singleton.FindNode(id, label);
-        }
-
-        public static void SetColor(object id, string label, string color)
-        {
-            Singleton.FindNode(id, label).SetColor(ColorNamed(color));
-        }
-
-        private GraphNode FindNode(object id, string label)
-        {
-            if (nodes.ContainsKey(id))
-                return nodes[id];
-
-            var child = new GameObject(label);
-            child.transform.parent = gameObject.transform;
-            child.transform.position = new Vector3(
-                Place(ScreenInWorldCoordinates.xMin, ScreenInWorldCoordinates.xMax),
-                Place(ScreenInWorldCoordinates.yMin, ScreenInWorldCoordinates.yMax));
-
-            return nodes[id] = child.AddComponent<GraphNode>();
-        }
-
-        private float Place(float min, float max)
-        {
-            var count = 2;
-            var sum = 0f;
-            for (var i = 0; i < count; i++)
-                sum += Random.Range(min, max);
-            return sum / count;
-        }
-
-        public static void AddEdge(object from, string fromLabel, object to, string toLabel, string edgeLabel,
-            string color)
-        {
-            Singleton.MakeEdge(from, fromLabel, to, toLabel, edgeLabel, ColorNamed(color));
-        }
-
-        static Color ColorNamed(string name)
-        {
-            switch (name)
-            {
-                case "red": return Color.red;
-                case "green": return Color.green;
-                case "blue": return Color.blue;
-                case "white": return Color.white;
-                case "black": return Color.black;
-                case "gray":
-                case "grey":
-                    return Color.gray;
-                case "cyan": return Color.cyan;
-                case "magenta": return Color.magenta;
-                case "yellow": return Color.yellow;
-                default:
-                    throw new ArgumentException($"Unknown color {name}");
+                if (value != _selected)
+                {
+                    _selected = value;
+                    selectionChanged = true;
+                }
             }
         }
 
-        private void MakeEdge(object from, string fromLabel, object to, string toLabel, string edgeLabel, Color c)
+        public void Clear()
         {
-            var child = new GameObject($"{from}->{to}");
-            child.transform.parent = gameObject.transform;
-            var edge = child.AddComponent<GraphEdge>();
-            edge.StartNode = FindNode(from, fromLabel);
-            edge.EndNode = FindNode(to, toLabel);
-            edge.Label = edgeLabel;
-            edge.Color = c;
+            nodes.Clear();
+            edges.Clear();
+            nodeDict.Clear();
+
+            foreach (Transform child in transform)
+                Destroy(child.gameObject);
+
+            RepopulateMesh();
         }
 
-        // Start is called before the first frame update
-        internal void Start()
+        public GraphNode AddNode(object key, string label, NodeStyle style = null)
         {
-            FindObjectOfType<Draw>().Visible = false;
-            Singleton = this;
+            if (!nodeDict.ContainsKey(key))
+            {
+                if (label == null)
+                    label = key.ToString();
+                if (style == null)
+                    style = NodeStyles[0];
+                var go = Instantiate<GameObject>(NodePrefab, transform);
+                go.name = label;
+                var rect = rectTransform.rect;
+                var node = go.GetComponent<GraphNode>();
+                var position = new Vector2(Random.Range(rect.xMin, rect.xMax), Random.Range(rect.yMin, rect.yMax));
+                node.Initialize(this, label, style, position);
+                nodes.Add(node);
+                nodeDict[key] = node;
+            }
+
+            return nodeDict[key];
         }
 
-        internal void OnGUI()
+        public GraphEdge AddEdge(object start, object end, string label, float length, EdgeStyle style = null)
         {
-            if (Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.Escape)
-                Exit();
+            var startNode = AddNode(start, null);
+            var endNode = AddNode(end, null);
+
+            if (label == null)
+                label = "";
+            if (style == null)
+                style = EdgeStyles[0];
+            var go = Instantiate<GameObject>(EdgePrefab, transform);
+            go.name = label;
+            var rect = rectTransform.rect;
+            var edge = go.GetComponent<GraphEdge>();
+            edge.Initialize(startNode, endNode, label, length, style);
+            edges.Add(edge);
+
+            return edge;
         }
 
-        private void Exit()
+        //protected override void Start()
+        //{
+        //    base.Start();
+        //    if (Application.isPlaying)
+        //    {
+        //        AddEdge("a", "b", "edge", 1000);
+        //        AddEdge("a", "c", "edge", 1000);
+        //        AddEdge("c", "b", "edge", 1000);
+        //    }
+        //}
+
+        public void FixedUpdate()
         {
-            FindObjectOfType<Draw>().Visible = true;
-            Singleton = null;
-            Destroy(gameObject);
+            UpdatePhysics();
         }
+
+        public void Update()
+        {
+            if (selectionChanged)
+            {
+                RecolorNodes();
+                selectionChanged = false;
+            }
+            RepopulateMesh();
+        }
+
+        private void RecolorNodes()
+        {
+            foreach (var n in nodes)
+                n.Recolor();
+        }
+
+        #region Physics update
+        void UpdatePhysics()
+        {
+            Rect bounds = rectTransform.rect;
+            foreach (var n in nodes)
+                n.NetForce = Vector2.zero;;
+            foreach (var e in edges) 
+                ApplySpringForce(e);
+            foreach (var n in nodes)
+            {
+                UpdatePosition(n);
+                n.Position = new Vector2(Mathf.Clamp(n.Position.x, bounds.xMin, bounds.xMax),
+                    Mathf.Clamp(n.Position.y, bounds.yMin, bounds.yMax));
+            }
+        }
+
+        private void UpdatePosition(GraphNode n)
+        {
+            if (n.IsBeingDragged)
+                return;
+            var saved = n.Position;
+            n.Position = (2-NodeDamping) * n.Position - (1-NodeDamping) * n.PreviousPosition + (Time.fixedDeltaTime * Time.fixedDeltaTime) * n.NetForce;
+            n.PreviousPosition = saved;
+        }
+
+        private void ApplySpringForce(GraphEdge e)
+        {
+            var offset = e.EndNode.Position - e.StartNode.Position;
+            var len = offset.magnitude;
+            if (len > 0.1f)
+            {
+                var lengthError = e.EquilibriumLength - len;
+                var force = (SpringStiffness * lengthError / len) * offset;
+                e.StartNode.NetForce -= force;
+                e.EndNode.NetForce += force;
+            }
+        }
+
+        #endregion
+
+        #region Primitive rendering
+        private void RepopulateMesh()
+        {
+            SetVerticesDirty();
+        }
+
+        private static readonly List<UIVertex> TriBuffer = new List<UIVertex>();
+
+        protected override void OnPopulateMesh(VertexHelper vh)
+        {
+            void AddTri(Vector3 v1, Vector3 v2, Vector3 v3, Color c)
+            {
+                var uiv = UIVertex.simpleVert;
+                uiv.color = c;
+                uiv.position = v1;
+                TriBuffer.Add(uiv);
+                uiv.position = v2;
+                TriBuffer.Add(uiv);
+                uiv.position = v3;
+                TriBuffer.Add(uiv);
+            }
+
+            void AddQuad(Vector3 v1, Vector3 v2, Vector3 v3, Vector3 v4, Color c)
+            {
+                AddTri(v1, v2, v3, c);
+                AddTri(v1, v3, v4, c);
+            }
+
+            void DrawEdge(Vector2 start, Vector2 end, EdgeStyle style, Color c)
+            {
+                var offset = end - start;
+                var length = offset.magnitude;
+                if (length > 1)  // arrows less than one pixel long will disappear
+                {
+                    // Draw line connecting start and end
+                    var unit = offset / length;
+                    var perp = new Vector2(unit.y, -unit.x);
+                    var halfWidthPerp = (style.LineWidth * 0.5f) * perp;
+                    var arrowheadBase = end - (style.ArrowheadLength * style.LineWidth) * unit;
+
+                    AddQuad(start + halfWidthPerp,
+                        arrowheadBase + halfWidthPerp,
+                        arrowheadBase-halfWidthPerp,
+                        start-halfWidthPerp,
+                        c);
+
+                    // Draw arrowhead if directed edge
+                    if (style.IsDirected)
+                    {
+                        var arrowheadHalfWidthPerp = style.ArrowheadWidth * halfWidthPerp;
+                        AddTri(end,
+                            arrowheadBase - arrowheadHalfWidthPerp,
+                            arrowheadBase + arrowheadHalfWidthPerp,
+                            c);
+                    }
+                }
+            }
+
+            vh.Clear();
+            TriBuffer.Clear();
+            foreach (var e in edges)
+            {
+                var brightnessFactor = ((SelectedNode == null || SelectedNode == e.StartNode || SelectedNode == e.EndNode)?1:GreyOutFactor);
+                DrawEdge(e.StartNode.Position, e.EndNode.Position,
+                    e.Style,
+                    e.Style.Color * brightnessFactor);
+            }
+            //for (var end = -1000; end <= 1000; end += 100)
+            //    DrawArrow(new Vector2(0,0), new Vector2(end, 1000), 10, Color.red);
+            //AddQuad(new Vector3(0, 0, 0), new Vector3(100, 0, 0), new Vector3(100, 100, 0), new Vector3(0, 100, 0), Color.white);
+            vh.AddUIVertexTriangleStream(TriBuffer);
+        }
+        #endregion
     }
 }

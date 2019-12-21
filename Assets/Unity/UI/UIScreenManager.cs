@@ -27,6 +27,19 @@ public class UIScreenManager : MonoBehaviour
         SetScreen(InitialScreen);
     }
 
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Tab))
+            NextScreen();
+    }
+
+    private int currentScreen = 0;
+    public void NextScreen()
+    {
+        currentScreen = (currentScreen + 1) % transform.childCount;
+        SetScreen(transform.GetChild(currentScreen).name);
+    }
+
     /// <summary>
     /// Switches to the UI screen with the specified name
     /// </summary>

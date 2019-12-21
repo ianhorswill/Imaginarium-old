@@ -24,70 +24,73 @@
 #endregion
 
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 namespace GraphVisualization
 {
-    public class GraphNode : MonoBehaviour
+    public class GraphNode : UIBehaviour, IPointerEnterHandler, IPointerExitHandler, IDragHandler, IBeginDragHandler, IEndDragHandler
     {
-        public Rigidbody2D RBody;
-        private TextMesh textMesh;
-        private CircleCollider2D hitBox;
+        public string Label;
+        public NodeStyle Style;
+        private RectTransform rectTransform;
+        private Graph graph;
 
-        public Color Color = Color.white;
+        public Vector2 Position, PreviousPosition;
+        public Vector2 NetForce;
+        private Text labelMesh;
 
-        private bool mouseDrag;
+        public bool IsBeingDragged;
 
-        // ReSharper disable once UnusedMember.Local
-        private void Start()
+        public void Initialize(Graph graph, string label, NodeStyle style, Vector2 position)
         {
-            RBody = gameObject.AddComponent<Rigidbody2D>();
-            RBody.gravityScale = 0;
-            RBody.drag = 0.75f;
-            RBody.constraints = RigidbodyConstraints2D.FreezeRotation;
-            textMesh = gameObject.AddComponent<TextMesh>();
-            textMesh.alignment = TextAlignment.Center;
-            //textMesh.fontStyle = FontStyle.Bold;
-            hitBox = gameObject.AddComponent<CircleCollider2D>();
-            hitBox.radius = 3;
-            textMesh.text = gameObject.name;
-            textMesh.color = Color;
+            this.graph = graph;
+            labelMesh = GetComponent<Text>();
+            labelMesh.text = label;
+            labelMesh.color = style.Color;
+            labelMesh.fontSize = style.FontSize;
+            if (style.Font != null)
+                labelMesh.font = style.Font;
+            labelMesh.fontStyle = style.FontStyle;
+            rectTransform = GetComponent<RectTransform>();
+            rectTransform.localPosition = PreviousPosition = position;
         }
 
-        public void SetColor(Color c)
+        public void Update()
         {
-            Color = c;
-            if (textMesh != null)
-                textMesh.color = c;
+            rectTransform.localPosition = Position;
         }
 
-        internal void OnMouseDown()
+        public void Recolor()
         {
-            mouseDrag = true;
-            Graph.SelectedNode = this;
+            labelMesh.color = ((graph.SelectedNode == this || graph.SelectedNode == null) ? 1 : graph.GreyOutFactor) * Style.Color;
         }
 
-        internal void OnMouseUp()
+        public void OnPointerEnter(PointerEventData eventData)
         {
-            mouseDrag = false;
-            Graph.SelectedNode = null;
+            graph.SelectedNode = this;
         }
 
-        internal void OnMouseEnter()
+        public void OnPointerExit(PointerEventData eventData)
         {
-            Graph.SelectedNode = this;
+            if (graph.SelectedNode == this)
+                graph.SelectedNode = null;
         }
 
-        internal void OnMouseExit()
+        public void OnDrag(PointerEventData data)
         {
-            Graph.SelectedNode = null;
+            if (RectTransformUtility.ScreenPointToLocalPointInRectangle(rectTransform.parent as RectTransform, data.position, null, out var p))
+                PreviousPosition = Position = p;
         }
 
-        public void FixedUpdate()
+        public void OnBeginDrag(PointerEventData eventData)
         {
-            Graph.ConstrainToScreen(RBody);
+            IsBeingDragged = true;
+        }
 
-            if (mouseDrag)
-                RBody.MovePosition(Camera.main.ScreenToWorldPoint(Input.mousePosition));
+        public void OnEndDrag(PointerEventData eventData)
+        {
+            IsBeingDragged = false;
         }
     }
 }
