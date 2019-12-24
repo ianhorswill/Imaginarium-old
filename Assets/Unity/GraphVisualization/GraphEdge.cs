@@ -29,23 +29,28 @@ using UnityEngine.UI;
 
 namespace GraphVisualization
 {
+    /// <summary>
+    /// Component that drives individual edges in a Graph.
+    /// These are created by Graph.AddEdge().  Do not instantiate one yourself.
+    /// </summary>
     public class GraphEdge : UIBehaviour
     {
         public GraphNode StartNode;
         public GraphNode EndNode;
         public string Label;
         public EdgeStyle Style;
-        public float EquilibriumLength;
         private Text text;
         private RectTransform rectTransform;
 
-        public void Initialize(GraphNode startNode, GraphNode endNode, string label, float length, EdgeStyle style)
+        /// <summary>
+        /// Called by Graph.AddEdge after object creation.
+        /// </summary>
+        public void Initialize(GraphNode startNode, GraphNode endNode, string label, EdgeStyle style)
         {
             this.StartNode = startNode;
             this.EndNode = endNode;
             this.Label = label;
             this.Style = style;
-            this.EquilibriumLength = length;
             text = GetComponent<Text>();
             text.text = label;
             if (style.Font != null)
@@ -57,6 +62,9 @@ namespace GraphVisualization
             UpdatePosition();
         }
 
+        /// <summary>
+        /// Updates position and rotation of edge text based on positions of endpoints
+        /// </summary>
         private void UpdatePosition()
         {
             // Move to midpoint of start and end
@@ -73,6 +81,20 @@ namespace GraphVisualization
         public void Update()
         {
             UpdatePosition();
+        }
+
+        /// <summary>
+        /// Called to adjust color of edge label when selected node in the graph changes.
+        /// When there is a selected node, edges not adjacent to it are greyed out.
+        /// </summary>
+        public void Recolor(Graph g)
+        {
+            text.color =
+                (g.SelectedNode == null || StartNode == g.SelectedNode || EndNode == g.SelectedNode
+                    ? 1
+                    : g.GreyOutFactor)
+                * Style.Color
+                ;
         }
     }
 }

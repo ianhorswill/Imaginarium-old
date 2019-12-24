@@ -112,6 +112,8 @@ public class Individual : Referent, IComparable
     /// <inheritdoc />
     public override string[] StandardName => Name;
 
+    public string MostRecentDescription { get; set; }
+
     public override bool IsNamed(string[] tokens) => Name.SameAs(tokens);
 
     // ReSharper disable once InconsistentNaming

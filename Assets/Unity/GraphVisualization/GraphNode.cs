@@ -29,22 +29,49 @@ using UnityEngine.UI;
 
 namespace GraphVisualization
 {
+    /// <summary>
+    /// Component that drives individual nodes in a Graph visualization.
+    /// These are created by Graph.AddNode().  Do not instantiate one yourself.
+    /// </summary>
     public class GraphNode : UIBehaviour, IPointerEnterHandler, IPointerExitHandler, IDragHandler, IBeginDragHandler, IEndDragHandler
     {
+        /// <summary>
+        /// The client-side object associated with this node.
+        /// </summary>
+        public object Key;
         public string Label;
         public NodeStyle Style;
         private RectTransform rectTransform;
         private Graph graph;
-
-        public Vector2 Position, PreviousPosition;
-        public Vector2 NetForce;
         private Text labelMesh;
 
+        /// <summary>
+        /// The current position as computed by the spring physics system in Graph.cs
+        /// </summary>
+        internal Vector2 Position;
+        /// <summary>
+        /// The previous position as computed by the spring physics system in Graph.cs
+        /// </summary>
+        internal Vector2 PreviousPosition;
+        /// <summary>
+        /// Net force applied to this node by the various springs
+        /// </summary>
+        public Vector2 NetForce;
+
+        /// <summary>
+        /// True if this node is in the process of being dragged by the mouse
+        /// </summary>
         public bool IsBeingDragged;
 
-        public void Initialize(Graph graph, string label, NodeStyle style, Vector2 position)
+        /// <summary>
+        /// Called from Graph.AddNode after instantiation of the prefab for this node.
+        /// </summary>
+        public void Initialize(Graph g, object key, string label, NodeStyle style, Vector2 position)
         {
-            this.graph = graph;
+            graph = g;
+            Key = key;
+            Label = label;
+            Style = style;
             labelMesh = GetComponent<Text>();
             labelMesh.text = label;
             labelMesh.color = style.Color;
@@ -58,13 +85,28 @@ namespace GraphVisualization
 
         public void Update()
         {
-            rectTransform.localPosition = Position;
+            // Set gameObject's position to that computed by spring physics
+            Vector3 p = Position;
+            p.z = Foreground ? -1 : 1;
+            rectTransform.localPosition = p;
         }
 
+        /// <summary>
+        /// Update color of node text, based on whether it has been selected by the user.
+        /// Called when node selected by mouse changes
+        /// </summary>
         public void Recolor()
         {
-            labelMesh.color = ((graph.SelectedNode == this || graph.SelectedNode == null) ? 1 : graph.GreyOutFactor) * Style.Color;
+            labelMesh.color = (Foreground ? 1 : graph.GreyOutFactor) * Style.Color;
         }
+
+        /// <summary>
+        /// True if this node is in the foreground.
+        /// Nodes are in the foreground unless some node they aren't adjacent to has been selected.
+        /// </summary>
+        private bool Foreground =>
+            graph.SelectedNode == this || graph.SelectedNode == null ||
+            graph.Adjacent(this, graph.SelectedNode);
 
         public void OnPointerEnter(PointerEventData eventData)
         {

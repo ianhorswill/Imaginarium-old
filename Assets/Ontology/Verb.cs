@@ -68,7 +68,7 @@ public class Verb : Concept
 
     public override bool IsNamed(string[] tokens) => tokens.SameAs(SingularForm) || tokens.SameAs(PluralForm);
 
-    public override string[] StandardName => SingularForm;
+    public override string[] StandardName => PluralForm;
 
     // ReSharper disable InconsistentNaming
     private string[] _singular, _plural;

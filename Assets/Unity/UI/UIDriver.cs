@@ -213,8 +213,12 @@ public class UIDriver : MonoBehaviour
             {
                 inventionDescriptions = new string[Generator.Current.Individuals.Count];
                 for (var i = 0; i < Generator.Current.Individuals.Count; i++)
-                    inventionDescriptions[i] =
-                        invention.Description(Generator.Current.Individuals[i], "<b><color=grey>", "</color></b>");
+                {
+                    var inventionDescription = invention.Description(Generator.Current.Individuals[i], "<b><color=grey>", "</color></b>");
+                    inventionDescriptions[i] = inventionDescription;
+                    Generator.Current.Individuals[i].MostRecentDescription = inventionDescription;
+                }
+
                 //MakeGraph();
             }
         }
@@ -253,7 +257,7 @@ public class UIDriver : MonoBehaviour
             var from = invention.NameString(f);
             var to = invention.NameString(t);
             var verb = v.Text;
-            RelationshipGraph.AddEdge(f, t, verb, 2000, VerbStyle(v));
+            RelationshipGraph.AddEdge(f, t, verb, VerbStyle(v));
         }
     }
     #endregion

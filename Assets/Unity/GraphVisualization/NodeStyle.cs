@@ -12,22 +12,27 @@ namespace GraphVisualization
         /// <summary>
         /// Name of the style
         /// </summary>
+        [Tooltip("Name of the style.")]
         public string Name = "default";
         /// <summary>
         /// Color in which to draw the node.
         /// </summary>
+        [Tooltip("Color in which to render the node")]
         public Color Color = new Color(1,1,1);
         /// <summary>
         /// Font in which to draw label.
         /// </summary>
+        [Tooltip("Font in which to render the node")]
         public Font Font;
         /// <summary>
         /// Point size in which to draw label.
         /// </summary>
+        [Tooltip("Size in which to render the node label")]
         public int FontSize = 12;
         /// <summary>
         /// The style in which to render the node's label.
         /// </summary>
+        [Tooltip("Font style (e.g. italic) in which to render the node label.")]
         public FontStyle FontStyle = FontStyle.Normal;
     }
 }
