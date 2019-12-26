@@ -37,7 +37,7 @@ public class Property : Concept
         Ontology.AllReferentTables.Add(AllProperties);
     }
 
-    public Property(string[] name, VariableType type)
+    public Property(string[] name, VariableType type) : base(name)
     {
         Name = name;
         AllProperties[name] = this;

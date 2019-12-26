@@ -30,6 +30,9 @@ using System.Collections.Generic;
 /// </summary>
 public abstract class MonadicConcept : Concept
 {
+    protected MonadicConcept(string[] name) : base(name) 
+    { }
+
     public static readonly TokenTrie<MonadicConcept> Trie = new TokenTrie<MonadicConcept>();
     public static bool LastMatchPlural => Trie.LastMatchPlural;
 

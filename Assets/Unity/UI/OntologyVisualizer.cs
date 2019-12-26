@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Collections.Generic;
 using System.Linq;
 using GraphVisualization;
 using UnityEngine;
@@ -17,6 +15,17 @@ public class OntologyVisualizer : MonoBehaviour, IGraphGenerator
         {
             switch (o)
             {
+                //case Individual i:
+                //    if (UIDriver.Invention != null)
+                //        foreach (var kind in UIDriver.Invention.MostSpecificNouns(i))
+                //            yield return (i, kind, "is a", null);
+                //    break;
+
+                case ProperNoun p:
+                    foreach (var kind in p.Kinds)
+                        yield return (p, kind, "is a", null);
+                    break;
+
                 case CommonNoun c:
                     foreach (var parent in c.Superkinds)
                         yield return (c, parent, "kind of", null);
@@ -45,9 +54,29 @@ public class OntologyVisualizer : MonoBehaviour, IGraphGenerator
             }
         }
 
-        g.GenerateFrom(CommonNoun.AllCommonNouns.Cast<Referent>().Concat(Verb.AllVerbs),
-            o => (o.ToString(),
-                (o is CommonNoun)?nounStyle:((o is Verb)?verbStyle:adjectiveStyle)), 
-            Edges);
+        (string, NodeStyle) NodeLabel(object node)
+        {
+            switch (node)
+            {
+                //case Individual i:
+                //    var iName = UIDriver.Invention?.NameString(i) ?? i.ToString();
+                //    return (iName, nounStyle);
+                case Noun n:
+                    return (n.ToString(), nounStyle);
+
+                case Verb v:
+                    return (v.ToString(), verbStyle);
+
+                default:
+                    return (node.ToString(), adjectiveStyle);
+            }
+        }
+
+        var nouns = Noun.AllNouns.Select(pair => pair.Value).Cast<object>();
+        var verbs = Verb.AllVerbs;
+        var vocabulary = nouns.Concat(verbs);
+        //var ephemera = Generator.Current?.EphemeralIndividuals;
+
+        g.GenerateFrom(vocabulary, NodeLabel, Edges);
     }
 }

@@ -91,7 +91,7 @@ public class Individual : Referent, IComparable
     /// </summary>
     public readonly Dictionary<Property, Variable> Properties = new Dictionary<Property, Variable>();
     
-    private Individual(IEnumerable<MonadicConcept> concepts, string[] name)
+    private Individual(IEnumerable<MonadicConcept> concepts, string[] name) : base(name)
     {
         Name = name;
         var enumerated = concepts as MonadicConcept[] ?? concepts.ToArray();

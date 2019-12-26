@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using UnityEngine;
 
 /// <summary>
 /// Represents the output of the generator.
@@ -162,6 +163,7 @@ public class Invention
             return Model[i.Properties[nameProperty]].ToString();
         }
 
+        Debug.AssertFormat(i.Kinds.Count > 0, "NameString({0}): individual has no kinds?", i);
         var kind = i.Kinds[0];
         return kind.NameTemplate != null ? FormatNameFromTemplate(i, suppressedProperties, kind) : i.Text;
     }

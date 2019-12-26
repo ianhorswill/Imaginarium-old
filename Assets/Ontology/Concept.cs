@@ -28,5 +28,6 @@
 /// </summary>
 public abstract class Concept : Referent
 {
-
+    protected Concept(string[] name) : base(name)
+    { }
 }

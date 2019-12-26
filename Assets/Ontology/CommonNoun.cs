@@ -34,6 +34,9 @@ using System.Linq;
 [DebuggerDisplay("{" + nameof(Text) + "}")]
 public class CommonNoun : Noun
 {
+    public CommonNoun() : base(null)
+    { }
+
     /// <summary>
     /// List of all common nouns (i.e. kinds/types) in the ontology.
     /// </summary>
@@ -62,6 +65,11 @@ public class CommonNoun : Noun
         }
         set
         {
+            if (_singular != null && ((TokenString) _singular).Equals((TokenString) value))
+                return;
+            // If we're defining the plural to be identical to the singular, don't check for name collision
+            if (_plural == null || !((TokenString) _plural).Equals((TokenString) value))
+                Ontology.EnsureUndefined(value, GetType());
             if (_singular != null)
             {
                 AllNouns.Remove(_singular);
@@ -95,6 +103,11 @@ public class CommonNoun : Noun
         }
         set
         {
+            if (_plural != null && ((TokenString) _plural).Equals((TokenString) value))
+                return;
+            // If we're defining the plural to be identical to the singular, don't check for name collision
+            if (_singular == null || !((TokenString) _singular).Equals((TokenString) value))
+                Ontology.EnsureUndefined(value, GetType());
             if (_plural != null)
             {
                 AllNouns.Remove(_plural);

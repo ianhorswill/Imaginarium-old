@@ -37,6 +37,9 @@ public abstract class Noun : MonadicConcept
         Ontology.AllReferentTables.Add(AllNouns);
     }
 
+    protected Noun(string[] name) : base(name) 
+    { }
+
     public static Dictionary<TokenString, Noun> AllNouns = new Dictionary<TokenString, Noun>();
 
     /// <summary>

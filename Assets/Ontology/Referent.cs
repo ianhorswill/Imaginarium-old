@@ -23,6 +23,7 @@
 // --------------------------------------------------------------------------------------------------------------------
 #endregion
 
+using System;
 using System.Diagnostics;
 
 /// <summary>
@@ -31,6 +32,11 @@ using System.Diagnostics;
 [DebuggerDisplay("{" + nameof(Text) + "}")]
 public abstract class Referent
 {
+    protected Referent(string[] name)
+    {
+        Ontology.EnsureUndefined(name, GetType());
+    }
+
     /// <summary>
     /// True if this object's name matches the specified token string.
     /// </summary>

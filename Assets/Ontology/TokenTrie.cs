@@ -33,7 +33,7 @@ public abstract class TokenTrieBase
         AllTokenTries.Add(this);
     }
 
-    private static readonly List<TokenTrieBase> AllTokenTries = new List<TokenTrieBase>();
+    public static readonly List<TokenTrieBase> AllTokenTries = new List<TokenTrieBase>();
 
     public static void ClearAllTries()
     {
@@ -42,6 +42,10 @@ public abstract class TokenTrieBase
     }
 
     public abstract void Clear();
+
+    public bool Contains(TokenString t) => Find(t) != null;
+
+    public abstract object Find(TokenString t);
 }
 
 /// <summary>
@@ -123,6 +127,16 @@ public class TokenTrie<TReferent> : TokenTrieBase
         }
 
         return null;
+    }
+
+    public override object Find(TokenString tokens)
+    {
+        var node = root;
+        foreach (var word in tokens.Tokens)
+            if (!node.Dict.TryGetValue(word, out node))
+                return null;
+
+        return node.Concept;
     }
 
     /// <summary>

@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
@@ -7,7 +8,7 @@ using GraphVisualization;
 
 public class UIDriver : MonoBehaviour
 {
-    private Invention invention;
+    public static Invention Invention;
     private string[] inventionDescriptions;
     private readonly StringBuilder buffer = new StringBuilder();
     public InputField InputField;
@@ -175,6 +176,12 @@ public class UIDriver : MonoBehaviour
             LogFile.Log(ex.Message);
             LogFile.Log(ex.StackTrace);
         }
+        catch (Exception ex)
+        {
+            Driver.CommandResponse = $"{ex.Message}\n";
+            LogFile.Log(ex.Message);
+            LogFile.Log(ex.StackTrace);
+        }
 
         Output = Driver.CommandResponse;
     }
@@ -183,10 +190,10 @@ public class UIDriver : MonoBehaviour
     {
         if (Generator.Current != null)
         {
-            invention = Generator.Current.Solve();
+            Invention = Generator.Current.Solve();
             if (LogFile.Enabled)
             {
-                if (invention == null)
+                if (Invention == null)
                 {
                     LogFile.Separate();
                     LogFile.Log("UNSATISFIABLE");
@@ -196,15 +203,15 @@ public class UIDriver : MonoBehaviour
                 {
                     LogFile.Separate();
                     LogFile.Log("MODEL");
-                    LogFile.Log(invention.Model.Model);
+                    LogFile.Log(Invention.Model.Model);
                     LogFile.Separate();
                     LogFile.Log("DESCRIPTION");
                     foreach (var i in Generator.Current.Individuals)
-                        LogFile.Log(invention.Description(i));
+                        LogFile.Log(Invention.Description(i));
                 }
             }
 
-            if (invention == null)
+            if (Invention == null)
             {
                 //Graph.Create();  // Remove existing graph, if any
                 inventionDescriptions = new[] {"Can't think of any - maybe there's a contradiction?"};
@@ -214,7 +221,7 @@ public class UIDriver : MonoBehaviour
                 inventionDescriptions = new string[Generator.Current.Individuals.Count];
                 for (var i = 0; i < Generator.Current.Individuals.Count; i++)
                 {
-                    var inventionDescription = invention.Description(Generator.Current.Individuals[i], "<b><color=grey>", "</color></b>");
+                    var inventionDescription = Invention.Description(Generator.Current.Individuals[i], "<b><color=grey>", "</color></b>");
                     inventionDescriptions[i] = inventionDescription;
                     Generator.Current.Individuals[i].MostRecentDescription = inventionDescription;
                 }
@@ -247,15 +254,15 @@ public class UIDriver : MonoBehaviour
     private void MakeGraph()
     {
         RelationshipGraph.Clear();
-        foreach (var i in invention.Individuals)
-            RelationshipGraph.AddNode(i, invention.NameString(i));
-        foreach (var relationship in invention.Relationships)
+        foreach (var i in Invention.Individuals)
+            RelationshipGraph.AddNode(i, Invention.NameString(i));
+        foreach (var relationship in Invention.Relationships)
         {
             var v = relationship.Item1;
             var f = relationship.Item2;
             var t = relationship.Item3;
-            var from = invention.NameString(f);
-            var to = invention.NameString(t);
+            var from = Invention.NameString(f);
+            var to = Invention.NameString(t);
             var verb = v.Text;
             RelationshipGraph.AddEdge(f, t, verb, VerbStyle(v));
         }

@@ -30,6 +30,9 @@ using System.Collections.Generic;
 /// </summary>
 public class Verb : Concept
 {
+    public Verb() : base(null)
+    { }
+
     /// <summary>
     /// Verbs that are implied by this verb
     /// </summary>
@@ -86,6 +89,9 @@ public class Verb : Concept
         }
         set
         {
+            if (_singular != null && ((TokenString) _singular).Equals((TokenString) value))
+                return;
+            Ontology.EnsureUndefined(value, GetType());
             if (_singular != null) Trie.Store(_singular, null);
             _singular = value;
             Trie.Store(_singular, this);
@@ -125,6 +131,9 @@ public class Verb : Concept
         }
         set
         {
+            if (_plural != null && ((TokenString) _plural).Equals((TokenString) value))
+                return;
+            Ontology.EnsureUndefined(value, GetType());
             if (_plural != null) Trie.Store(_plural, null);
             _plural = value;
             Trie.Store(_plural, this, true);

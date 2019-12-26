@@ -23,8 +23,10 @@
 // --------------------------------------------------------------------------------------------------------------------
 #endregion
 
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 /// <summary>
 /// Operations for accessing the ontology as a whole
@@ -39,6 +41,24 @@ public static class Ontology
     public static readonly List<IDictionary> AllReferentTables = new List<IDictionary>();
 
     /// <summary>
+    /// Return true if there's already a concept with the specified name.
+    /// </summary>
+    public static object Find(TokenString name)
+    {
+        var dict = AllReferentTables.FirstOrDefault(t => t.Contains(name));
+        var result = dict?[name];
+        if (result == null)
+            foreach (var t in TokenTrieBase.AllTokenTries)
+            {
+                result = t.Find(name);
+                if (result != null)
+                    break;
+            }
+
+        return result;
+    }
+
+    /// <summary>
     /// Removes all concepts form the ontology.
     /// </summary>
     public static void EraseConcepts()
@@ -47,5 +67,14 @@ public static class Ontology
             c.Clear();
         
         TokenTrieBase.ClearAllTries();
+    }
+
+    public static void EnsureUndefined(string[] name, Type newType)
+    {
+        if (name == null)
+            return;
+        var old = Find(name);
+        if (old != null)
+            throw new NameCollisionException(name, old.GetType(), newType);
     }
 }

@@ -36,7 +36,7 @@ public class Adjective : MonadicConcept
         Ontology.AllReferentTables.Add(AllAdjectives);
     }
 
-    public Adjective(string[] name)
+    public Adjective(string[] name) : base(name)
     {
         Name = name;
         AllAdjectives[name] = this;

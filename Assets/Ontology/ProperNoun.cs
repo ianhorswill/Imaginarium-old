@@ -30,7 +30,7 @@ public class ProperNoun : Noun
     public string[] Name;
     public readonly Individual Individual;
 
-    public ProperNoun(string[] name)
+    public ProperNoun(string[] name) : base(name)
     {
         Name = name;
         Individual = Individual.Permanent(new MonadicConcept[0], Name);
