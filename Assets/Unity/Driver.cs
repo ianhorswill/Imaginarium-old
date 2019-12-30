@@ -294,7 +294,7 @@ public class Driver : MonoBehaviour
                 AddList(" is a kind of", "and", common.Superkinds);
 
             foreach (var alt in common.AlternativeSets)
-                AddList(alt.IsRequired ? ", must be" : ", can be", "or", alt.Alternatives);
+                AddList(alt.IsRequired ? ", must be" : ", can be", "or", alt.Alternatives.Select(a => a.Concept));
 
             if (common.Properties.Count > 0)
                 AddList(", has properties", "and", common.Properties);

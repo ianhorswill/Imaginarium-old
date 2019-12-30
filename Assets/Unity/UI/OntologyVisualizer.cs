@@ -35,10 +35,10 @@ public class OntologyVisualizer : MonoBehaviour, IGraphGenerator
                         yield return (c, a, "can be", null);
                     foreach (var s in c.AlternativeSets)
                         foreach (var a in s.Alternatives)
-                            yield return (c, a, "can be", null);
+                            yield return (c, a.Concept, "can be", null);
                     foreach (var a in c.ImpliedAdjectives)
                         if (a.Conditions.Length==0)
-                            yield return (c, a.Modifier, "is always", null);
+                            yield return (c, a.Modifier.Concept, a.Modifier.IsPositive?"is always":"is never", null);
                         else
                             yield return (c, a.Modifier, "can be", null);
                     break;

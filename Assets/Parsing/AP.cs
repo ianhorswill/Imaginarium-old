@@ -23,14 +23,30 @@
 // --------------------------------------------------------------------------------------------------------------------
 #endregion
 
+using static Parser;
+
 /// <summary>
 /// Represents a phrase denoting an adjective
 /// </summary>
 public class AP : ReferringExpression<Adjective>
 {
     public Adjective Adjective => Concept;
+    public bool IsNegated;
+
+    public MonadicConceptLiteral MonadicConceptLiteral => new MonadicConceptLiteral(Adjective, !IsNegated);
 
     protected override Adjective GetConcept() => Adjective.Find(Text) ?? new Adjective(Text);
 
     public override bool ValidBeginning(string firstToken) => firstToken != "a" && firstToken != "an";
+
+    public override void ParseModifiers()
+    {
+        if (CurrentToken == "not" | CurrentToken == "non" || CurrentToken == "never")
+        {
+            IsNegated = true;
+            SkipToken();
+            if (!EndOfInput && CurrentToken == "-")
+                SkipToken();
+        }
+    }
 }

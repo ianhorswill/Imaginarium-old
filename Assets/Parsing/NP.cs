@@ -178,23 +178,37 @@ public class NP : ReferringExpression<Noun>
     {
         UnityEngine.Debug.Assert(CachedConcept == null);
         var old = State;
-        MonadicConcept next;
-        MonadicConcept last = null;
+        MonadicConcept nextConcept;
+        MonadicConceptLiteral last = null;
         Modifiers.Clear();
         do
         {
-            next = MatchTrie(MonadicConcept.Trie);
-            if (next != null)
+            var isPositive = true;
+            if (EndOfInput)
+                break;
+            if (CurrentToken == "not" || CurrentToken == "non")
             {
+                isPositive = false;
+                SkipToken();
+                if (EndOfInput)
+                    return false;
+                if (CurrentToken == "-")
+                    SkipToken();
+            }
+            nextConcept = MatchTrie(MonadicConcept.Trie);
+            if (nextConcept != null)
+            {
+                var next = new MonadicConceptLiteral(nextConcept, isPositive);
+
                 if (last != null)
                     Modifiers.Add(last);
                 last = next;
                 if (!EndOfInput && CurrentToken == ",")
                     SkipToken();
             }
-        } while (next != null);
+        } while (nextConcept != null);
 
-        if (last != null && last is Noun n)
+        if (last != null && last.Concept is Noun n)
         {
             CachedConcept = n;
             Number = MonadicConcept.LastMatchPlural ? Syntax.Number.Plural : Syntax.Number.Singular;

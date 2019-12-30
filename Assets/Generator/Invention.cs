@@ -103,7 +103,7 @@ public class Invention
     public IEnumerable<Adjective> AdjectivesDescribing(Individual i)
     {
         var kinds = TrueKinds(i);
-        var relevantAdjectives = kinds.SelectMany(k => k.RelevantAdjectives.Concat(k.AlternativeSets.SelectMany(a => a.Alternatives))).Distinct();
+        var relevantAdjectives = kinds.SelectMany(k => k.RelevantAdjectives.Concat(k.AlternativeSets.SelectMany(a => a.Alternatives).Select(a => a.Concept))).Where(a => a is Adjective).Cast<Adjective>().Distinct();
         return relevantAdjectives.Where(a => IsA(i, a));
     }
 

@@ -239,7 +239,7 @@ public class Generator
                 IsA(i, adj);
             foreach (var set in k.AlternativeSets)
             {
-                var clause = set.Alternatives.Select(a => IsA(i, a)).Append(Not(IsA(i, k)));
+                var clause = set.Alternatives.Select(a => Satisfies(i, a)).Append(Not(IsA(i, k)));
                 if (set.IsRequired)
                     Problem.Unique(clause);
                 else

@@ -256,11 +256,11 @@ public partial class Syntax
                 {
                     case CommonNoun c:
                         c.ImpliedAdjectives.Add(new CommonNoun.ConditionalModifier(Subject.Modifiers.ToArray(),
-                            PredicateAP.Adjective));
+                            PredicateAP.MonadicConceptLiteral));
                         break;
 
                     case ProperNoun n:
-                        n.Individual.Modifiers.Add(PredicateAP.Adjective);
+                        n.Individual.Modifiers.Add(PredicateAP.MonadicConceptLiteral);
                         break;
 
                     default:
@@ -274,7 +274,7 @@ public partial class Syntax
         new Syntax(() => new object[] { Subject, Is, PredicateAPList })
             .Action(() =>
             {
-                    Subject.CommonNoun.AlternativeSets.Add(new CommonNoun.AlternativeSet(PredicateAPList.Concepts.ToArray(), true));
+                    Subject.CommonNoun.AlternativeSets.Add(new CommonNoun.AlternativeSet(PredicateAPList.Expressions.Select(ap => ap.MonadicConceptLiteral).ToArray(), true));
             })
             .Check(SubjectVerbAgree, SubjectUnmodified)
             .Documentation("Declares that Subjects must be one of the Adjectives.  So 'cats are big or small' says cats are always either big or small, but not both or neither."),
@@ -282,7 +282,7 @@ public partial class Syntax
         new Syntax(() => new object[] { Subject, "can", "be", PredicateAPList })
             .Action(() =>
             {
-                Subject.CommonNoun.AlternativeSets.Add(new CommonNoun.AlternativeSet(PredicateAPList.Concepts.ToArray(), false));
+                Subject.CommonNoun.AlternativeSets.Add(new CommonNoun.AlternativeSet(PredicateAPList.Expressions.Select(ap => ap.MonadicConceptLiteral).ToArray(), false));
             })
             .Check(SubjectDefaultPlural, SubjectUnmodified)
             .Documentation("Declares that Subjects can be any one of the Adjectives, but don't have to be.  So 'cats can be big or small' says cats can be big, small, or neither, but not both."),

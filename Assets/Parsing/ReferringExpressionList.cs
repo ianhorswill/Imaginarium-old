@@ -51,7 +51,7 @@ public class ReferringExpressionList<TE, TR> : Segment
     /// <summary>
     /// List of constituent expressions
     /// </summary>
-    readonly List<TE> expressions = new List<TE>();
+    public readonly List<TE> Expressions = new List<TE>();
 
     /// <summary>
     /// True if the constituents are joined by "and", otherwise they're joined by "or"
@@ -67,7 +67,7 @@ public class ReferringExpressionList<TE, TR> : Segment
         {
             // This assumes we will never have an expression whose referent is the empty list
             if (concepts.Count == 0)
-                concepts.AddRange(expressions.Select(e => e.Concept));
+                concepts.AddRange(Expressions.Select(e => e.Concept));
             return concepts;
         }
     }
@@ -78,7 +78,7 @@ public class ReferringExpressionList<TE, TR> : Segment
     public virtual void Reset()
     {
         concepts.Clear();
-        expressions.Clear();
+        Expressions.Clear();
     }
 
     /// <summary>
@@ -108,7 +108,7 @@ public class ReferringExpressionList<TE, TR> : Segment
                 return false;
             if (!SanityCheck(item))
                 return false;
-            expressions.Add(item);
+            Expressions.Add(item);
             if (lastOne)
                 done = true;
             else if (CurrentToken == "and")
@@ -162,7 +162,7 @@ public class ReferringExpressionList<TE, TR> : Segment
                 return false;
             if (!SanityCheck(item))
                 return false;
-            expressions.Add(item);
+            Expressions.Add(item);
             if (lastOne)
                 done = true;
             if (EndOfInput)

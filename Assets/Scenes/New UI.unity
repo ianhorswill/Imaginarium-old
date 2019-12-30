@@ -568,7 +568,25 @@ MonoBehaviour:
     Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
     FontSize: 80
     FontStyle: 0
+  - Name: is always
+    Color: {r: 0.5754717, g: 0.5673282, b: 0.5673282, a: 1}
+    LineWidth: 10
+    IsDirected: 1
+    ArrowheadLength: 7
+    ArrowheadWidth: 7
+    Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
+    FontSize: 80
+    FontStyle: 0
   - Name: mutually exclusive
+    Color: {r: 1, g: 0, b: 0, a: 1}
+    LineWidth: 10
+    IsDirected: 0
+    ArrowheadLength: 7
+    ArrowheadWidth: 7
+    Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
+    FontSize: 80
+    FontStyle: 0
+  - Name: is never
     Color: {r: 1, g: 0, b: 0, a: 1}
     LineWidth: 10
     IsDirected: 0

@@ -219,13 +219,13 @@ public class CommonNoun : Noun
         /// <summary>
         /// At most one of these may be true of the noun
         /// </summary>
-        public readonly Adjective[] Alternatives;
+        public readonly MonadicConceptLiteral[] Alternatives;
         /// <summary>
         /// Whether one of them *has* to be true of the noun
         /// </summary>
         public readonly bool IsRequired;
 
-        public AlternativeSet(Adjective[] alternatives, bool isRequired)
+        public AlternativeSet(MonadicConceptLiteral[] alternatives, bool isRequired)
         {
             Alternatives = alternatives;
             IsRequired = isRequired;
