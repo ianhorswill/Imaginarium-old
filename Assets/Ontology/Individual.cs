@@ -40,7 +40,7 @@ public class Individual : Referent, IComparable
     /// <param name="concepts">CommonNouns and Adjectives that must apply to the individual</param>
     /// <param name="name">Default name to give to the individual if no name property can be found.</param>
     /// <returns></returns>
-    public static Individual Ephemeral(IEnumerable<MonadicConcept> concepts, string[] name)
+    public static Individual Ephemeral(IEnumerable<MonadicConceptLiteral> concepts, string[] name)
     {
         return new Individual(concepts, name);
     }
@@ -51,7 +51,7 @@ public class Individual : Referent, IComparable
     /// <param name="concepts">CommonNouns and Adjectives that must be true of this Individual</param>
     /// <param name="name">Default name for the individual if not name property can be found.</param>
     /// <returns></returns>
-    public static Individual Permanent(IEnumerable<MonadicConcept> concepts, string[] name)
+    public static Individual Permanent(IEnumerable<MonadicConceptLiteral> concepts, string[] name)
     {
         var individual = new Individual(concepts, name);
         AllPermanentIndividuals[name] = individual;
@@ -84,19 +84,19 @@ public class Individual : Referent, IComparable
     /// <summary>
     /// The Adjectives that might apply to this Individual
     /// </summary>
-    public readonly List<Adjective> Adjectives = new List<Adjective>();
+    public readonly List<MonadicConceptLiteral> Modifiers = new List<MonadicConceptLiteral>();
 
     /// <summary>
     /// The Properties of this individual.
     /// </summary>
     public readonly Dictionary<Property, Variable> Properties = new Dictionary<Property, Variable>();
     
-    private Individual(IEnumerable<MonadicConcept> concepts, string[] name) : base(name)
+    private Individual(IEnumerable<MonadicConceptLiteral> concepts, string[] name) : base(name)
     {
         Name = name;
-        var enumerated = concepts as MonadicConcept[] ?? concepts.ToArray();
-        Kinds.AddRange(enumerated.Where(c => c is CommonNoun).Cast<CommonNoun>());
-        Adjectives.AddRange(enumerated.Where(c => c is Adjective).Cast<Adjective>());
+        var enumerated = concepts as MonadicConceptLiteral[] ?? concepts.ToArray();
+        Kinds.AddRange(enumerated.Where(l => l.Concept is CommonNoun).Select(l => (CommonNoun)l.Concept));
+        Modifiers.AddRange(enumerated.Where(l => !(l.Concept is CommonNoun)));
     }
 
     public static Dictionary<TokenString, Individual> AllPermanentIndividuals = new Dictionary<TokenString, Individual>();

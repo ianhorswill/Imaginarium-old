@@ -67,7 +67,7 @@ public class Generator
     /// </summary>
     /// <param name="noun">Base common noun for the object</param>
     /// <param name="concepts">Other monadic concepts that must be true of the object</param>
-    public Generator(CommonNoun noun, params MonadicConcept[] concepts) : this(noun, (IEnumerable<MonadicConcept>)concepts)
+    public Generator(CommonNoun noun, params MonadicConceptLiteral[] concepts) : this(noun, (IEnumerable<MonadicConceptLiteral>)concepts)
     {  }
 
     /// <summary>
@@ -76,7 +76,7 @@ public class Generator
     /// <param name="noun">Base common noun for the object</param>
     /// <param name="concepts">Other monadic concepts that must be true of the object</param>
     /// <param name="count">Number of objects of the specified type to include</param>
-    public Generator(CommonNoun noun, IEnumerable<MonadicConcept> concepts, int count = 1)
+    public Generator(CommonNoun noun, IEnumerable<MonadicConceptLiteral> concepts, int count = 1)
     {
         Count = count;
         var ca = concepts.ToArray();
@@ -228,7 +228,7 @@ public class Generator
 
             foreach (var a in k.ImpliedAdjectives)
             {
-                AddImplication(i, a.Conditions.Append(k), a.Adjective);
+                AddImplication(i, a.Conditions.Append(k), a.Modifier);
                 //AddClause(a.Conditions.Select(c => Not(MembershipProposition(i, c))).Append(Not(MembershipProposition(i, k)))
                 //        .Append(MembershipProposition(i, a.Adjective)));
             }
@@ -256,8 +256,8 @@ public class Generator
                 SolveForSubclass(ind, k);
         }
 
-        foreach (var a in ind.Adjectives) 
-            MaybeAssert(IsA(ind, a));
+        foreach (var a in ind.Modifiers) 
+            MaybeAssert(Satisfies(ind, a));
     }
     
     #region Predicate and Proposition tracking
@@ -271,17 +271,31 @@ public class Generator
     /// <summary>
     /// Assert p is true, unless we've already asserted it
     /// </summary>
-    /// <param name="p">Proposition to assert</param>
+    /// <param name="l">Proposition to assert</param>
     /// <returns>True if it had not already been asserted</returns>
-    private bool MaybeAssert(Proposition p)
+    private bool MaybeAssert(Proposition l)
     {
-        if (asserted.Contains(p))
+        if (asserted.Contains(l))
             return false;
-        Problem.Assert(p);
-        asserted.Add(p);
+        Problem.Assert(l);
+        asserted.Add(l);
         return true;
     }
 
+    /// <summary>
+    /// Assert p is true, unless we've already asserted it
+    /// </summary>
+    /// <param name="l">Proposition to assert</param>
+    /// <returns>True if it had not already been asserted</returns>
+    private bool MaybeAssert(Literal l)
+    {
+        if (asserted.Contains(l))
+            return false;
+        Problem.Assert(l);
+        asserted.Add(l);
+        return true;
+    }
+    
     /// <summary>
     /// The proposition representing that concept k applies to individual i
     /// </summary>
@@ -293,6 +307,15 @@ public class Generator
         var p = PredicateOf(k)(i);
         p.InitialProbability = k.InitialProbability;
         return p;
+    }
+
+    /// <summary>
+    /// The literal representing that concept k or its negation applies to individual i
+    /// </summary>
+    private Literal Satisfies(Individual i, MonadicConceptLiteral l)
+    {
+        var prop = IsA(i, l.Concept);
+        return l.IsPositive ? prop : Not(prop);
     }
 
     public bool CanBeA(Individual i, CommonNoun kind)
@@ -354,7 +377,7 @@ public class Generator
     /// <summary>
     /// Propositions already asserted in Problem
     /// </summary>
-    private readonly HashSet<Proposition> asserted = new HashSet<Proposition>();
+    private readonly HashSet<Literal> asserted = new HashSet<Literal>();
 
     /// <summary>
     /// Predicates created within Problem
@@ -388,6 +411,29 @@ public class Generator
         AddClause(antecedents.Select(a => Not(IsA(i, a))).Append(consequent));
     }
 
+    /// <summary>
+    /// Add clause to Problem stating that consequent(i) follow from antecedent(i)
+    /// </summary>
+    /// <param name="i">Individual for which this implication holds</param>
+    /// <param name="antecedents">A set of conditions on i</param>
+    /// <param name="consequent">A concept that must be true of i when the antecedents are true.</param>
+    void AddImplication(Individual i, IEnumerable<MonadicConceptLiteral> antecedents, MonadicConceptLiteral consequent)
+    {
+        AddClause(antecedents.Select(a => Not(Satisfies(i, a))).Append(Satisfies(i, consequent)));
+    }
+
+    /// <summary>
+    /// Add clause to Problem stating that consequent(i) follow from antecedent(i)
+    /// </summary>
+    /// <param name="i">Individual for which this implication holds</param>
+    /// <param name="antecedents">A set of conditions on i</param>
+    /// <param name="consequent">A proposition that must follow from the antecedent applying to i.</param>
+    void AddImplication(Individual i, IEnumerable<MonadicConceptLiteral> antecedents, Literal consequent)
+    {
+        AddClause(antecedents.Select(a => Not(Satisfies(i, a))).Append(consequent));
+    }
+
+    
     /// <summary>
     /// Assert that all antecedents being true implies consequent
     /// </summary>

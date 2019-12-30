@@ -58,7 +58,7 @@ public class NP : ReferringExpression<Noun>
     /// The modifiers (adjectives or other common nouns) applied to the CommonNoun head, if any.
     /// For example, in "quick, brown fox", fox is the CommonNoun and quick and brown are modifiers.
     /// </summary>
-    public List<MonadicConcept> Modifiers = new List<MonadicConcept>();
+    public List<MonadicConceptLiteral> Modifiers = new List<MonadicConceptLiteral>();
 
     /// <summary>
     /// True if the segment starts with a determiner

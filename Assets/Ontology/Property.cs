@@ -71,10 +71,10 @@ public class Property : Concept
 
     public class MenuRule
     {
-        public readonly MonadicConcept[] Conditions;
+        public readonly MonadicConceptLiteral[] Conditions;
         public readonly Menu<string> Menu;
 
-        public MenuRule(MonadicConcept[] conditions, Menu<string> menu)
+        public MenuRule(MonadicConceptLiteral[] conditions, Menu<string> menu)
         {
             Conditions = conditions;
             Menu = menu;

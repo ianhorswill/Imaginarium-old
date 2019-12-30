@@ -164,7 +164,7 @@ public class CommonNoun : Noun
     /// <summary>
     /// Adjectives that are always true of this kind of object.
     /// </summary>
-    public readonly List<ConditionalAdjective> ImpliedAdjectives = new List<ConditionalAdjective>();
+    public readonly List<ConditionalModifier> ImpliedAdjectives = new List<ConditionalModifier>();
     /// <summary>
     /// Properties attached to this kind of object
     /// Objects of this kind may also have properties attached to sub- and superkinds.
@@ -235,23 +235,23 @@ public class CommonNoun : Noun
     /// <summary>
     /// An adjective together with an optional list of modifiers that allow it to apply
     /// </summary>
-    public class ConditionalAdjective
+    public class ConditionalModifier
     {
-        private static readonly MonadicConcept[] EmptyCondition = new MonadicConcept[0];
+        private static readonly MonadicConceptLiteral[] EmptyCondition = new MonadicConceptLiteral[0];
 
         /// <summary>
         /// Additional conditions on top of the CommonNoun in which this is stored, that must be true for the implication to hold
         /// </summary>
-        public readonly MonadicConcept[] Conditions;
+        public readonly MonadicConceptLiteral[] Conditions;
         /// <summary>
         /// Adjective that follows from the noun and conditions.
         /// </summary>
-        public readonly MonadicConcept Adjective;
+        public readonly MonadicConceptLiteral Modifier;
 
-        public ConditionalAdjective(MonadicConcept[] conditions, MonadicConcept adjective)
+        public ConditionalModifier(MonadicConceptLiteral[] conditions, MonadicConceptLiteral modifier)
         {
             Conditions = conditions??EmptyCondition;
-            Adjective = adjective;
+            Modifier = modifier;
         }
     }
 }

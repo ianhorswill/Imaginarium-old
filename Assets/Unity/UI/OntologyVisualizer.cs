@@ -38,9 +38,9 @@ public class OntologyVisualizer : MonoBehaviour, IGraphGenerator
                             yield return (c, a, "can be", null);
                     foreach (var a in c.ImpliedAdjectives)
                         if (a.Conditions.Length==0)
-                            yield return (c, a.Adjective, "is always", null);
+                            yield return (c, a.Modifier, "is always", null);
                         else
-                            yield return (c, a.Adjective, "can be", null);
+                            yield return (c, a.Modifier, "can be", null);
                     break;
 
                 case Verb v:

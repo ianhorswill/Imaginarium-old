@@ -176,7 +176,7 @@ public partial class Syntax
             {
                 Subject.CommonNoun.DeclareSuperclass(Object.CommonNoun);
                 foreach (var mod in Object.Modifiers)
-                    Subject.CommonNoun.ImpliedAdjectives.Add(new CommonNoun.ConditionalAdjective(null, mod));
+                    Subject.CommonNoun.ImpliedAdjectives.Add(new CommonNoun.ConditionalModifier(null, mod));
             })
             .Check(SubjectVerbAgree, ObjectSingular, SubjectUnmodified, SubjectCommonNoun, ObjectCommonNoun)
             .Documentation("Declares that all Subjects are also Objects.  For example, 'cat is a kind of animal' says anything that is a cat is also an animal."),
@@ -192,7 +192,7 @@ public partial class Syntax
                             $"The noun '<i>{noun.StandardName}</i>' is a proper noun (a name of a specific thing), but I need a common noun (a kind of thing) here");
                     c.DeclareSuperclass(Object.CommonNoun);
                     foreach (var mod in Object.Modifiers)
-                        c.ImpliedAdjectives.Add(new CommonNoun.ConditionalAdjective(null, mod));
+                        c.ImpliedAdjectives.Add(new CommonNoun.ConditionalModifier(null, mod));
 
                 }
             })
@@ -255,12 +255,12 @@ public partial class Syntax
                 switch (Subject.Noun)
                 {
                     case CommonNoun c:
-                        c.ImpliedAdjectives.Add(new CommonNoun.ConditionalAdjective(Subject.Modifiers.ToArray(),
+                        c.ImpliedAdjectives.Add(new CommonNoun.ConditionalModifier(Subject.Modifiers.ToArray(),
                             PredicateAP.Adjective));
                         break;
 
                     case ProperNoun n:
-                        n.Individual.Adjectives.Add(PredicateAP.Adjective);
+                        n.Individual.Modifiers.Add(PredicateAP.Adjective);
                         break;
 
                     default:

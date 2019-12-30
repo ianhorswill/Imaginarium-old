@@ -14,7 +14,7 @@ namespace Tests
             ParseAndExecute("people can love other people");
             ParseAndExecute("people cannot love themselves");
             var v = Verb.Find("loves");
-            var g = new Generator(CommonNoun.Find("person"), new MonadicConcept[0], 10);
+            var g = new Generator(CommonNoun.Find("person"), new MonadicConceptLiteral[0], 10);
             for (int n = 0; n < 100; n++)
             {
                 var s = g.Solve();
@@ -28,7 +28,7 @@ namespace Tests
             Ontology.EraseConcepts();
             ParseAndExecute("people must love themselves");
             var v = Verb.Find("loves");
-            var g = new Generator(CommonNoun.Find("person"), new MonadicConcept[0], 10);
+            var g = new Generator(CommonNoun.Find("person"), new MonadicConceptLiteral[0], 10);
             for (int n = 0; n < 100; n++)
             {
                 var s = g.Solve();
@@ -42,7 +42,7 @@ namespace Tests
             Ontology.EraseConcepts();
             ParseAndExecute("people can love one person");
             var v = Verb.Find("loves");
-            var g = new Generator(CommonNoun.Find("person"), new MonadicConcept[0], 3);
+            var g = new Generator(CommonNoun.Find("person"), new MonadicConceptLiteral[0], 3);
             bool sawNonTotal = false;
 
             for (var n = 0; n < 300; n++)
@@ -64,7 +64,7 @@ namespace Tests
             Ontology.EraseConcepts();
             ParseAndExecute("people must love one person");
             var v = Verb.Find("loves");
-            var g = new Generator(CommonNoun.Find("person"), new MonadicConcept[0], 10);
+            var g = new Generator(CommonNoun.Find("person"), new MonadicConceptLiteral[0], 10);
 
             for (var n = 0; n < 100; n++)
             {
@@ -83,7 +83,7 @@ namespace Tests
             Ontology.EraseConcepts();
             ParseAndExecute("people can love each other");
             var v = Verb.Find("loves");
-            var g = new Generator(CommonNoun.Find("person"), new MonadicConcept[0], 10);
+            var g = new Generator(CommonNoun.Find("person"), new MonadicConceptLiteral[0], 10);
 
             foreach (var i1 in g.Individuals)
             foreach (var i2 in g.Individuals)

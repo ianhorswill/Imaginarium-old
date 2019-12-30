@@ -300,7 +300,7 @@ public class Driver : MonoBehaviour
                 AddList(", has properties", "and", common.Properties);
 
             if (common.ImpliedAdjectives.Count > 0)
-                AddList(", is always", "and", common.ImpliedAdjectives.Select(i => i.Adjective));
+                AddList(", is always", "and", common.ImpliedAdjectives.Select(i => i.Modifier.Concept));
 
             GUILayout.Label(Buffer.ToString(), OntologyStyle);
         }
