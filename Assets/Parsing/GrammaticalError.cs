@@ -25,10 +25,9 @@
 
 using System;
 
-public class GrammaticalError : Exception
+public class GrammaticalError : UserException
 {
-    public GrammaticalError(string message) : base(message) { }
-    public GrammaticalError(string problemDescription, params string[] tokens) 
-        : base($"{problemDescription} in \"{Tokenizer.Untokenize(tokens)}\"")
+    public GrammaticalError(string message) : base(message, message) { }
+    public GrammaticalError(string problemDescription, string rich) : base(problemDescription, rich)
     { }
 }

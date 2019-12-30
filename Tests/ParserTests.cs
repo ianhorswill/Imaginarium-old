@@ -51,6 +51,13 @@ namespace Tests
         }
 
         [TestMethod]
+        public void APListTest()
+        {
+            Ontology.EraseConcepts();
+            ParseAndExecute("Cats can be white, black, or ginger");
+        }
+
+        [TestMethod]
         public void RequiredAlternativeSetTest()
         {
             Ontology.EraseConcepts();

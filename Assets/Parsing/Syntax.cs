@@ -80,14 +80,24 @@ public partial class Syntax
 
     //private static bool ObjectNonSingular() => Object.Number == null || Object.Number == Number.Plural;
 
+    /// <summary>
+    /// Object is not marked plural.  If number is ambiguous, force it to singular.
+    /// </summary>
+    /// <returns></returns>
     private static bool ObjectSingular()
     {
         if (Object.Number == Number.Plural)
-            throw new GrammaticalError("Noun should be in singular form", Object.Text);
+            throw new GrammaticalError($"The noun '{Object.Text}' should be in singular form in this context",
+                $"The noun '<i>{Object.Text}<i>' should be in singular form in this context");
 
         Object.Number = Number.Singular;
         return true;
     }
+
+    /// <summary>
+    /// Object is syntactically singular, i.e. it starts with "a", "an", etc.
+    /// </summary>
+    private static bool ObjectExplicitlySingular() => Object.Number == Number.Singular;
 
     private static bool ObjectQuantifierAgree()
     {
@@ -102,7 +112,8 @@ public partial class Syntax
     private static bool SubjectUnmodified()
     {
         if (Subject.Modifiers.Count > 0)
-            throw new GrammaticalError("Subject noun cannot take adjectives", Subject.Text);
+            throw new GrammaticalError($"The noun '{Subject.Text}' cannot take adjectives in this context",
+                $"The noun '{Subject.Text}' cannot take adjectives as the subject of this sentence pattern");
         return true;
     }
 
@@ -113,7 +124,8 @@ public partial class Syntax
     private static bool ObjectUnmodified()
     {
         if (Object.Modifiers.Count > 0)
-            throw new GrammaticalError("Object noun cannot take adjectives", Subject.Text);
+            throw new GrammaticalError($"The noun '{Object.Text}' cannot take adjectives", 
+                $"The noun '<i>{Object.Text}</i>' cannot take any adjectives or other modifiers as the object of this sentence pattern.");
         return true;
     }
 
@@ -383,14 +395,14 @@ public partial class Syntax
     /// <summary>
     /// User-facing description of this form.
     /// </summary>
-    private string docString;
+    public string DocString;
 
     /// <summary>
     /// Adds the specified documentation string to the Syntax form.
     /// </summary>
     public Syntax Documentation(string doc)
     {
-        docString = doc;
+        DocString = doc;
         return this;
     }
 
@@ -412,8 +424,28 @@ public partial class Syntax
             }
 
             Buffer.Append("</b>\n");
-            Buffer.Append(docString??"");
-            Buffer.Append("\n\n");
+            Buffer.Append(DocString??"");
+            return Buffer.ToString();
+        }
+    }
+
+    public string SentencePatternDescription
+    {
+        get
+        {
+            Buffer.Length = 0;
+            var firstOne = true;
+            Buffer.Append("<b>");
+            foreach (var c in makeConstituents())
+            {
+                if (firstOne)
+                    firstOne = false;
+                else Buffer.Append(' ');
+
+                Buffer.Append(ConstituentName(c));
+            }
+
+            Buffer.Append("</b>");
             return Buffer.ToString();
         }
     }

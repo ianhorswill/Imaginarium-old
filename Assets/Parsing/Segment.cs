@@ -77,6 +77,9 @@ public class Segment
             {
                 Backup();
                 SetText(beginning);
+                if (start == end)
+                    // Empty segment
+                    goto giveUp;
                 return true;
             }
             else if (Syntax.ListConjunction(CurrentToken))
@@ -87,6 +90,7 @@ public class Segment
             else
                 SkipToken();
 
+        giveUp:
         ResetTo(beginning);
         return false;
     }
@@ -116,6 +120,11 @@ public class Segment
             SkipToEnd();
 
         SetText(beginning);
+        if (start == end)
+        {
+            ResetTo(beginning);
+            return false;
+        }
         return true;
     }
 

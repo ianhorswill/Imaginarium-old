@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
@@ -10,7 +9,6 @@ public class UIDriver : MonoBehaviour
 {
     public static Invention Invention;
     private string[] inventionDescriptions;
-    private readonly StringBuilder buffer = new StringBuilder();
     public InputField InputField;
     public Text OutputField;
     public ScrollRect OutputScrollRect;
@@ -35,6 +33,14 @@ public class UIDriver : MonoBehaviour
     {
         // Move keyboard focus to input
         SelectInput();
+    }
+
+    /// <summary>
+    /// Called when this UI mode is disabled.
+    /// </summary>
+    public void OnDisable()
+    {
+        StopAllCoroutines();
     }
 
     /// <summary>
@@ -135,10 +141,13 @@ public class UIDriver : MonoBehaviour
         if (!gameObject.activeSelf)
             return;
 
+        if (!UnityEngine.Input.GetKeyDown(KeyCode.Return))
+            return;
+
         LogFile.Separate();
         LogFile.Log("USER COMMAND");
         LogFile.Log("> "+Input);
-        Driver.CommandResponse = "";
+        Driver.ClearCommandBuffer();
 
         try
         {
@@ -148,42 +157,62 @@ public class UIDriver : MonoBehaviour
             {
                 Generator.Current.Rebuild();
                 ReSolve();
-                buffer.Length = 0;
                 foreach (var s in inventionDescriptions)
-                {
-                    buffer.AppendLine(s);
-                }
+                    Driver.AppendResponseLine(s);
 
                 MakeGraph();
 
-                Driver.CommandResponse = buffer.ToString();
             }
+
             Input = "";
-        }
-        catch (GrammaticalError ex)
-        {
-            Driver.CommandResponse = $"{ex.Message}\n";
-            var firstOne = true;
-            foreach (var r in Syntax.RulesMatchingKeywords(Parser.Input))
-            {
-                if (firstOne)
-                {
-                    Driver.CommandResponse += "Perhaps you meant one of these sentence patterns:\n\n";
-                    firstOne = false;
-                }
-                Driver.CommandResponse += $"{r.HelpDescription}";
-            }
-            LogFile.Log(ex.Message);
-            LogFile.Log(ex.StackTrace);
         }
         catch (Exception ex)
         {
-            Driver.CommandResponse = $"{ex.Message}\n";
+            var previousOutput = Driver.CommandResponse;
+            Driver.ClearCommandBuffer();
+            Driver.AppendResponseLine("<color=yellow>");
+            if (Parser.RuleTriggeringException == null)
+                Driver.AppendResponseLine($"Uh oh.  I got confused by '<i>{Parser.InputTriggeringException??"none"}</i>'");
+            else
+                Driver.AppendResponseLine(
+                    $"    Uh oh.  I got confused while matching the input '<i>{Parser.InputTriggeringException??"none"}</i>' to the pattern '{Parser.RuleTriggeringException.SentencePatternDescription}' ({Parser.RuleTriggeringException.DocString.Trim('.')}).");
+            Driver.AppendResponseLine($"    {FormatExceptionMessage(ex)}.");
+            Driver.AppendResponseLine("</color>");
+
+            if (ex is GrammaticalError && Parser.RuleTriggeringException == null)
+            {
+                var firstOne = true;
+                foreach (var r in Syntax.RulesMatchingKeywords(Parser.Input))
+                {
+                    if (firstOne)
+                    {
+                        Driver.AppendResponseLine("\n<b>    Perhaps you meant one of these sentence patterns:</b>\n");
+                        firstOne = false;
+                    }
+
+                    Driver.AppendResponseLine($"{r.HelpDescription}\n");
+                }
+            }
+            Driver.AppendResponseLine("");
+            Driver.AppendResponseLine(previousOutput);
+
             LogFile.Log(ex.Message);
             LogFile.Log(ex.StackTrace);
         }
 
         Output = Driver.CommandResponse;
+    }
+
+    private static string FormatExceptionMessage(Exception ex)
+    {
+        switch (ex)
+        {
+            case UserException e:
+                return e.RichText;
+
+            default:
+                return $"Sorry.  An internal error ({ex.GetType().Name}) occurred: {ex.Message}";
+        }
     }
 
     private void ReSolve()
@@ -254,6 +283,8 @@ public class UIDriver : MonoBehaviour
     private void MakeGraph()
     {
         RelationshipGraph.Clear();
+        if (Invention == null)
+            return;
         foreach (var i in Invention.Individuals)
             RelationshipGraph.AddNode(i, Invention.NameString(i));
         foreach (var relationship in Invention.Relationships)
@@ -261,8 +292,6 @@ public class UIDriver : MonoBehaviour
             var v = relationship.Item1;
             var f = relationship.Item2;
             var t = relationship.Item3;
-            var from = Invention.NameString(f);
-            var to = Invention.NameString(t);
             var verb = v.Text;
             RelationshipGraph.AddEdge(f, t, verb, VerbStyle(v));
         }

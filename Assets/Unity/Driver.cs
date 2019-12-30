@@ -36,11 +36,30 @@ public class Driver : MonoBehaviour
     public GUIStyle ErrorStyle;
     public GUIStyle OntologyStyle;
     private string command = "";
-    public static string CommandResponse = "";
+
     private int counter;
     private Invention invention;
     private string[] inventionDescriptions;
     private float textAreaFraction = 0.5f;
+
+    #region Command output
+    private static readonly StringBuilder CommandBuffer = new StringBuilder();
+
+    /// <summary>
+    /// Remove any pending output
+    /// </summary>
+    public static void ClearCommandBuffer()
+    {
+        CommandBuffer.Length = 0;
+    }
+
+    public static void AppendResponseLine(string s)
+    {
+        CommandBuffer.AppendLine(s);
+    }
+
+    public static string CommandResponse => CommandBuffer.ToString();
+    #endregion
 
     public void Start()
     {
@@ -167,7 +186,7 @@ public class Driver : MonoBehaviour
             if (invention == null)
             {
                 Graph.Create();  // Remove existing graph, if any
-                inventionDescriptions = new string[] { "Can't think of any - maybe there's a contradiction?"};
+                inventionDescriptions = new[] { "Can't think of any - maybe there's a contradiction?"};
             }
             else
             {
@@ -217,7 +236,7 @@ public class Driver : MonoBehaviour
         LogFile.Separate();
         LogFile.Log("USER COMMAND");
         LogFile.Log("> "+command);
-        CommandResponse = "";
+        AppendResponseLine("");
         try
         {
             Parser.UserCommand(command);
@@ -230,7 +249,7 @@ public class Driver : MonoBehaviour
         }
         catch (GrammaticalError ex)
         {
-            CommandResponse = ex.Message;
+            AppendResponseLine(ex.Message);
             LogFile.Log(ex.Message);
             LogFile.Log(ex.StackTrace);
         }

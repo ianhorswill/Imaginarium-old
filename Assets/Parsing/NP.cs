@@ -48,7 +48,8 @@ public class NP : ReferringExpression<Noun>
         {
             var n = Noun as CommonNoun;
             if (n == null)
-                throw new GrammaticalError("Not a common noun", Text);
+                throw new GrammaticalError($"{Text.Untokenize()} is not a common noun",
+                    $"I was expecting the term '<i>{Text.Untokenize()}</i>' to be a common noun (a kind of person, place, thing, etc.), but it isn't");
             return n;
         }
     }
@@ -235,9 +236,11 @@ public class NP : ReferringExpression<Noun>
         {
             var singular = noun.SingularForm.SameAs(text);
             if (singular && Number == Syntax.Number.Plural && !noun.SingularForm.SameAs(noun.PluralForm))
-                throw new GrammaticalError("Singular noun used without 'a' or 'an'", Text);
+                throw new GrammaticalError($"The singular noun '{Text}' was used without 'a' or 'an' before it", 
+                    $"The singular noun '<i>{Text}</i>' was used without 'a' or 'an' before it");
             if (!singular && Number == Syntax.Number.Singular)
-                throw new GrammaticalError("Plural noun used with 'a' or 'an'", Text);
+                throw new GrammaticalError($"The plural noun '{Text}' was used with 'a' or 'an'",
+                    $"The plural noun '<i>{Text}</i>' was used with 'a' or 'an' before it");
             return noun;
         }
 
@@ -248,6 +251,8 @@ public class NP : ReferringExpression<Noun>
         else
             // Note: this guarantees there is a singular form.
             noun.PluralForm = text;
+
+        Driver.AppendResponseLine($"Learned the new common noun <b><i>{noun.SingularForm.Untokenize()}</i></b>.");
 
         MaybeLoadDefinitions(noun);
 

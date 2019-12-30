@@ -45,6 +45,13 @@ public static class Parser
     }
 
     /// <summary>
+    /// Rule in which grammatical error was detected.
+    /// </summary>
+    public static Syntax RuleTriggeringException;
+
+    public static string InputTriggeringException;
+
+    /// <summary>
     /// Finds the matching Syntax rule for sentence and runs its associated action.
     /// </summary>
     /// <param name="sentence">User input (either an ontology statement or a command)</param>
@@ -52,15 +59,24 @@ public static class Parser
     public static bool ParseAndExecute(string sentence)
     {
         sentence = sentence.TrimEnd(' ', '.');
+        InputTriggeringException = sentence;
         // Load text
         Input.Clear();
         Input.AddRange(Tokenizer.Tokenize(sentence));
 
-        var rule = Syntax.AllRules.FirstOrDefault(r => r.Try());
+        RuleTriggeringException = null;
+        var rule = Syntax.AllRules.FirstOrDefault(r =>
+        {
+            RuleTriggeringException = r;
+            return r.Try();
+        });
+        RuleTriggeringException = null;
 
-        // Parse!
         if (rule == null)
-            throw new GrammaticalError("Unknown sentence form", sentence);
+            throw new GrammaticalError("Unknown sentence pattern", 
+                "This doesn't match any of the sentence patterns I know");
+
+        InputTriggeringException = null;
 
         return !rule.IsCommand;
     }

@@ -23,6 +23,8 @@
 // --------------------------------------------------------------------------------------------------------------------
 #endregion
 
+using System;
+
 /// <summary>
 /// A linguistic object that represents a logical predicate
 /// </summary>
@@ -30,4 +32,19 @@ public abstract class Concept : Referent
 {
     protected Concept(string[] name) : base(name)
     { }
+
+    public static string EnglishTypeName(Type t)
+    {
+        switch (t.Name)
+        {
+            case "CommonNoun":
+                return "noun";
+
+            case "ProperNoun":
+                return "proper noun";
+
+            default:
+                return t.Name.ToLower();
+        }
+    }
 }

@@ -41,6 +41,7 @@ public class Adjective : MonadicConcept
         Name = name;
         AllAdjectives[name] = this;
         Store(name, this);
+        Driver.AppendResponseLine($"Learned the adjective <b><i>{name.Untokenize()}</i></b>.");
     }
 
     /// <summary>

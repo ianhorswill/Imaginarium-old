@@ -120,6 +120,8 @@ public class VerbSegment : ReferringExpression<Verb>
             // Note: this guarantees there is a singular form.
             verb.PluralForm = text;
 
+        Driver.AppendResponseLine($"Learned new verb <b><i>{verb.StandardName.Untokenize()}</i></b>.");
+
         MaybeLoadDefinitions(verb);
 
         return verb;

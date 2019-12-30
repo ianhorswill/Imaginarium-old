@@ -34,6 +34,8 @@ public class ProperNoun : Noun
     {
         Name = name;
         Individual = Individual.Permanent(new MonadicConcept[0], Name);
+        Driver.AppendResponseLine($"Learned the new proper name <b><i>{Name.Untokenize()}</i></b>.");
+        AllNouns[Name] = this;
     }
 
     public override bool IsNamed(string[] tokens) => Name.SameAs(tokens);

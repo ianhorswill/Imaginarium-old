@@ -23,10 +23,10 @@
 // --------------------------------------------------------------------------------------------------------------------
 #endregion
 
+using System;
 using static Parser;
 using System.IO;
 using System.Linq;
-using System.Text;
 using CatSAT.NonBoolean.SMT.Float;
 using CatSAT.NonBoolean.SMT.MenuVariables;
 
@@ -47,10 +47,8 @@ public partial class Syntax
         new Syntax("help")
             .Action(() =>
             {
-                var b = new StringBuilder();
-                foreach (var r in AllRules) b.Append(r.HelpDescription);
-                
-                Driver.CommandResponse = b.ToString();
+                foreach (var r in AllRules) 
+                    Driver.AppendResponseLine(r.HelpDescription);
             })
             .Documentation("Prints this list of commands"),
 
@@ -70,7 +68,11 @@ public partial class Syntax
             .Documentation("Undoes the last change to the ontology."), 
 
         new Syntax("start", "over")
-            .Action( History.Clear )
+            .Action( () =>
+            {
+                History.Clear();
+                Driver.AppendResponseLine("Knowledgebase erased.  I don't know anything.");
+            })
             .Command()
             .Documentation("Tells the system to forget everything you've told it about the world."), 
         
@@ -101,7 +103,7 @@ public partial class Syntax
                 verb.SubjectKind = Subject.CommonNoun;
                 verb.ObjectKind = Object.CommonNoun;
                 verb.IsFunction = !Quantifier.IsPlural;
-                // "Cats can love other cats" means antireflexive, whereas "cats can love many cats" doesn't.
+                // "Cats can love other cats" means anti-reflexive, whereas "cats can love many cats" doesn't.
                 verb.IsAntiReflexive = Quantifier.IsOther;
                 verb.IsTotal = CanMust.Match[0] == "must";
             })
@@ -110,6 +112,7 @@ public partial class Syntax
 
         new Syntax(() => new object[] { Verb, "is", RareCommon })
             .Action(() => Verb.Verb.Density = RareCommon.Value)
+            // ReSharper disable once StringLiteralTypo
             .Documentation("States that Verb'ing is rare/common."), 
 
         new Syntax(() => new object[] { Verb, "and", Verb2, "are", "mutually", "exclusive" })
@@ -185,7 +188,8 @@ public partial class Syntax
                 {
                     var c = noun as CommonNoun;
                     if (c == null)
-                        throw new GrammaticalError("This noun is a proper noun (a name of a specific thing), but I need a common noun (a kind of thing) here", noun.StandardName);
+                        throw new GrammaticalError($"The noun '{noun.StandardName}' is a proper noun (a name of a specific thing), but I need a common noun (a kind of thing) here",
+                            $"The noun '<i>{noun.StandardName}</i>' is a proper noun (a name of a specific thing), but I need a common noun (a kind of thing) here");
                     c.DeclareSuperclass(Object.CommonNoun);
                     foreach (var mod in Object.Modifiers)
                         c.ImpliedAdjectives.Add(new CommonNoun.ConditionalAdjective(null, mod));
@@ -235,8 +239,8 @@ public partial class Syntax
                 var proper = (ProperNoun) Subject.Noun;
                 proper.Kinds.Add(Object.CommonNoun);
             })
-            .Check(SubjectProperNoun, ObjectCommonNoun)
-            .Documentation("States that person or thing Subject is of the specified type."),
+            .Check(SubjectProperNoun, ObjectCommonNoun, ObjectExplicitlySingular)
+            .Documentation("States that person or thing Subject is of the type Object."),
 
         //new Syntax(() => new object[] { Subject, Is, Object })
         //    .Action(() =>
@@ -248,7 +252,21 @@ public partial class Syntax
         new Syntax(() => new object[] { Subject, Is, PredicateAP })
             .Action(() =>
             {
-                Subject.CommonNoun.ImpliedAdjectives.Add(new CommonNoun.ConditionalAdjective(Subject.Modifiers.ToArray(), PredicateAP.Adjective));
+                switch (Subject.Noun)
+                {
+                    case CommonNoun c:
+                        c.ImpliedAdjectives.Add(new CommonNoun.ConditionalAdjective(Subject.Modifiers.ToArray(),
+                            PredicateAP.Adjective));
+                        break;
+
+                    case ProperNoun n:
+                        n.Individual.Adjectives.Add(PredicateAP.Adjective);
+                        break;
+
+                    default:
+                        throw new Exception(
+                            $"Unknown kind of noun ({Subject.Noun.GetType().Name}: '{Subject.Noun.StandardName.Untokenize()}'");
+                }
             })
             .Check(SubjectVerbAgree)
             .Documentation("Declares that Subjects are always Adjective.  For example, 'cats are fuzzy' declares that all cats are also fuzzy."),

@@ -49,7 +49,8 @@ public static class Inflection
         foreach (var i in Inflections)
             if (i.MatchSingularForPlural(singular))
                 return i.InflectSingularForPlural(singular);
-        throw new GrammaticalError(singular+" appears to be a singular noun, but I can't find a plural inflection for it");
+        throw new GrammaticalError($"'{singular}' appears to be a singular noun, but I can't find a plural inflection for it",
+            $"In this context, the term '<i>{singular}</i>' appears to be a singular noun, but I can't find a plural inflection for it");
     }
 
     public static string SingularOfNoun(string plural)
@@ -59,7 +60,8 @@ public static class Inflection
         foreach (var i in Inflections)
             if (i.MatchPluralForSingular(plural))
                 return i.InflectPluralForSingular(plural);
-        throw new GrammaticalError(plural+" appears to be a plural noun, but I can't find a singular inflection for it");
+        throw new GrammaticalError($"'{plural}' appears to be a plural noun, but I can't find a singular inflection for it",
+            $"In this context, the term '<i>{plural}</i>' appears to be a plural noun, but I can't find a singular inflection for it");
     }
 
     public static string[] SingularOfNoun(string[] plural)

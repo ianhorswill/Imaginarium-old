@@ -165,7 +165,13 @@ public class ReferringExpressionList<TE, TR> : Segment
             expressions.Add(item);
             if (lastOne)
                 done = true;
-            else if (CurrentToken == "and")
+            if (EndOfInput)
+                break;
+            if (CurrentToken == ",")
+                SkipToken();
+            if (EndOfInput)
+                break;
+            if (CurrentToken == "and")
             {
                 lastOne = true;
                 IsAnd = true;
@@ -175,23 +181,6 @@ public class ReferringExpressionList<TE, TR> : Segment
                 lastOne = true;
                 IsAnd = false;
                 SkipToken();
-            }
-            else
-            {
-                if (EndOfInput)
-                    break;
-                if (CurrentToken == "and")
-                {
-                    lastOne = true;
-                    IsAnd = true;
-                    SkipToken();
-                } else if (CurrentToken == "or")
-                {
-                    lastOne = true;
-                    IsAnd = false;
-                    SkipToken();
-                } else 
-                    SkipToken();
             }
         }
 

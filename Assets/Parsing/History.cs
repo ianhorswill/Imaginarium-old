@@ -54,7 +54,10 @@ public static class History
             var end = Declarations.Count - 1;
             undone = Declarations[end];
             Declarations.RemoveAt(end);
+            Driver.AppendResponseLine($"Undid {undone}");
         }
+        else
+            Driver.AppendResponseLine("No declarations to undo.");
 
         Replay();
         Generator.Current = null;
