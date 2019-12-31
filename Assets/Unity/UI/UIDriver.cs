@@ -205,14 +205,22 @@ public class UIDriver : MonoBehaviour
 
     private static string FormatExceptionMessage(Exception ex)
     {
+        string message;
         switch (ex)
         {
             case UserException e:
-                return e.RichText;
+                message = e.RichText;
+                break;
 
             default:
-                return $"Sorry.  An internal error ({ex.GetType().Name}) occurred: {ex.Message}";
+                message = $"Sorry.  An internal error ({ex.GetType().Name}) occurred: {ex.Message}";
+                break;
         }
+
+        if (ex.InnerException != null) 
+            message += "\nInner exception:\n" + FormatExceptionMessage(ex.InnerException);
+
+        return message;
     }
 
     private void ReSolve()

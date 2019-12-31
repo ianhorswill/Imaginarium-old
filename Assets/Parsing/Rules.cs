@@ -52,6 +52,14 @@ public partial class Syntax
             })
             .Documentation("Prints this list of commands"),
 
+        new Syntax("quit")
+            .Action(UnityEngine.Application.Quit)
+            .Documentation("Ends the application"),
+
+        new Syntax("exit")
+            .Action(UnityEngine.Application.Quit)
+            .Documentation("Ends the application"),
+
         new Syntax(() => new object[] { "imagine", Object })
             .Action(() =>
             {
@@ -71,7 +79,7 @@ public partial class Syntax
             .Action( () =>
             {
                 History.Clear();
-                Driver.AppendResponseLine("Knowledgebase erased.  I don't know anything.");
+                Driver.AppendResponseLine("Knowledge-base erased.  I don't know anything.");
             })
             .Command()
             .Documentation("Tells the system to forget everything you've told it about the world."), 

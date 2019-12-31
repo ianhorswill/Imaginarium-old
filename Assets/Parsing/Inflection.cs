@@ -24,7 +24,7 @@
 #endregion
 
 using System.Collections.Generic;
-using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using File = System.IO.File;
 
@@ -109,7 +109,7 @@ public static class Inflection
     private static readonly char[] Vowels = {'a', 'e', 'i', 'o', 'u'};
     private static bool EndsWithConsonant(string s, out char c)
     {
-        Debug.Assert(s.Length > 0);
+        System.Diagnostics.Debug.Assert(s.Length > 0);
         c = s[s.Length - 1];
         return !Vowels.Contains(c);
     }
