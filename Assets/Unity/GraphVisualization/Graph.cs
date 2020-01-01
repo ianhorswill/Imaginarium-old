@@ -23,7 +23,6 @@
 // --------------------------------------------------------------------------------------------------------------------
 #endregion
 
-using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
@@ -166,15 +165,15 @@ namespace GraphVisualization
             RepopulateMesh();
         }
 
-        public void GenerateFrom(IEnumerable keys, NodeFormatter format, EdgeGenerator edgeGenerator)
+        public void GenerateFrom<TNode>(IEnumerable<TNode> keys, NodeFormatter<TNode> format, EdgeGenerator<TNode> edgeGenerator)
         {
-            void MakeNode(object k)
+            void MakeNode(TNode k)
             {
                 var (label, style) = format(k);
                 AddNode(k, label, style);
             }
 
-            void WalkGeneration(object k)
+            void WalkGeneration(TNode k)
             { 
                 // Add node
                 MakeNode(k);
@@ -182,10 +181,10 @@ namespace GraphVisualization
                 // Add edges and recurse
                 foreach (var (f, t, l, s) in edgeGenerator(k))
                 {
-                    bool fWalked = nodeDict.ContainsKey(f);
+                    var fWalked = nodeDict.ContainsKey(f);
                     if (!fWalked)
                         MakeNode(f);
-                    bool tWalked = nodeDict.ContainsKey(t);
+                    var tWalked = nodeDict.ContainsKey(t);
                     if (!tWalked)
                         MakeNode(t);
                     AddEdge(f, t, l, s);
@@ -206,13 +205,18 @@ namespace GraphVisualization
         /// </summary>
         /// <param name="node">Node to generate edges for.</param>
         /// <returns>Enumerated stream of edge information: from-node, to-node, label, and style.</returns>
-        public delegate IEnumerable<(object, object, string, EdgeStyle)> EdgeGenerator(object node);
+        public delegate IEnumerable<(TNode start, TNode end, string label, EdgeStyle style)> EdgeGenerator<TNode>(TNode node);
         /// <summary>
         /// A procedure to be used by GenerateFrom() to generate labels and styles for nodes
         /// </summary>
         /// <param name="o">Node</param>
         /// <returns>Label and style for the node</returns>
-        public delegate (string, NodeStyle) NodeFormatter(object o);
+        public delegate (string label, NodeStyle style) NodeFormatter<in TNode>(TNode o);
+
+        public GraphBuilder<T> GetGraphBuilder<T>()
+        {
+            return new GraphBuilder<T>(this);
+        }
 
         /// <summary>
         /// Add a single node to the graph.
@@ -360,7 +364,7 @@ namespace GraphVisualization
         }
 
         /// <summary>
-        /// Dim/undim nodes based on selected node.
+        /// Dim/un-dim nodes based on selected node.
         /// </summary>
         private void SelectionChanged()
         {
