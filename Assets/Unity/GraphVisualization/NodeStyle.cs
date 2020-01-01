@@ -34,5 +34,11 @@ namespace GraphVisualization
         /// </summary>
         [Tooltip("Font style (e.g. italic) in which to render the node label.")]
         public FontStyle FontStyle = FontStyle.Normal;
+
+        /// <summary>
+        /// Prefab to use for making nodes
+        /// </summary>
+        [Tooltip("Prefab to instantiate to make a new node for this graph.  If None, use the default listed in the Graph.")]
+        public GameObject Prefab;
     }
 }

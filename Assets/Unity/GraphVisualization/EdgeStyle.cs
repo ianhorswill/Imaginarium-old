@@ -30,6 +30,13 @@ namespace GraphVisualization
         /// </summary>
         [Tooltip("If true, the edge will be drawn as an arrow, otherwise a plain line.")]
         public bool IsDirected = true;
+
+        /// <summary>
+        /// Whether the Graph should draw this edge as a line or arrow.
+        /// If false, some other component in the edge prefab should be responsible for drawing it.
+        /// </summary>
+        [Tooltip("Whether the Graph should draw this edge as a line or arrow.  If false, some component in the edge prefab should do the rendering.")]
+        public bool DrawEdge = true;
         /// <summary>
         /// Length of the arrowhead, if this is a directed edge
         /// </summary>
@@ -60,6 +67,13 @@ namespace GraphVisualization
         /// </summary>
         [Tooltip("FontStyle (e.g. italic) in which to render the label.")]
         public FontStyle FontStyle = FontStyle.Normal;
+
+        /// <summary>
+        /// Prefab to use for making edges
+        /// </summary>
+        [Tooltip("Prefab to instantiate to make a new edge in this style, if different from the default in Graph.")]
+        public GameObject Prefab;
+
         
         /// <summary>
         /// Copy the style

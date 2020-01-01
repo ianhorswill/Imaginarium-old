@@ -33,7 +33,7 @@ namespace GraphVisualization
     /// Component that drives individual edges in a Graph.
     /// These are created by Graph.AddEdge().  Do not instantiate one yourself.
     /// </summary>
-    public class GraphEdge : UIBehaviour
+    public class GraphEdge : UIBehaviour, IEdgeDriver
     {
         public GraphNode StartNode;
         public GraphNode EndNode;
@@ -45,19 +45,23 @@ namespace GraphVisualization
         /// <summary>
         /// Called by Graph.AddEdge after object creation.
         /// </summary>
-        public void Initialize(GraphNode startNode, GraphNode endNode, string label, EdgeStyle style)
+        public void Initialize(Graph g, GraphNode startNode, GraphNode endNode, string label, EdgeStyle style)
         {
             this.StartNode = startNode;
             this.EndNode = endNode;
             this.Label = label;
             this.Style = style;
             text = GetComponent<Text>();
-            text.text = label;
-            if (style.Font != null)
-                text.font = style.Font;
-            if (style.FontSize != 0)
-                text.fontSize = style.FontSize;
-            text.fontStyle = style.FontStyle;
+            if (text != null)
+            {
+                text.text = label;
+                if (style.Font != null)
+                    text.font = style.Font;
+                if (style.FontSize != 0)
+                    text.fontSize = style.FontSize;
+                text.fontStyle = style.FontStyle;
+            }
+
             rectTransform = GetComponent<RectTransform>();
             UpdatePosition();
         }
@@ -87,14 +91,15 @@ namespace GraphVisualization
         /// Called to adjust color of edge label when selected node in the graph changes.
         /// When there is a selected node, edges not adjacent to it are greyed out.
         /// </summary>
-        public void Recolor(Graph g)
+        public void SelectionChanged(Graph g, GraphNode selectedNode)
         {
-            text.color =
-                (g.SelectedNode == null || StartNode == g.SelectedNode || EndNode == g.SelectedNode
-                    ? 1
-                    : g.GreyOutFactor)
-                * Style.Color
-                ;
+            if (text != null)
+                text.color =
+                    (selectedNode == null || StartNode == selectedNode || selectedNode
+                        ? 1
+                        : g.GreyOutFactor)
+                    * Style.Color
+                    ;
         }
     }
 }

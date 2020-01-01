@@ -33,7 +33,7 @@ namespace GraphVisualization
     /// Component that drives individual nodes in a Graph visualization.
     /// These are created by Graph.AddNode().  Do not instantiate one yourself.
     /// </summary>
-    public class GraphNode : UIBehaviour, IPointerEnterHandler, IPointerExitHandler, IDragHandler, IBeginDragHandler, IEndDragHandler
+    public class GraphNode : UIBehaviour, IPointerEnterHandler, IPointerExitHandler, IDragHandler, IBeginDragHandler, IEndDragHandler, INodeDriver
     {
         /// <summary>
         /// The client-side object associated with this node.
@@ -73,12 +73,16 @@ namespace GraphVisualization
             Label = label;
             Style = style;
             labelMesh = GetComponent<Text>();
-            labelMesh.text = label;
-            labelMesh.color = style.Color;
-            labelMesh.fontSize = style.FontSize;
-            if (style.Font != null)
-                labelMesh.font = style.Font;
-            labelMesh.fontStyle = style.FontStyle;
+            if (labelMesh != null)
+            {
+                labelMesh.text = label;
+                labelMesh.color = style.Color;
+                labelMesh.fontSize = style.FontSize;
+                if (style.Font != null)
+                    labelMesh.font = style.Font;
+                labelMesh.fontStyle = style.FontStyle;
+            }
+
             rectTransform = GetComponent<RectTransform>();
             rectTransform.localPosition = PreviousPosition = position;
         }
@@ -95,9 +99,10 @@ namespace GraphVisualization
         /// Update color of node text, based on whether it has been selected by the user.
         /// Called when node selected by mouse changes
         /// </summary>
-        public void Recolor()
+        public void SelectionChanged(Graph g, GraphNode selected)
         {
-            labelMesh.color = (Foreground ? 1 : graph.GreyOutFactor) * Style.Color;
+            if (labelMesh != null)
+                labelMesh.color = (Foreground ? 1 : graph.GreyOutFactor) * Style.Color;
         }
 
         /// <summary>

@@ -69,12 +69,12 @@ namespace GraphVisualization
         /// <summary>
         /// Prefab to use for making nodes
         /// </summary>
-        [Tooltip("Prefab to instantiate to make a new node for this graph.  Prefab should include a Text field.")]
+        [Tooltip("Prefab to instantiate to make a new node for this graph.")]
         public GameObject NodePrefab;
         /// <summary>
         /// Prefab to use for making edges
         /// </summary>
-        [Tooltip("Prefab to instantiate to make a new edge for this graph.  Prefab should include a Text field.")]
+        [Tooltip("Prefab to instantiate to make a new edge for this graph.")]
         public GameObject EdgePrefab;
         
         /// <summary>
@@ -120,9 +120,11 @@ namespace GraphVisualization
         /// All GraphNode objects in this Graph, one per node/key
         /// </summary>
         private readonly List<GraphNode> nodes = new List<GraphNode>();
+        private readonly List<INodeDriver> nodeDrivers = new List<INodeDriver>();
         /// <summary>
         /// All GraphEdge objects in this Graph, one per graph edge
         /// </summary>
+        private readonly List<IEdgeDriver> edgeDrivers = new List<IEdgeDriver>();
         private readonly List<GraphEdge> edges = new List<GraphEdge>();
 
         /// <summary>
@@ -151,7 +153,7 @@ namespace GraphVisualization
         public void Clear()
         {
             nodes.Clear();
-            edges.Clear();
+            edgeDrivers.Clear();
             nodeDict.Clear();
             adjacency.Clear();
 
@@ -226,13 +228,17 @@ namespace GraphVisualization
                     label = node.ToString();
                 if (style == null)
                     style = NodeStyles[0];
-                var go = Instantiate(NodePrefab, transform);
+                var go = Instantiate(style.Prefab != null?style.Prefab:NodePrefab, transform);
                 go.name = label;
                 var rect = rectTransform.rect;
-                var internalNode = go.GetComponent<GraphNode>();
                 var position = new Vector2(Random.Range(rect.xMin, rect.xMax), Random.Range(rect.yMin, rect.yMax));
-                internalNode.Initialize(this, node, label, style, position);
+                var internalNode = go.GetComponent<GraphNode>();
                 nodes.Add(internalNode);
+                foreach (var driver in go.GetComponents<INodeDriver>())
+                {
+                    driver.Initialize(this, node, label, style, position);
+                    nodeDrivers.Add(driver);
+                }
                 nodeDict[node] = internalNode;
             }
         }
@@ -255,11 +261,14 @@ namespace GraphVisualization
                 label = "";
             if (style == null)
                 style = EdgeStyleNamed(label)??EdgeStyles[0];
-            var go = Instantiate(EdgePrefab, transform);
+            var go = Instantiate(style.Prefab != null?style.Prefab:EdgePrefab, transform);
             go.name = label;
-            var edge = go.GetComponent<GraphEdge>();
-            edge.Initialize(startNode, endNode, label, style);
-            edges.Add(edge);
+            edges.Add(go.GetComponent<GraphEdge>());
+            foreach (var driver in go.GetComponents<IEdgeDriver>())
+            {
+                driver.Initialize(this, startNode, endNode, label, style);
+                edgeDrivers.Add(driver);
+            }
 
             adjacency.Add((startNode, endNode));
             adjacency.Add((endNode, startNode));
@@ -282,7 +291,7 @@ namespace GraphVisualization
         {
             if (selectionChanged)
             {
-                Recolor();
+                SelectionChanged();
                 selectionChanged = false;
             }
             RepopulateMesh();
@@ -353,12 +362,12 @@ namespace GraphVisualization
         /// <summary>
         /// Dim/undim nodes based on selected node.
         /// </summary>
-        private void Recolor()
+        private void SelectionChanged()
         {
-            foreach (var n in nodes)
-                n.Recolor();
-            foreach (var e in edges)
-                e.Recolor(this);
+            foreach (var n in nodeDrivers)
+                n.SelectionChanged(this, SelectedNode);
+            foreach (var e in edgeDrivers)
+                e.SelectionChanged(this, SelectedNode);
         }
         #endregion
         
