@@ -11,7 +11,7 @@ public class OntologyVisualizer : MonoBehaviour, IGraphGenerator
         var adjectiveStyle = g.NodeStyleNamed("Adjective");
         var verbStyle = g.NodeStyleNamed("Verb");
 
-        IEnumerable<(object, object, string, EdgeStyle)> Edges(object o)
+        IEnumerable<(object from, object to, string label, EdgeStyle style)> Edges(object o)
         {
             switch (o)
             {
@@ -54,7 +54,7 @@ public class OntologyVisualizer : MonoBehaviour, IGraphGenerator
             }
         }
 
-        (string, NodeStyle) NodeLabel(object node)
+        (string label, NodeStyle style) NodeLabel(object node)
         {
             switch (node)
             {
