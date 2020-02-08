@@ -437,10 +437,23 @@ public static class Parser
     #endregion
 
     #region Definition files
+
     /// <summary>
     /// Directory holding definitions files and item lists.
     /// </summary>
-    public static string DefinitionsDirectory;
+    public static string DefinitionsDirectory
+    {
+        get => _definitionsDirectory;
+        set
+        {
+            _definitionsDirectory = value;
+            // Throw away our state when we change projects
+            Ontology.EraseConcepts();
+            History.Clear();
+        }
+    }
+
+    private static string _definitionsDirectory;
 
     /// <summary>
     /// Returns full path for library definitions for the specified noun.

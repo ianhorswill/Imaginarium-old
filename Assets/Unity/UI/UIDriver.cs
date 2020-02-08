@@ -14,7 +14,7 @@ public class UIDriver : MonoBehaviour
     public ScrollRect OutputScrollRect;
     public Scrollbar OutputVerticalScroll;
     public ContentSizeFitter OutputFitter;
-    public GraphVisualization.Graph RelationshipGraph;
+    public Graph RelationshipGraph;
 
     /// <summary>
     /// Called at startup.
@@ -22,7 +22,6 @@ public class UIDriver : MonoBehaviour
     /// </summary>
     public void Start()
     {
-        Parser.DefinitionsDirectory = Application.dataPath + "/Definitions";
         SelectInput();
     }
 
@@ -137,7 +136,7 @@ public class UIDriver : MonoBehaviour
     {
         // Not sure how it is this can get called from SetActive,
         // but it turns out that it can and that breaks the attempt to launch
-        // the focus coroutine.
+        // the focus co-routine.
         if (!gameObject.activeSelf)
             return;
 
@@ -161,7 +160,6 @@ public class UIDriver : MonoBehaviour
                     Driver.AppendResponseLine(s);
 
                 MakeGraph();
-
             }
 
             Input = "";
@@ -171,11 +169,9 @@ public class UIDriver : MonoBehaviour
             var previousOutput = Driver.CommandResponse;
             Driver.ClearCommandBuffer();
             Driver.AppendResponseLine("<color=yellow>");
-            if (Parser.RuleTriggeringException == null)
-                Driver.AppendResponseLine($"Uh oh.  I got confused by '<i>{Parser.InputTriggeringException??"none"}</i>'");
-            else
-                Driver.AppendResponseLine(
-                    $"    Uh oh.  I got confused while matching the input '<i>{Parser.InputTriggeringException??"none"}</i>' to the pattern '{Parser.RuleTriggeringException.SentencePatternDescription}' ({Parser.RuleTriggeringException.DocString.Trim('.')}).");
+            Driver.AppendResponseLine(Parser.RuleTriggeringException == null
+                ? $"Uh oh.  I got confused by '<i>{Parser.InputTriggeringException ?? "none"}</i>'"
+                : $"    Uh oh.  I got confused while matching the input '<i>{Parser.InputTriggeringException ?? "none"}</i>' to the pattern '{Parser.RuleTriggeringException.SentencePatternDescription}' ({Parser.RuleTriggeringException.DocString.Trim('.')}).");
             Driver.AppendResponseLine($"    {FormatExceptionMessage(ex)}.");
             Driver.AppendResponseLine("</color>");
 

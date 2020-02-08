@@ -152,6 +152,7 @@ namespace GraphVisualization
         public void Clear()
         {
             nodes.Clear();
+            edges.Clear();
             edgeDrivers.Clear();
             nodeDict.Clear();
             adjacency.Clear();
