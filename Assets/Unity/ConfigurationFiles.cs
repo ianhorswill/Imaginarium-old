@@ -32,6 +32,10 @@ using UnityEngine;
 /// </summary>
 public static class ConfigurationFiles
 {
+    public static readonly string ProjectsDirectory = Path.Combine(Application.dataPath, "Projects");
+
+    public static string ProjectPath(string projectName) => Path.Combine(ProjectsDirectory, projectName);
+
     // This has to be outside the ApplicationHome method, or SecurityException occurs before the try.
     private static string UnityPath => Application.dataPath;
 

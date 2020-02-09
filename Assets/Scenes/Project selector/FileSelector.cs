@@ -10,11 +10,29 @@ public class FileSelector : MonoBehaviour
     [Tooltip("Scene file to switch to after project is selected")]
     public string NextScene;
 
+    public TMPro.TextMeshProUGUI NewProjectNameField;
+
+    private string NewProjectName
+    {
+        get => NewProjectNameField.text;
+        set
+        {
+            NewProjectNameField.text = value;
+            // If you only set it once, Unity will set the text field to a zero-width space (unicode 8203)
+            // and nothing else.  Seriously.  Completely reproducible.
+            NewProjectNameField.text = value;
+        }
+    }
+
+    public string NewProjectNamePrompt = "Name for new generator";
+    public string NewProjectNameProd = "Enter a name here first";
+
     // Start is called before the first frame update
     // ReSharper disable once UnusedMember.Local
     void Start()
     {
-        Populate(Path.Combine(Application.dataPath, "Projects"));
+        Populate(ConfigurationFiles.ProjectsDirectory);
+        NewProjectName = NewProjectNamePrompt;
     }
 
     void Populate(string parentPath)
@@ -42,5 +60,18 @@ public class FileSelector : MonoBehaviour
     private void LeaveScene()
     {
         SceneManager.LoadSceneAsync(NextScene);
+    }
+
+    public void CreateProject()
+    {
+        var pName = NewProjectName.Trim();
+        if (pName == NewProjectNamePrompt || pName == "")
+            NewProjectName = NewProjectNameProd;
+        else if (pName != NewProjectNameProd)
+        {
+            var path = ConfigurationFiles.ProjectPath(pName);
+            Directory.CreateDirectory(path);
+            Select(path);
+        }
     }
 }
