@@ -47,8 +47,7 @@ public class FileSelector : MonoBehaviour
 
     public void OnGUI()
     {
-        if (Event.current.isKey && Event.current.keyCode == KeyCode.Escape)
-            LeaveScene();
+        Scenes.HandleSceneKeys();
     }
 
     private void Select(string dir)
@@ -59,7 +58,7 @@ public class FileSelector : MonoBehaviour
 
     private void LeaveScene()
     {
-        SceneManager.LoadSceneAsync(NextScene);
+        Scenes.SwitchToRepl();
     }
 
     public void CreateProject()

@@ -115,6 +115,8 @@ public class UIDriver : MonoBehaviour
     // ReSharper disable once UnusedMember.Local
     private void OnGUI()
     {
+        Scenes.HandleSceneKeys(Scenes.Menu);
+
         var e = Event.current;
 
         if (e.type == EventType.KeyDown)
