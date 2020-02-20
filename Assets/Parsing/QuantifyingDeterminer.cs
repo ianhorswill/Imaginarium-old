@@ -50,6 +50,7 @@ public class QuantifyingDeterminer : ClosedClassSegment
     private static readonly string[] PluralQuantifiers =
     {
         "many",
+        "some",
         "other"
     };
 
@@ -70,19 +71,41 @@ public class QuantifyingDeterminer : ClosedClassSegment
     };
 
     public bool IsPlural => PluralQuantifiers.Contains(Quantifier);
-    public bool IsOther => Quantifier == "other";
+    public bool IsOther;
     public bool IsInvalid => InvalidQuantifiers.Contains(Quantifier);
 
     public override bool ScanTo(Func<string, bool> endPredicate)
     {
         Quantifier = CurrentToken;
-        return Match(IsQuantifier) && !EndOfInput && endPredicate(CurrentToken);
+        if (!Match(IsQuantifier))
+            return false;
+
+        IsOther = Quantifier == "other";
+
+        if (!IsOther && !EndOfInput && CurrentToken == "other")
+        {
+            IsOther = true;
+            SkipToken();
+        }
+
+        return !EndOfInput && endPredicate(CurrentToken);
     }
 
     public override bool ScanTo(string token)
     {
         Quantifier = CurrentToken;
-        return Match(IsQuantifier) && !EndOfInput && CurrentToken == token;
+        if (!Match(IsQuantifier))
+            return false;
+
+        IsOther = Quantifier == "other";
+
+        if (!IsOther && !EndOfInput && CurrentToken == "other")
+        {
+            IsOther = true;
+            SkipToken();
+        }
+
+        return !EndOfInput && CurrentToken == token;
     }
 
     public override bool ScanToEnd(bool failOnConjunction = true)
