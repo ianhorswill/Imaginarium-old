@@ -1,11 +1,14 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 
 public class MainMenu : MonoBehaviour
 {
     public TMPro.TextMeshProUGUI LogButtonText;
 
-    public void Start()
+    public IEnumerator Start()
     {
+        while (LogButtonText == null)
+            yield return null;
         UpdateToggleButton();
     }
 
