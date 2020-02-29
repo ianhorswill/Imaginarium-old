@@ -34,7 +34,7 @@ public abstract class Referent
 {
     protected Referent(string[] name)
     {
-        Ontology.EnsureUndefined(name, GetType());
+        Ontology.EnsureUndefinedOrDefinedAsType(name, GetType());
     }
 
     /// <summary>

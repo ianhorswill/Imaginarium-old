@@ -24,7 +24,7 @@
 #endregion
 
 using System.Collections.Generic;
-using System.IO;
+using System.Data;
 using System.Linq;
 using File = System.IO.File;
 
@@ -86,7 +86,10 @@ public static class Inflection
         return SingularOfNoun(singular);
     }
 
-    public static IEnumerable<string[]> GerundOfVerb(string[] plural)
+    public static bool IsGerund(string[] verbal) =>
+        ContainsCopula(verbal) || (verbal.Length == 1 && verbal[0].EndsWith("ing"));
+
+    public static IEnumerable<string[]> GerundsOfVerb(string[] plural)
     {
         if (ContainsCopula(plural))
             yield return ReplaceCopula(plural, "being");
@@ -106,6 +109,28 @@ public static class Inflection
         }
     }
 
+    public static string[] BaseFormOfGerund(string[] gerund)
+    {
+        if (gerund.Contains("being"))
+        {
+            return gerund.Replace("being", "be").ToArray();
+        }
+        if (gerund.Length == 1)
+        {
+            var s = gerund[0];
+            // Cut trailing -ing
+            if (s.EndsWith("ing"))
+                s = s.Substring(0, s.Length - 3);
+            var len = s.Length;
+            // Removed doubled consonant
+            if (len > 2 && s[len - 1] == s[len - 2])
+                s = s.Substring(0, len - 1);
+            return new [] { s };
+        }
+
+        throw new SyntaxErrorException($"Can't determine the stem verb of gerund {gerund.Untokenize()}");
+    }
+
     private static readonly char[] Vowels = {'a', 'e', 'i', 'o', 'u'};
     private static bool EndsWithConsonant(string s, out char c)
     {
@@ -118,7 +143,10 @@ public static class Inflection
     private static readonly string[] CopularForms = {"is", "are", "being", "be" };
     private static bool ContainsCopula(string[] tokens) => tokens.Any(word => CopularForms.Contains(word));
 
-    private static string[] ReplaceCopula(string[] tokens, string replacement) => tokens.Select(word => CopularForms.Contains(word) ? replacement : word).ToArray();
+    public static string[] ReplaceCopula(string[] tokens, string replacement) => tokens.Select(word => CopularForms.Contains(word) ? replacement : word).ToArray();
+
+    private static IEnumerable<T> Replace<T>(this IEnumerable<T> seq, T from, T to) =>
+        seq.Select(e => e.Equals(from) ? to : e);
 
     private static readonly Dictionary<string, string> IrregularPlurals = new Dictionary<string, string>();
 

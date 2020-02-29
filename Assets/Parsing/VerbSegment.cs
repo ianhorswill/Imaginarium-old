@@ -38,6 +38,14 @@ public class VerbSegment : ReferringExpression<Verb>
     /// </summary>
     public Verb Verb => Concept;
 
+    public VerbConjugation Conjugation;
+
+    public override void Reset()
+    {
+        base.Reset();
+        Conjugation = VerbConjugation.BaseForm;
+    }
+
     private string DebugText => Text.Untokenize();
 
     #region Scanning
@@ -114,11 +122,24 @@ public class VerbSegment : ReferringExpression<Verb>
 
         var verb = new Verb();
 
-        if (Syntax.VerbNumber == Syntax.Number.Singular)
-            verb.SingularForm = text;
-        else
-            // Note: this guarantees there is a singular form.
-            verb.PluralForm = text;
+        switch (Conjugation)
+        {
+            case VerbConjugation.BaseForm:
+                verb.BaseForm = text;
+                break;
+
+            case VerbConjugation.Gerund:
+                verb.GerundForm = text;
+                break;
+
+            case VerbConjugation.ThirdPerson:
+                if (Syntax.VerbNumber == Syntax.Number.Singular)
+                    verb.SingularForm = text;
+                else
+                    // Note: this guarantees there is a singular form.
+                    verb.PluralForm = text;
+                break;
+        }
 
         Driver.AppendResponseLine($"Learned new verb <b><i>{verb.StandardName.Untokenize()}</i></b>.");
 

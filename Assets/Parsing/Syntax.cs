@@ -66,7 +66,17 @@ public partial class Syntax
         if (VerbNumber == Number.Singular)
             return false;
         VerbNumber = Number.Plural;
+        Verb.Conjugation = VerbConjugation.BaseForm;
         return true;
+    }
+
+    private static bool VerbGerundForm() => VerbGerundForm(Verb);
+    private static bool Verb2GerundForm() => VerbGerundForm(Verb2);
+
+    private static bool VerbGerundForm(VerbSegment s)
+    {
+        s.Conjugation = VerbConjugation.Gerund;
+        return Inflection.IsGerund(s.Text);
     }
 
     private static bool SubjectDefaultPlural()

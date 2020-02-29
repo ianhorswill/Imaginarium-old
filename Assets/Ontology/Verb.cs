@@ -24,6 +24,8 @@
 #endregion
 
 using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
 
 /// <summary>
 /// Represents a verb, i.e. a binary relation
@@ -67,11 +69,42 @@ public class Verb : Concept
 
     public static readonly TokenTrie<Verb> Trie = new TokenTrie<Verb>();
 
-    public static IEnumerable<Verb> AllVerbs => Trie.Contents;
+    public static IEnumerable<Verb> AllVerbs => Trie.Contents.Distinct();
 
     public override bool IsNamed(string[] tokens) => tokens.SameAs(SingularForm) || tokens.SameAs(PluralForm);
 
-    public override string[] StandardName => PluralForm;
+    // ReSharper disable InconsistentNaming
+    private string[] _baseForm;
+    private string[] _gerundForm;
+    // ReSharper restore InconsistentNaming
+
+    public string[] BaseForm
+    {
+        get => _baseForm;
+        set
+        {
+            _baseForm = value;
+            Trie.Store(value, this);
+            EnsureGerundForm();
+            EnsurePluralForm();
+            EnsureSingularForm();
+        }
+    }
+
+    public string[] GerundForm
+    {
+        get => _gerundForm;
+        set
+        {
+            _gerundForm = value;
+            Trie.Store(value, this);
+            EnsureBaseForm();
+            EnsurePluralForm();
+            EnsureSingularForm();
+        }
+    }
+
+    public override string[] StandardName => BaseForm;
 
     // ReSharper disable InconsistentNaming
     private string[] _singular, _plural;
@@ -91,12 +124,12 @@ public class Verb : Concept
         {
             if (_singular != null && ((TokenString) _singular).Equals((TokenString) value))
                 return;
-            Ontology.EnsureUndefined(value, GetType());
+            Ontology.EnsureUndefinedOrDefinedAsType(value, GetType());
             if (_singular != null) Trie.Store(_singular, null);
             _singular = value;
-            Trie.Store(_singular, this);
+            Trie.Store(_singular, this, false);
             EnsurePluralForm();
-            CreateGerundForms();
+            EnsureGerundForm();
         }
     }
 
@@ -104,10 +137,31 @@ public class Verb : Concept
     /// Add likely spellings of the gerund of this verb.
     /// They are stored as if they are plural inflections.
     /// </summary>
-    private void CreateGerundForms()
+    private void EnsureGerundForm()
     {
-        foreach (var form in Inflection.GerundOfVerb(_plural))
+        if (_gerundForm != null)
+            return;
+        EnsureBaseForm();
+        foreach (var form in Inflection.GerundsOfVerb(_baseForm))
+        {
+            if (_gerundForm == null)
+                _gerundForm = form;
             Trie.Store(form, this, true);
+        }
+    }
+
+    private void EnsureBaseForm()
+    {
+        if (_baseForm != null)
+            return;
+        if (_gerundForm != null)
+            _baseForm = Inflection.BaseFormOfGerund(_gerundForm);
+        Debug.Assert(_plural != null || _singular != null || _baseForm != null);
+        EnsurePluralForm();
+        EnsureSingularForm();
+        if (_baseForm != null)
+            _baseForm = Inflection.ReplaceCopula(_plural, "be");
+        EnsureGerundForm();
     }
 
     /// <summary>
@@ -133,7 +187,7 @@ public class Verb : Concept
         {
             if (_plural != null && ((TokenString) _plural).Equals((TokenString) value))
                 return;
-            Ontology.EnsureUndefined(value, GetType());
+            Ontology.EnsureUndefinedOrDefinedAsType(value, GetType());
             if (_plural != null) Trie.Store(_plural, null);
             _plural = value;
             Trie.Store(_plural, this, true);
@@ -146,7 +200,11 @@ public class Verb : Concept
 
     private void EnsurePluralForm()
     {
-        if (_plural == null)
+        if (_plural != null)
+            return;
+        if (_baseForm != null)
+            PluralForm = Inflection.ReplaceCopula(_baseForm, "are"); 
+        else
             PluralForm = Inflection.PluralOfVerb(_singular);
     }
 
@@ -159,3 +217,10 @@ public class Verb : Concept
         return v;
     }
 }
+
+public enum VerbConjugation
+{
+    ThirdPerson,
+    BaseForm,
+    Gerund
+};

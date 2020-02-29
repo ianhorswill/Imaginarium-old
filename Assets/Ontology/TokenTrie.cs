@@ -64,9 +64,7 @@ public class TokenTrie<TReferent> : TokenTrieBase
     IEnumerable<TReferent> SubtreeContents(Node n)
     {
         var children = n.Dict.SelectMany(pair => SubtreeContents(pair.Value));
-        if (!n.IsPlural && n.Concept != null)
-            return children.Prepend(n.Concept);
-        return children;
+        return n.Concept != null ? children.Prepend(n.Concept) : children;
     }
 
     /// <summary>

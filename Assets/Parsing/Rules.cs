@@ -142,6 +142,7 @@ public partial class Syntax
             {
                 Verb.Verb.Generalizations.Add(Verb2.Verb);
             })
+            .Check(VerbGerundForm, Verb2GerundForm)
             .Documentation("States that two objects being related by the first verb means they must also be related by the second."), 
 
         new Syntax(() => new object[] { Subject, "are", RareCommon })

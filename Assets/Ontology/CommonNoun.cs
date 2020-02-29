@@ -69,7 +69,7 @@ public class CommonNoun : Noun
                 return;
             // If we're defining the plural to be identical to the singular, don't check for name collision
             if (_plural == null || !((TokenString) _plural).Equals((TokenString) value))
-                Ontology.EnsureUndefined(value, GetType());
+                Ontology.EnsureUndefinedOrDefinedAsType(value, GetType());
             if (_singular != null)
             {
                 AllNouns.Remove(_singular);
@@ -107,7 +107,7 @@ public class CommonNoun : Noun
                 return;
             // If we're defining the plural to be identical to the singular, don't check for name collision
             if (_singular == null || !((TokenString) _singular).Equals((TokenString) value))
-                Ontology.EnsureUndefined(value, GetType());
+                Ontology.EnsureUndefinedOrDefinedAsType(value, GetType());
             if (_plural != null)
             {
                 AllNouns.Remove(_plural);

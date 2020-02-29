@@ -10,6 +10,7 @@ public class OntologyVisualizer : MonoBehaviour, IGraphGenerator
         var nounStyle = g.NodeStyleNamed("Noun");
         var adjectiveStyle = g.NodeStyleNamed("Adjective");
         var verbStyle = g.NodeStyleNamed("Verb");
+        var errorStyle = g.NodeStyleNamed("Error");
 
         IEnumerable<(object from, object to, string label, EdgeStyle style)> Edges(object o)
         {
@@ -44,8 +45,10 @@ public class OntologyVisualizer : MonoBehaviour, IGraphGenerator
                     break;
 
                 case Verb v:
-                    yield return (v.SubjectKind, v, "subject", null);
-                    yield return (v, v.ObjectKind, "object", null);
+                    if (v.SubjectKind != null)
+                        yield return (v.SubjectKind, v, "subject", null);
+                    if (v.ObjectKind != null)
+                        yield return (v, v.ObjectKind, "object", null);
                     foreach (var super in v.Generalizations)
                         yield return (v, super, "implies", null);
                     foreach (var m in v.MutualExclusions)
@@ -65,15 +68,15 @@ public class OntologyVisualizer : MonoBehaviour, IGraphGenerator
                     return (n.ToString(), nounStyle);
 
                 case Verb v:
-                    return (v.ToString(), verbStyle);
+                    return (v.ToString(), (v.ObjectKind == null || v.SubjectKind == null)?errorStyle:verbStyle);
 
                 default:
                     return (node.ToString(), adjectiveStyle);
             }
         }
 
-        var nouns = Noun.AllNouns.Select(pair => pair.Value).Cast<object>();
-        var verbs = Verb.AllVerbs;
+        var nouns = Noun.AllNouns.Select(pair => pair.Value).Cast<object>().ToArray();
+        var verbs = Verb.AllVerbs.ToArray();
         var vocabulary = nouns.Concat(verbs);
         //var ephemera = Generator.Current?.EphemeralIndividuals;
 

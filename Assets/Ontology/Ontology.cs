@@ -69,12 +69,12 @@ public static class Ontology
         TokenTrieBase.ClearAllTries();
     }
 
-    public static void EnsureUndefined(string[] name, Type newType)
+    public static void EnsureUndefinedOrDefinedAsType(string[] name, Type newType)
     {
         if (name == null)
             return;
         var old = Find(name);
-        if (old != null)
+        if (old != null && old.GetType() != newType)
             throw new NameCollisionException(name, old.GetType(), newType);
     }
 }
