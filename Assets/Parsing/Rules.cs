@@ -108,12 +108,12 @@ public partial class Syntax
             .Action(() =>
             {
                 var verb = Verb.Verb;
-                verb.SubjectKind = Subject.CommonNoun;
-                verb.ObjectKind = Object.CommonNoun;
-                verb.IsFunction = !Quantifier.IsPlural;
+                verb.SubjectKind = CommonNoun.LeastUpperBound(verb.SubjectKind, Subject.CommonNoun);
+                verb.ObjectKind = CommonNoun.LeastUpperBound(verb.ObjectKind, Object.CommonNoun);
+                verb.IsFunction |= !Quantifier.IsPlural;
                 // "Cats can love other cats" means anti-reflexive, whereas "cats can love many cats" doesn't.
-                verb.IsAntiReflexive = Quantifier.IsOther;
-                verb.IsTotal = CanMust.Match[0] == "must";
+                verb.IsAntiReflexive |= Quantifier.IsOther;
+                verb.IsTotal |= CanMust.Match[0] == "must";
             })
             .Check(VerbBaseForm, ObjectUnmodified, ObjectQuantifierAgree, SubjectCommonNoun, ObjectCommonNoun)
             .Documentation("Specifies how many Objects a given Subject can Verb."),
@@ -154,7 +154,7 @@ public partial class Syntax
             .Action(() =>
             {
                 var verb = Verb.Verb;
-                verb.SubjectKind = verb.ObjectKind = Subject.CommonNoun;
+                verb.SubjectKind = verb.ObjectKind = CommonNoun.LeastUpperBound(verb.SubjectKind, verb.ObjectKind, Subject.CommonNoun);
                 verb.IsAntiReflexive = true;
             })
             .Check(VerbBaseForm, SubjectCommonNoun)
@@ -164,7 +164,7 @@ public partial class Syntax
             .Action(() =>
             {
                 var verb = Verb.Verb;
-                verb.SubjectKind = verb.ObjectKind = Subject.CommonNoun;
+                verb.SubjectKind = verb.ObjectKind = CommonNoun.LeastUpperBound(verb.SubjectKind, verb.ObjectKind, Subject.CommonNoun);;
                 verb.IsReflexive = true;
             })
             .Check(VerbBaseForm, SubjectCommonNoun)
@@ -174,7 +174,7 @@ public partial class Syntax
             .Action(() =>
             {
                 var verb = Verb.Verb;
-                verb.SubjectKind = verb.ObjectKind = Subject.CommonNoun;
+                verb.SubjectKind = verb.ObjectKind = CommonNoun.LeastUpperBound(verb.SubjectKind, verb.ObjectKind, Subject.CommonNoun);;
                 verb.IsSymmetric = true;
             })
             .Check(VerbBaseForm, SubjectCommonNoun)

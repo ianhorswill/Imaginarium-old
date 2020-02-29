@@ -195,8 +195,35 @@ public class CommonNoun : Noun
             super.ForAllDescendantKinds(a);
     }
 
-    public bool IsImmediateSuperKindOf(CommonNoun super) => Subkinds.Contains(super);
-    public bool IsImmediateSubKindOf(CommonNoun sub) => Superkinds.Contains(sub);
+    public bool IsImmediateSuperKindOf(CommonNoun sub) => Subkinds.Contains(sub);
+    public bool IsImmediateSubKindOf(CommonNoun super) => Superkinds.Contains(super);
+
+    public bool IsSuperKindOf(CommonNoun sub) => sub == this || Subkinds.Any(IsSuperKindOf);
+
+    public bool IsSubKindOf(CommonNoun super) => super.IsSuperKindOf(this);
+
+    public static CommonNoun LeastUpperBound(CommonNoun a, CommonNoun b)
+    {
+        if (a == null)
+            return b;
+        if (b == null)
+            return a;
+
+        if (a.IsSuperKindOf(b))
+            return a;
+        
+        foreach (var super in a.Superkinds)
+        {
+            var lub = LeastUpperBound(super, b);
+            if (lub != null)
+                return lub;
+        }
+
+        return null;
+    }
+
+    public static CommonNoun LeastUpperBound(CommonNoun a, CommonNoun b, CommonNoun c) =>
+        a == null ? LeastUpperBound(b, c) : LeastUpperBound(a, LeastUpperBound(b, c));
 
     /// <summary>
     /// Ensure super is an immediate super-kind of this kind.
