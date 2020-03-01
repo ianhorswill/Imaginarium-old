@@ -17,4 +17,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Project selector/Project selector.unity
     guid: a9c2149df9ac0ed49a23152c5ffb1cac
+  - enabled: 1
+    path: Assets/Scenes/Server.unity
+    guid: 5d2172e3232c4df4c8ede0b619e37016
   m_configObjects: {}

@@ -22,7 +22,7 @@ public class BuildPlayer
 
         var options = new BuildPlayerOptions
         {
-            scenes = new[] { "Assets/Scenes/New UI.unity" },
+            scenes = new[] { "Assets/Scenes/Help.unity" },
             locationPathName = locationPath,
             target = target,
             options = BuildOptions.None
