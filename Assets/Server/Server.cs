@@ -1,29 +1,27 @@
-﻿using System.Diagnostics;
-using System.Net;
+﻿using System.Net;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
-using UnityEngine.PlayerLoop;
 using Debug = UnityEngine.Debug;
 
 public class Server : MonoBehaviour
 {
     public TMPro.TextMeshProUGUI Header;
     private HttpListener listener;
+    private TcpListener tcpListener;
 
     private Task<HttpListenerContext> nextRequest;
 
     // Start is called before the first frame update
-    void Start()
+    // ReSharper disable once UnusedMember.Local
+    private void Start()
     {
-        if (Generator.Current == null)
-        {
-            Header.text = "Please select a generator before starting server";
-            return;
-        }
+        listener = new HttpListener();
 
         var header = "Unknown IP address";
-        var hostAddresses = Dns.GetHostAddresses(Dns.GetHostName());
+        var hostname = Dns.GetHostName();
+        var hostAddresses = Dns.GetHostAddresses(hostname);
         if (hostAddresses.Length > 0)
         {
             var b = new StringBuilder();
@@ -31,13 +29,17 @@ public class Server : MonoBehaviour
             var firstOne = true;
             foreach (var address in hostAddresses)
             {
+                if (address.AddressFamily != AddressFamily.InterNetwork)
+                    continue;
+
                 if (firstOne)
                     firstOne = false;
                 else 
                     b.Append("Or: ");
 
-                var addressString = address.MapToIPv4().ToString();
-                b.Append($"<b>http://{addressString}:1608<b>\n");
+                var ip4Address = address.MapToIPv4().ToString();
+                var url = $"http://{ip4Address}:1608";
+                b.Append($"<b>{url}<b>\n");
             }
 
             header = b.ToString();
@@ -47,8 +49,6 @@ public class Server : MonoBehaviour
 
         if (!HttpListener.IsSupported)
             Debug.Log("Http listeners are not supported on this OS.");
-
-        listener = new HttpListener();
         listener.Prefixes.Add("http://*:1608/");
         listener.Start();
         Poll();
@@ -70,9 +70,8 @@ public class Server : MonoBehaviour
         Debug.Log("Got request");
         // Construct a response.
         var response = context.Response;
-        var invention = Generator.Current.Solve();
-        string responseString = $"<HTML><BODY>{invention.Description(invention.Individuals[0],"<b>", "</b>")}</BODY></HTML>";
-        byte[] buffer = System.Text.Encoding.UTF8.GetBytes(responseString);
+        string responseString = $"<HTML><BODY>{Response(context.Request.Url.AbsolutePath)}</BODY></HTML>";
+        byte[] buffer = Encoding.UTF8.GetBytes(responseString);
         // Get a response stream and write the response to it.
         response.ContentLength64 = buffer.Length;
         System.IO.Stream output = response.OutputStream;
@@ -81,7 +80,14 @@ public class Server : MonoBehaviour
         output.Close();
     }
 
-    void Update()
+    private static string Response(string path)
+    {
+        Debug.Log(path);
+        return Generator.Current.Solve().Description(Generator.Current.Solve().Individuals[0],"<b>", "</b>");
+    }
+
+    // ReSharper disable once UnusedMember.Local
+    private void Update()
     {
         Poll();
     }
