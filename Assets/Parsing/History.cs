@@ -69,7 +69,7 @@ public static class History
     /// </summary>
     private static void Replay()
     {
-        Ontology.EraseConcepts();
+        Ontology.Reload();
         foreach (var decl in Declarations)
             Parser.ParseAndExecute(decl);
     }

@@ -92,17 +92,17 @@ public partial class Syntax
             .Command()
             .Documentation("Saves assertions to a file."),
 
-        new Syntax(() => new object[] { "edit", ListName })
-            .Action(() =>
-            {
-                var definitionFilePath = Parser.DefinitionFilePath(ListName.Text.Untokenize());
+        //new Syntax(() => new object[] { "edit", ListName })
+        //    .Action(() =>
+        //    {
+        //        var definitionFilePath = Parser.DefinitionFilePath(ListName.Text.Untokenize());
 
-                Ontology.EraseConcepts();
-                Parser.LoadDefinitions(definitionFilePath);
-                History.Edit(definitionFilePath);
-            })
-            .Command()
-            .Documentation("Add new assertions to a file.  Use save command to save changes."),
+        //        Ontology.EraseConcepts();
+        //        Parser.LoadDefinitions(definitionFilePath);
+        //        History.Edit(definitionFilePath);
+        //    })
+        //    .Command()
+        //    .Documentation("Add new assertions to a file.  Use save command to save changes."),
         
         new Syntax(() => new object[] { Subject, CanMust, Verb, Quantifier, Object })
             .Action(() =>

@@ -33,6 +33,7 @@ using System.Text;
 /// <summary>
 /// Rules for parsing the top-level syntax of sentences.
 /// </summary>
+[DebuggerDisplay("{HelpDescription}")]
 public partial class Syntax
 {
     /// <summary>

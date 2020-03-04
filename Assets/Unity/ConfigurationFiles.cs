@@ -55,6 +55,8 @@ public static class ConfigurationFiles
         }
     }
 
+    public const string SourceExtension = ".gen";
+
     /// <summary>
     /// Path the the configuration directory with the specified name
     /// </summary>

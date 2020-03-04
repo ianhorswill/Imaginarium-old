@@ -24,6 +24,7 @@
 #endregion
 
 
+using System.IO;
 using System.Text;
 
 public class Driver
@@ -45,5 +46,22 @@ public class Driver
     }
 
     public static string CommandResponse => CommandBuffer.ToString();
+    #endregion
+
+    #region Load error tracking
+    private static readonly StringBuilder LoadErrorBuffer = new StringBuilder();
+
+    public static void ClearLoadErrors()
+    {
+        LoadErrorBuffer.Length = 0;
+    }
+
+    public static string LoadErrors => 
+        LoadErrorBuffer.Length>0 ? LoadErrorBuffer.ToString() : null;
+
+    public static void LogLoadError(string filename, int lineNumber, string message)
+    {
+        LoadErrorBuffer.AppendLine($"File {Path.GetFileName(filename)}, line {lineNumber}:\n<b>{message}</b>");
+    }
     #endregion
 }

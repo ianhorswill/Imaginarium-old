@@ -34,6 +34,10 @@ using System.Text;
 /// </summary>
 public static class Parser
 {
+    public static List<string> LoadedFiles = new List<string>();
+    public static string CurrentSourceFile;
+    public static int CurrentSourceLine;
+    
     /// <summary>
     /// Parse and execute a new command from the user, and log it if it's an ontology alteration
     /// </summary>
@@ -73,7 +77,7 @@ public static class Parser
         RuleTriggeringException = null;
 
         if (rule == null)
-            throw new GrammaticalError("Unknown sentence pattern", 
+            throw new GrammaticalError($"Unknown sentence pattern: {sentence}", 
                 "This doesn't match any of the sentence patterns I know");
 
         InputTriggeringException = null;
@@ -112,7 +116,7 @@ public static class Parser
         if (EndOfInput)
             return false;
 
-        if (string.Equals(CurrentToken, token, StringComparison.OrdinalIgnoreCase))
+        if (String.Equals(CurrentToken, token, StringComparison.OrdinalIgnoreCase))
         {
             currentTokenIndex++;
             return true;
@@ -223,7 +227,7 @@ public static class Parser
     public static bool MatchNumber(out float number)
     {
         var token = CurrentToken;
-        if (float.TryParse(token, out number))
+        if (Single.TryParse(token, out number))
         {
             SkipToken();
             return true;
@@ -448,7 +452,6 @@ public static class Parser
         {
             _definitionsDirectory = value;
             // Throw away our state when we change projects
-            Ontology.EraseConcepts();
             History.Clear();
         }
     }
@@ -494,12 +497,22 @@ public static class Parser
 
     public static void LoadDefinitions(string path)
     {
+        if (LoadedFiles.Contains(path))
+            return;
+
         LogFile.Log("Loading " + path);
+        LoadedFiles.Add(path);
+        var oldPath = CurrentSourceFile;
+        var oldLine = CurrentSourceLine;
+        CurrentSourceFile = path;
+        CurrentSourceLine = 0;
+
         Push();
 
         var assertions = File.ReadAllLines(path);
         foreach (var def in assertions)
         {
+            CurrentSourceLine++;
             var trimmed = def.Trim();
             if (trimmed != "" && !trimmed.StartsWith("#"))
                 ParseAndExecute(trimmed);
@@ -507,6 +520,8 @@ public static class Parser
 
         Pop();
         LogFile.Log("Finished loading of " + path);
+        CurrentSourceFile = oldPath;
+        CurrentSourceLine = oldLine;
     }
 
     #endregion

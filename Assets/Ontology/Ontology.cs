@@ -26,6 +26,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 /// <summary>
@@ -67,6 +68,32 @@ public static class Ontology
             c.Clear();
         
         TokenTrieBase.ClearAllTries();
+        Parser.LoadedFiles.Clear();
+    }
+
+    public static void Reload()
+    {
+        EraseConcepts();
+        Load();
+    }
+
+    private static void Load()
+    {
+        Driver.ClearLoadErrors();
+
+        foreach (var file in Directory.GetFiles(Parser.DefinitionsDirectory))
+            if (Path.GetExtension(file) == ConfigurationFiles.SourceExtension)
+            {
+                try
+                {
+                    Parser.LoadDefinitions(file);
+                }
+                catch (Exception e)
+                {
+                    Driver.LogLoadError(Parser.CurrentSourceFile, Parser.CurrentSourceLine, e.Message);
+                    throw;
+                }
+            }
     }
 
     public static void EnsureUndefinedOrDefinedAsType(string[] name, Type newType)

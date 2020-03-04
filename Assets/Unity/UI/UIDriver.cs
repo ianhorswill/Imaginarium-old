@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using GraphVisualization;
 
 public class UIDriver : MonoBehaviour
@@ -30,8 +31,25 @@ public class UIDriver : MonoBehaviour
     /// </summary>
     public void OnEnable()
     {
+        if (Parser.DefinitionsDirectory == null)
+            OutputField.text = "No generator selected";
+        else
+            OutputField.text = $"Using {Path.GetFileName(Parser.DefinitionsDirectory)} generator";
+
+        CheckForLoadErrors();
+
         // Move keyboard focus to input
         SelectInput();
+    }
+
+    private void CheckForLoadErrors()
+    {
+        var loadErrors = Driver.LoadErrors;
+        if (loadErrors != null)
+        {
+            OutputField.text = loadErrors;
+            Driver.ClearLoadErrors();
+        }
     }
 
     /// <summary>
