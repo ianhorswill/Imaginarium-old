@@ -1,0 +1,3 @@
+[submodule "Assets/Unity/GraphVisualization/Code"]
+	path = Assets/Unity/GraphVisualization/Code
+	url = https://github.com/ianhorswill/GraphVisualization
