@@ -71,12 +71,30 @@ public static class Ontology
         Parser.LoadedFiles.Clear();
     }
 
+    /// <summary>
+    /// Reload the current project
+    /// </summary>
     public static void Reload()
     {
         EraseConcepts();
         Load();
     }
 
+    /// <summary>
+    /// Test if the project has been updated since the last load
+    /// </summary>
+    public static bool ProjectUpdated()
+    {
+        foreach (var file in Directory.GetFiles(Parser.DefinitionsDirectory))
+            if (Path.GetExtension(file) == ConfigurationFiles.SourceExtension &&
+                File.GetLastWriteTimeUtc(file) > Parser.MostRecentFileUpdateTime)
+                return true;
+        return false;
+    }
+
+    /// <summary>
+    /// Load all the source files in the current project
+    /// </summary>
     private static void Load()
     {
         Driver.ClearLoadErrors();

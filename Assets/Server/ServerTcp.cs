@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -21,7 +20,7 @@ public class ServerTcp : MonoBehaviour
     // ReSharper disable once UnusedMember.Local
     private void Start()
     {
-        listener = new TcpListener(IPAddress.Any, Port);
+        //var me = IPAddress.Any;
 
         var header = "Unknown IP address";
         var hostname = Dns.GetHostName();
@@ -38,12 +37,10 @@ public class ServerTcp : MonoBehaviour
 
                 if (firstOne)
                     firstOne = false;
-                else 
+                else
                     b.Append("Or: ");
 
-                var ip4Address = address.MapToIPv4().ToString();
-                var url = $"http://{ip4Address}:{Port}";
-                b.Append($"<b>{url}<b>\n");
+                b.Append($"<b>{$"http://{address}:{Port}"}<b>\n");
             }
 
             header = b.ToString();
@@ -51,26 +48,37 @@ public class ServerTcp : MonoBehaviour
 
         Header.text = header;
 
+        listener = new TcpListener(IPAddress.Any, Port);
         listener.Start();
         Poll();
     }
 
+    private Thread currentThread;
+
+    private bool ThreadRunning => currentThread != null && currentThread.IsAlive;
+
     private void Poll()
     {
-        if (nextClient == null)
-            nextClient = listener.AcceptTcpClientAsync();
-        else if (nextClient.IsCompleted)
+        if (currentThread != null && !currentThread.IsAlive)
         {
-            ProcessRequest(nextClient.Result);
-            nextClient = listener.AcceptTcpClientAsync();
+            Debug.Log("completed");
+            currentThread = null;
+        }
+
+        if (!ThreadRunning && listener.Pending())
+        {
+            var client = listener.AcceptTcpClient();
+            Debug.Log($"Connect {((IPEndPoint)client.Client.RemoteEndPoint).Address}");
+            currentThread = new Thread(() => ProcessRequest(client));
+            currentThread.Start();
         }
     }
 
     private void ProcessRequest(TcpClient client)
     {
-        Debug.Log("Got request");
+        //Debug.Log("Got request");
         var inStream = new StreamReader(client.GetStream());
-        var outStream = new StreamWriter(client.GetStream());
+        var outStream = new StreamWriter(client.GetStream(), Encoding.UTF8);
         string line;
         var url = "";
         while ((line = inStream.ReadLine()) != null)
@@ -78,7 +86,7 @@ public class ServerTcp : MonoBehaviour
             if (line == "")
                 break;
 
-            Debug.Log(line);
+            //Debug.Log(line);
             if (line.StartsWith("GET"))
             {
                 var slash = line.IndexOf('/');
@@ -87,28 +95,53 @@ public class ServerTcp : MonoBehaviour
                 url = space < 0 ? request : request.Substring(0, space);
             }
         }
-        // Construct a response.
-        //var response = context.Response;
-        //string responseString = $"<HTML><BODY>{Response(context.Request.Url.AbsolutePath)}</BODY></HTML>";
-        //byte[] buffer = Encoding.UTF8.GetBytes(responseString);
-        //// Get a response stream and write the response to it.
-        //response.ContentLength64 = buffer.Length;
-        //System.IO.Stream output = response.OutputStream;
-        //output.Write(buffer,0,buffer.Length);
-        //// You must close the output stream.
-        //output.Close();
-        Debug.Log(url);
-        outStream.WriteLine(Response(url));
+
+        //Debug.Log(url);
+
+        // Generate response
+        var response = Response(url);
+        var bits = Encoding.UTF8.GetBytes(response);
+
+        // Write headers
+        outStream.Write("HTTP/1.1 200 OK\r\n");
+        outStream.Write("Connection: close\r\n");
+        //outStream.Write("Transfer-Encoding: identity\r\n");
+        outStream.Write("Content-Type: text/html\r\n");
+        //outStream.Write($"Content-Length: {bits.Length}\r\n");
+        outStream.Write("\r\n");
+
+        // Write content
+        //client.GetStream().Write(bits, 0, bits.Length);
+        //client.GetStream().Flush();
+        //Thread.Sleep(5000);
+        outStream.Write(response);
         outStream.Flush();
-        inStream.Close();
-        outStream.Close();
+
+        // Close everything
+        //inStream.Close();
+        //outStream.Close();
         client.Close();
     }
 
     private static string Response(string path)
     {
-        Debug.Log(path);
-        return Generator.Current.Solve().Description(Generator.Current.Solve().Individuals[0],"<b>", "</b>");
+        //Debug.Log(path);
+        if (Generator.Current == null)
+            return "<HTML><body>No generator selected</body></html>";
+
+        var invention = Generator.Current.Solve();
+        var buffer = new StringBuilder();
+        buffer.Append("<html><body><ul>");
+
+        foreach (var i in invention.Individuals)
+        {
+            buffer.Append("<li>");
+            buffer.Append(invention.Description(i,"<b>", "</b>"));
+            buffer.Append("</li>");
+        }
+
+        buffer.Append("</ul></body></html>");
+        return buffer.ToString();
     }
 
     // ReSharper disable once UnusedMember.Local
@@ -120,5 +153,7 @@ public class ServerTcp : MonoBehaviour
     private void OnDestroy()
     {
         listener.Stop();
+        if (ThreadRunning)
+            currentThread.Abort();
     }
 }

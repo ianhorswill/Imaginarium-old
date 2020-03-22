@@ -34,9 +34,22 @@ using System.Text;
 /// </summary>
 public static class Parser
 {
+    /// <summary>
+    /// Files from the current project (generator) currently being loaded
+    /// </summary>
     public static List<string> LoadedFiles = new List<string>();
+    /// <summary>
+    /// File currently being loaded
+    /// </summary>
     public static string CurrentSourceFile;
+    /// <summary>
+    /// Line of the file we're currently loading
+    /// </summary>
     public static int CurrentSourceLine;
+    /// <summary>
+    /// The update time of the most recently loaded file.
+    /// </summary>
+    public static DateTime MostRecentFileUpdateTime;
     
     /// <summary>
     /// Parse and execute a new command from the user, and log it if it's an ontology alteration
@@ -451,6 +464,7 @@ public static class Parser
         set
         {
             _definitionsDirectory = value;
+            MostRecentFileUpdateTime = DateTime.MinValue;
             // Throw away our state when we change projects
             History.Clear();
         }
@@ -506,6 +520,10 @@ public static class Parser
         var oldLine = CurrentSourceLine;
         CurrentSourceFile = path;
         CurrentSourceLine = 0;
+
+        var update = File.GetLastWriteTimeUtc(path);
+        if (update > MostRecentFileUpdateTime)
+            MostRecentFileUpdateTime = update;
 
         Push();
 
