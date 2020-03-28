@@ -51,8 +51,12 @@ public class FileSelector : MonoBehaviour
 
         foreach (var dir in Directory.GetDirectories(parentPath))
         {
+            var fileName = Path.GetFileName(dir);
+            if (fileName.StartsWith(".git") || fileName.StartsWith("_git"))
+                continue;
+
             var button = Instantiate(ButtonPrefab, Content);
-            button.transform.Find("Text").GetComponent<TMPro.TextMeshProUGUI>().text = Path.GetFileName(dir);
+            button.transform.Find("Text").GetComponent<TMPro.TextMeshProUGUI>().text = fileName;
             button.GetComponent<Button>().onClick.AddListener(() => Select(dir));
         }
     }
