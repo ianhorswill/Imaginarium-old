@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using NUnit.Framework;
 using UnityEditor;
 using UnityEditor.Callbacks;
 
@@ -9,7 +8,7 @@ using UnityEditor.Callbacks;
 /// </summary>
 public class CopyFilesOnBuild
 {
-    private static readonly string[] DataDirectories = {"Inflections", "Projects"};
+    private static readonly string[] DataDirectories = {"Inflections", "Examples"};
     [PostProcessBuild()]
     // ReSharper disable once IdentifierTypo
     public static void OnPostprocessBuild(BuildTarget target, string pathToBuiltProject)

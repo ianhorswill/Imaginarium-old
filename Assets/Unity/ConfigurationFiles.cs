@@ -23,6 +23,8 @@
 // --------------------------------------------------------------------------------------------------------------------
 #endregion
 
+using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Security;
 using UnityEngine;
@@ -32,12 +34,35 @@ using UnityEngine;
 /// </summary>
 public static class ConfigurationFiles
 {
-    public static readonly string ProjectsDirectory = Path.Combine(Application.dataPath, "Projects");
+    public static readonly string ExamplesDirectory = Path.Combine(Application.dataPath, "Examples");
 
-    public static string ProjectPath(string projectName) => Path.Combine(ProjectsDirectory, projectName);
+    public static string UserDataDirectory =
+        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Imaginarium");
+
+    public static string UserProjectsDirectory =
+        Path.Combine(UserDataDirectory, "Generators");
+
+    public static string UserReposDirectory = Path.Combine(UserDataDirectory, "Repositories");
+
+    public static string ProjectPath(string directory, string projectName) => Path.Combine(directory, projectName);
 
     // This has to be outside the ApplicationHome method, or SecurityException occurs before the try.
     private static string UnityPath => Application.dataPath;
+
+    public static IEnumerable<string> SearchPath
+    {
+        get
+        {
+            yield return ExamplesDirectory;
+
+            if (Directory.Exists(UserProjectsDirectory))
+                yield return UserProjectsDirectory;
+
+            if (Directory.Exists(UserReposDirectory))
+                foreach (var dir in Directory.GetDirectories(UserReposDirectory))
+                    yield return dir;
+        }
+    }
 
     /// <summary>
     /// Path to the directory containing configuration files.
