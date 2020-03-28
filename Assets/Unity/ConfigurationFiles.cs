@@ -26,28 +26,26 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Security;
-using UnityEngine;
 
 /// <summary>
 /// Provides methods for finding definitions and other configuration files.
 /// </summary>
 public static class ConfigurationFiles
 {
-    public static readonly string ExamplesDirectory = Path.Combine(Application.dataPath, "Examples");
+    public static string ExamplesDirectory => Path.Combine(UnityPath, "Examples");
 
-    public static string UserDataDirectory =
+    public static string UserDataDirectory =>
         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Imaginarium");
 
-    public static string UserProjectsDirectory =
+    public static string UserProjectsDirectory =>
         Path.Combine(UserDataDirectory, "Generators");
 
-    public static string UserReposDirectory = Path.Combine(UserDataDirectory, "Repositories");
+    public static string UserReposDirectory => Path.Combine(UserDataDirectory, "Repositories");
 
     public static string ProjectPath(string directory, string projectName) => Path.Combine(directory, projectName);
 
-    // This has to be outside the ApplicationHome method, or SecurityException occurs before the try.
-    private static string UnityPath => Application.dataPath;
+    // This is the correct value for the test project.  When actually running under unity, it gets reset to Application.dataPath
+    public static string UnityPath = "../../../Assets";
 
     public static IEnumerable<string> SearchPath
     {
@@ -67,18 +65,7 @@ public static class ConfigurationFiles
     /// <summary>
     /// Path to the directory containing configuration files.
     /// </summary>
-    public static string ApplicationHome
-    {
-        get
-        {
-            try { return UnityPath; }
-            catch (SecurityException)
-            {
-                // We're running in a test context, not inside of Unity
-                return "../../../Assets";
-            }
-        }
-    }
+    public static string ApplicationHome => UnityPath;
 
     public const string SourceExtension = ".gen";
 

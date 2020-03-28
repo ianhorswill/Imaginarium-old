@@ -23,6 +23,8 @@ public class UIDriver : MonoBehaviour
     /// </summary>
     public void Start()
     {
+        ConfigurationFiles.UnityPath = Application.dataPath;
+
         SelectInput();
     }
 
