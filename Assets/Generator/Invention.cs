@@ -78,7 +78,7 @@ public class Invention
             var propertyName = property.Text;
             var prop = pair.Value;
             var value = FormatPropertyValue(prop, Model[prop]);
-            result = $"{result}, {propertyName} {value}";
+            result = $"{result}, {propertyName}: {value}";
         }
 
         return $"{startEmphasis}{name}{endEmphasis} is {result}";

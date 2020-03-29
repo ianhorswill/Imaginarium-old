@@ -308,7 +308,9 @@ public partial class Syntax
             .Action(() =>
             {
                 var menuName = ListName.Text.Untokenize();
-                var menu = new Menu<string>(menuName, File.ReadAllLines(DefinitionFilePath(menuName)));
+                if (!NameIsValidFilename(menuName))
+                    throw new Exception($"The list name \"{menuName}\" is not a valid file name.");
+                var menu = new Menu<string>(menuName, File.ReadAllLines(ListFilePath(menuName)));
                 var propertyName = Object.Text;
                 var prop = Subject.CommonNoun.Properties.FirstOrDefault(p => p.IsNamed(propertyName));
                 if (prop == null)

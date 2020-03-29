@@ -61,7 +61,10 @@ public class Driver
 
     public static void LogLoadError(string filename, int lineNumber, string message)
     {
-        LoadErrorBuffer.AppendLine($"File {Path.GetFileName(filename)}, line {lineNumber}:\n<b>{message}</b>");
+        if (Parser.InputTriggeringException == null)
+            LoadErrorBuffer.AppendLine($"File {Path.GetFileName(filename)}, line {lineNumber}:\n<b>{message}</b>");
+        else
+            LoadErrorBuffer.AppendLine($"File {Path.GetFileName(filename)}, line {lineNumber}:\nWhile processing the command:\n<b>{Parser.InputTriggeringException}</b>\nThe following error occured:\n<b>{message}</b>");
     }
     #endregion
 }

@@ -5,6 +5,11 @@
 /// </summary>
 public class SceneKeyHandler : MonoBehaviour
 {
+    public void Start()
+    {
+        QualitySettings.vSyncCount = 1;
+    }
+
     public void OnGUI()
     {
         Scenes.HandleSceneKeys();

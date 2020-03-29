@@ -67,6 +67,8 @@ public static class ConfigurationFiles
     /// </summary>
     public static string ApplicationHome => UnityPath;
 
+    public const string ListExtension = ".txt";
+
     public const string SourceExtension = ".gen";
 
     /// <summary>

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
 
 /// <summary>
@@ -23,6 +24,7 @@ public class UIScreenManager : MonoBehaviour
     // ReSharper disable once UnusedMember.Local
     private void Start()
     {
+        QualitySettings.vSyncCount = 1;
         singleton = this;
         SetScreen(InitialScreen);
     }
@@ -32,6 +34,11 @@ public class UIScreenManager : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Tab))
             NextScreen();
+        #if UNITY_EDITOR
+        // The editor ignores the vertical sync in quality settings.  So this is the
+        // only way to throttle CPU usage when the game is idle.
+        Thread.Sleep(10);
+        #endif
     }
 
     private int currentScreen;

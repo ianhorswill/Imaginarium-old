@@ -250,11 +250,11 @@ public class NP : ReferringExpression<Noun>
         {
             var singular = noun.SingularForm.SameAs(text);
             if (singular && Number == Syntax.Number.Plural && !noun.SingularForm.SameAs(noun.PluralForm))
-                throw new GrammaticalError($"The singular noun '{Text}' was used without 'a' or 'an' before it", 
-                    $"The singular noun '<i>{Text}</i>' was used without 'a' or 'an' before it");
+                throw new GrammaticalError($"The singular noun '{Text.Untokenize()}' was used without 'a' or 'an' before it", 
+                    $"The singular noun '<i>{Text.Untokenize()}</i>' was used without 'a' or 'an' before it");
             if (!singular && Number == Syntax.Number.Singular)
-                throw new GrammaticalError($"The plural noun '{Text}' was used with 'a' or 'an'",
-                    $"The plural noun '<i>{Text}</i>' was used with 'a' or 'an' before it");
+                throw new GrammaticalError($"The plural noun '{Text.Untokenize()}' was used with 'a' or 'an'",
+                    $"The plural noun '<i>{Text.Untokenize()}</i>' was used with 'a' or 'an' before it");
             return noun;
         }
 

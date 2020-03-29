@@ -481,12 +481,24 @@ public static class Parser
         return DefinitionFilePath(fileName);
     }
 
+    public static bool NameIsValidFilename(Referent referent) =>
+        NameIsValidFilename(referent.Text);
+
+    public static bool NameIsValidFilename(string fileName) =>
+        fileName.IndexOfAny(Path.GetInvalidFileNameChars()) < 0;
+
     /// <summary>
     /// Returns the full path for the specified file in the definition library.
     /// </summary>
-    public static string DefinitionFilePath(string fileName)
+    public static string DefinitionFilePath(string fileName) =>
+        Path.Combine(DefinitionsDirectory, fileName + ConfigurationFiles.SourceExtension);
+
+    /// <summary>
+    /// Returns the full path for the specified list file in the definition library.
+    /// </summary>
+    public static string ListFilePath(string fileName)
     {
-        var definitionFilePath = Path.Combine(DefinitionsDirectory, fileName + ".txt");
+        var definitionFilePath = Path.Combine(DefinitionsDirectory, fileName + ConfigurationFiles.ListExtension);
         return definitionFilePath;
     }
 
@@ -496,7 +508,7 @@ public static class Parser
     /// </summary>
     public static void MaybeLoadDefinitions(Referent referent)
     {
-        if (DefinitionsDirectory != null && File.Exists(DefinitionFilePath(referent)))
+        if (DefinitionsDirectory != null && NameIsValidFilename(referent) && File.Exists(DefinitionFilePath(referent)))
             LoadDefinitions(referent);
     }
 

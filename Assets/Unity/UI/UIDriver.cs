@@ -9,7 +9,7 @@ using GraphVisualization;
 public class UIDriver : MonoBehaviour
 {
     public static Invention Invention;
-    private string[] inventionDescriptions;
+    private List<string> inventionDescriptions;
     public InputField InputField;
     public Text OutputField;
     public ScrollRect OutputScrollRect;
@@ -26,14 +26,22 @@ public class UIDriver : MonoBehaviour
         ConfigurationFiles.UnityPath = Application.dataPath;
 
         var generator = PlayerPrefs.GetString("DefinitionsDirectory", null);
-        if (generator != null)
-            Parser.DefinitionsDirectory = generator;
-        if (Parser.DefinitionsDirectory == null)
+
+        if (generator == null)
             OutputField.text = "No generator selected";
         else
+        {
             OutputField.text = $"Using {Path.GetFileName(Parser.DefinitionsDirectory)} generator";
-
-        CheckForLoadErrors();
+            try
+            {
+                Parser.DefinitionsDirectory = generator;
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+            }
+            CheckForLoadErrors();
+        }
 
         // Move keyboard focus to input
         SelectInput();
@@ -264,17 +272,28 @@ public class UIDriver : MonoBehaviour
             if (Invention == null)
             {
                 //Graph.Create();  // Remove existing graph, if any
-                inventionDescriptions = new[] {"Can't think of any - maybe there's a contradiction?"};
+                inventionDescriptions = new List<string> {"Can't think of any - maybe there's a contradiction?"};
             }
             else
             {
-                inventionDescriptions = new string[Generator.Current.Individuals.Count];
-                for (var i = 0; i < Generator.Current.Individuals.Count; i++)
+                inventionDescriptions = new List<string>(Generator.Current.Individuals.Count);
+
+                var walked = new HashSet<Individual>();
+
+                void Walk(Individual i)
                 {
-                    var inventionDescription = Invention.Description(Generator.Current.Individuals[i], "<b><color=grey>", "</color></b>");
-                    inventionDescriptions[i] = inventionDescription;
-                    Generator.Current.Individuals[i].MostRecentDescription = inventionDescription;
+                    if (walked.Contains(i))
+                        return;
+                    walked.Add(i);
+
+                    inventionDescriptions.Add(Invention.Description(i, "<b><color=grey>", "</color></b>"));
+                    foreach (var sub in Invention.Individuals)
+                        if (sub.Container == i)
+                            Walk(sub);
                 }
+
+                foreach (var i in Invention.Individuals)
+                    Walk(i);
 
                 //MakeGraph();
             }
