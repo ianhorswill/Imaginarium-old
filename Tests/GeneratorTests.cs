@@ -34,6 +34,37 @@ namespace Tests
         }
 
         [TestMethod]
+        public void PartTest()
+        {
+            Ontology.EraseConcepts();
+            ParseAndExecute("a cat is a kind of person",
+                "a persian is a kind of cat",
+                "a tabby is a kind of cat",
+                "a siamese is a kind of cat",
+                "a cat can be haughty",
+                "a cat can be cuddly",
+                "a cat can be crazy",
+                "a persian can be matted",
+                "red, blue, and green are kinds of color",
+                "a cat has a color called its favorite color");
+            var cat = (CommonNoun)Noun.Find("cat");
+            var color = (CommonNoun) Noun.Find("color");
+            var g = new Generator(cat);
+            for (var n = 0; n < 100; n++)
+            {
+                var i = g.Solve();
+                Assert.IsTrue(i.IsA(i.Individuals[0], cat));
+                Assert.IsTrue(i.IsA(i.Individuals[0], "persian")
+                              || i.IsA(i.Individuals[0], "tabby")
+                              || i.IsA(i.Individuals[0], "siamese"));
+                Assert.AreEqual(i.Individuals[0], i.Individuals[1].Container);
+                Assert.IsTrue(i.IsA(i.Individuals[1], color));
+                Console.WriteLine(i.Model.Model);
+                Console.WriteLine(i.Description(i.Individuals[0]));
+            }
+        }
+
+        [TestMethod]
         public void  CompoundNounTest()
         {
             Ontology.EraseConcepts();

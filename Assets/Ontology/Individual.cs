@@ -39,10 +39,11 @@ public class Individual : Referent, IComparable
     /// </summary>
     /// <param name="concepts">CommonNouns and Adjectives that must apply to the individual</param>
     /// <param name="name">Default name to give to the individual if no name property can be found.</param>
+    /// <param name="container">The object of which this is a part, if any</param>
     /// <returns></returns>
-    public static Individual Ephemeral(IEnumerable<MonadicConceptLiteral> concepts, string[] name)
+    public static Individual Ephemeral(IEnumerable<MonadicConceptLiteral> concepts, string[] name, Individual container = null)
     {
-        return new Individual(concepts, name);
+        return new Individual(concepts, name, container);
     }
 
     /// <summary>
@@ -89,11 +90,17 @@ public class Individual : Referent, IComparable
     /// <summary>
     /// The Properties of this individual.
     /// </summary>
+    public readonly Dictionary<Part, Individual> Parts = new Dictionary<Part, Individual>();
+    
+    /// <summary>
+    /// The Properties of this individual.
+    /// </summary>
     public readonly Dictionary<Property, Variable> Properties = new Dictionary<Property, Variable>();
     
-    private Individual(IEnumerable<MonadicConceptLiteral> concepts, string[] name) : base(name)
+    private Individual(IEnumerable<MonadicConceptLiteral> concepts, string[] name, Individual container = null) : base(name)
     {
         Name = name;
+        Container = container;
         var enumerated = concepts as MonadicConceptLiteral[] ?? concepts.ToArray();
         Kinds.AddRange(enumerated.Where(l => l.Concept is CommonNoun).Select(l => (CommonNoun)l.Concept));
         Modifiers.AddRange(enumerated.Where(l => !(l.Concept is CommonNoun)));
@@ -108,6 +115,11 @@ public class Individual : Referent, IComparable
     /// name property.
     /// </summary>
     public readonly string[] Name;
+
+    /// <summary>
+    /// The Individual of which this is a part
+    /// </summary>
+    public readonly Individual Container;
 
     /// <inheritdoc />
     public override string[] StandardName => Name;

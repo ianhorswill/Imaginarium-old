@@ -165,6 +165,18 @@ public class CommonNoun : Noun
     /// Adjectives that are always true of this kind of object.
     /// </summary>
     public readonly List<ConditionalModifier> ImpliedAdjectives = new List<ConditionalModifier>();
+
+    /// <summary>
+    /// Components of this kind of object
+    /// Objects of this kind may also have parts attached to sub- and superkinds.
+    /// </summary>
+    public readonly List<Part> Parts = new List<Part>();
+
+    /// <summary>
+    /// Return the Part of this noun with the specified name, or null.
+    /// </summary>
+    public Part PartNamed(string[] name) => Parts.FirstOrDefault(p => p.IsNamed(name));
+
     /// <summary>
     /// Properties attached to this kind of object
     /// Objects of this kind may also have properties attached to sub- and superkinds.
@@ -174,10 +186,7 @@ public class CommonNoun : Noun
     /// <summary>
     /// Return the property of this noun with the specified name, or null.
     /// </summary>
-    public Property PropertyNamed(string[] name)
-    {
-        return Properties.FirstOrDefault(p => p.IsNamed(name));
-    }
+    public Property PropertyNamed(string[] name) => Properties.FirstOrDefault(p => p.IsNamed(name));
 
     public void ForAllAncestorKinds(Action<CommonNoun> a, bool includeSelf = true)
     {

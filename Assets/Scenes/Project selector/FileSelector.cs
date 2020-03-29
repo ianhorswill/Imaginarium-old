@@ -52,7 +52,7 @@ public class FileSelector : MonoBehaviour
         foreach (var dir in Directory.GetDirectories(parentPath))
         {
             var fileName = Path.GetFileName(dir);
-            if (fileName.StartsWith(".git") || fileName.StartsWith("_git"))
+            if (fileName == null || fileName.StartsWith(".git") || fileName.StartsWith("_git"))
                 continue;
 
             var button = Instantiate(ButtonPrefab, Content);

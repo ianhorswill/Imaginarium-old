@@ -156,16 +156,25 @@ public class Invention
 
     public string NameString(Individual i, List<Property> suppressedProperties = null)
     {
-        var nameProperty = i.NameProperty();
-        if (nameProperty != null)
+        var containerPrefix = i.Container != null ? NameString(i.Container) : "";
+
+        string NameWithoutPrefix()
         {
-            suppressedProperties?.Add(nameProperty);
-            return Model[i.Properties[nameProperty]].ToString();
+            var nameProperty = i.NameProperty();
+            if (nameProperty != null)
+            {
+                suppressedProperties?.Add(nameProperty);
+                return Model[i.Properties[nameProperty]].ToString();
+            }
+
+            Debug.AssertFormat(i.Kinds.Count > 0, "NameString({0}): individual has no kinds?", i);
+            var kind = i.Kinds[0];
+            return kind.NameTemplate != null
+                       ? FormatNameFromTemplate(i, suppressedProperties, kind)
+                       : i.Text;
         }
 
-        Debug.AssertFormat(i.Kinds.Count > 0, "NameString({0}): individual has no kinds?", i);
-        var kind = i.Kinds[0];
-        return kind.NameTemplate != null ? FormatNameFromTemplate(i, suppressedProperties, kind) : i.Text;
+        return containerPrefix + NameWithoutPrefix();
     }
 
     private string FormatNameFromTemplate(Individual i, List<Property> suppressedProperties, CommonNoun kind)

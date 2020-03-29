@@ -79,12 +79,13 @@ public class Generator
     public Generator(CommonNoun noun, IEnumerable<MonadicConceptLiteral> concepts, int count = 1)
     {
         Count = count;
-        var ca = concepts.ToArray();
-        for (var i = 0; i < Count; i++)
-            EphemeralIndividuals.Add(Individual.Ephemeral(ca.Append(noun), noun.SingularForm.Append(i.ToString()).ToArray()));
-
+        Noun = noun;
+        Concepts = concepts.ToArray();
         Rebuild();
     }
+
+    public readonly CommonNoun Noun;
+    public readonly MonadicConceptLiteral[] Concepts;
 
     /// <summary>
     /// Rebuild and re-solve the CatSAT problem
@@ -93,6 +94,16 @@ public class Generator
     {
         // Do this first so that Problem.Current gets set.
         Problem = new Problem("invention");
+
+        EphemeralIndividuals.Clear();
+
+        var ca = Concepts.ToArray();
+        for (var i = 0; i < Count; i++)
+            EphemeralIndividuals.Add(Individual.Ephemeral(ca.Append(Noun), Noun.SingularForm.Append(i.ToString()).ToArray()));
+
+        foreach (var i in EphemeralIndividuals.ToArray())
+            AddParts(i);
+
         Individuals.Clear();
         Individuals.AddRange(EphemeralIndividuals);
         Individuals.AddRange(Individual.AllPermanentIndividuals.Select(pair => pair.Value));
@@ -152,6 +163,24 @@ public class Generator
                         Problem.AtMost(1, Holds(v, s, o), Holds(e, s, o));
                 }
         }
+    }
+
+    private void AddParts(Individual i)
+    {
+        foreach (var k in i.Kinds) AddParts(i, k);
+    }
+
+    private void AddParts(Individual i, CommonNoun k)
+    {
+        foreach (var part in k.Parts)
+        {
+            var p = Individual.Ephemeral(part.MonadicConcepts, part.Name.Prepend("'s").ToArray(), i);
+            EphemeralIndividuals.Add(p);
+            AddParts(p);
+        }
+
+        foreach (var super in k.Superkinds)
+            AddParts(i, super);
     }
 
     IEnumerable<(Individual, Individual)> Domain(Verb v)
@@ -287,6 +316,7 @@ public class Generator
     /// </summary>
     /// <param name="l">Proposition to assert</param>
     /// <returns>True if it had not already been asserted</returns>
+    // ReSharper disable once UnusedMethodReturnValue.Local
     private bool MaybeAssert(Literal l)
     {
         if (asserted.Contains(l))
@@ -395,7 +425,7 @@ public class Generator
     /// <param name="i">Individual for which this implication holds</param>
     /// <param name="antecedents">A set of conditions on i</param>
     /// <param name="consequent">A concept that must be true of i when the antecedents are true.</param>
-    void AddImplication(Individual i, IEnumerable<MonadicConcept> antecedents, MonadicConcept consequent)
+    private void AddImplication(Individual i, IEnumerable<MonadicConcept> antecedents, MonadicConcept consequent)
     {
         AddClause(antecedents.Select(a => Not(IsA(i, a))).Append(IsA(i, consequent)));
     }
@@ -406,7 +436,7 @@ public class Generator
     /// <param name="i">Individual for which this implication holds</param>
     /// <param name="antecedents">A set of conditions on i</param>
     /// <param name="consequent">A proposition that must follow from the antecedent applying to i.</param>
-    void AddImplication(Individual i, IEnumerable<MonadicConcept> antecedents, Literal consequent)
+    private void AddImplication(Individual i, IEnumerable<MonadicConcept> antecedents, Literal consequent)
     {
         AddClause(antecedents.Select(a => Not(IsA(i, a))).Append(consequent));
     }

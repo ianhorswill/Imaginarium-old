@@ -321,5 +321,20 @@ public partial class Syntax
             })
             .Check(SubjectVerbAgree, ObjectUnmodified)
             .Documentation("Say Subjects have a property whose possible values are given in the specified file.  For example 'cats have a name from cat names', or 'French cats have a name from French cat names'"),
+
+        new Syntax(() => new object[] { Subject, Has, Object, "called", "its", ListName })
+            .Action(() =>
+            {
+
+                var partName = ListName.Text;
+                var part = Subject.CommonNoun.Parts.FirstOrDefault(p => p.IsNamed(partName));
+                if (part == null)
+                {
+                    part = new Part(partName, Object.CommonNoun, Object.Modifiers);
+                    Subject.CommonNoun.Parts.Add(part);
+                }
+            })
+            .Check(SubjectVerbAgree, ObjectUnmodified)
+            .Documentation("Say Subjects have a property whose possible values are given in the specified file.  For example 'cats have a name from cat names', or 'French cats have a name from French cat names'"),
     };
 }

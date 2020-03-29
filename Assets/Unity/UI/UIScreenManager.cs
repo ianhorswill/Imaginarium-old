@@ -27,13 +27,14 @@ public class UIScreenManager : MonoBehaviour
         SetScreen(InitialScreen);
     }
 
+    // ReSharper disable once UnusedMember.Local
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.Tab))
             NextScreen();
     }
 
-    private int currentScreen = 0;
+    private int currentScreen;
     public void NextScreen()
     {
         currentScreen = (currentScreen + 1) % transform.childCount;
