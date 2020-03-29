@@ -25,14 +25,9 @@ public class UIDriver : MonoBehaviour
     {
         ConfigurationFiles.UnityPath = Application.dataPath;
 
-        SelectInput();
-    }
-
-    /// <summary>
-    /// Called when this UI mode is activated
-    /// </summary>
-    public void OnEnable()
-    {
+        var generator = PlayerPrefs.GetString("DefinitionsDirectory", null);
+        if (generator != null)
+            Parser.DefinitionsDirectory = generator;
         if (Parser.DefinitionsDirectory == null)
             OutputField.text = "No generator selected";
         else

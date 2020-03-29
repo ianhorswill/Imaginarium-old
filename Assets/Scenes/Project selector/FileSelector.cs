@@ -69,6 +69,8 @@ public class FileSelector : MonoBehaviour
     private void Select(string dir)
     {
         Parser.DefinitionsDirectory = dir;
+        PlayerPrefs.SetString("DefinitionsDirectory", dir);
+        PlayerPrefs.Save();
         LeaveScene();
     }
 
