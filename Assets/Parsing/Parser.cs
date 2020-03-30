@@ -232,6 +232,8 @@ public static class Parser
         return s == "has" || s == "have";
     }
 
+    private static readonly string[] NumberWords =
+        { "zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten"};
     /// <summary>
     /// Attempt to match token to a number.  If successful, writes number to out arg.
     /// </summary>
@@ -240,13 +242,15 @@ public static class Parser
     public static bool MatchNumber(out float number)
     {
         var token = CurrentToken;
-        if (Single.TryParse(token, out number))
+        if (float.TryParse(token, out number))
         {
             SkipToken();
             return true;
         }
 
-        return false;
+        number = Array.IndexOf(NumberWords, token);
+
+        return number >= 0;
     }
 
     /// <summary>

@@ -98,8 +98,12 @@ public class Generator
         EphemeralIndividuals.Clear();
 
         var ca = Concepts.ToArray();
-        for (var i = 0; i < Count; i++)
-            EphemeralIndividuals.Add(Individual.Ephemeral(ca.Append(Noun), Noun.SingularForm.Append(i.ToString()).ToArray()));
+        if (Count == 1)
+            EphemeralIndividuals.Add(Individual.Ephemeral(ca.Append(Noun),
+                Noun.SingularForm.Prepend("the").ToArray()));
+        else
+            for (var i = 0; i < Count; i++)
+                EphemeralIndividuals.Add(Individual.Ephemeral(ca.Append(Noun), Noun.SingularForm.Append(i.ToString()).ToArray()));
 
         foreach (var i in EphemeralIndividuals.ToArray())
             AddParts(i);
@@ -269,10 +273,7 @@ public class Generator
             foreach (var set in k.AlternativeSets)
             {
                 var clause = set.Alternatives.Select(a => Satisfies(i, a)).Append(Not(IsA(i, k)));
-                if (set.IsRequired)
-                    Problem.Unique(clause);
-                else
-                    Problem.AtMost(1, clause);
+                Problem.Quantify(set.MinCount, set.MaxCount, clause);
             }
 
             kindsFormalized.Add(new Tuple<Individual, CommonNoun>(i, k));

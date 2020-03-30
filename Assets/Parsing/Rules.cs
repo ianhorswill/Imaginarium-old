@@ -164,7 +164,7 @@ public partial class Syntax
             .Action(() =>
             {
                 var verb = Verb.Verb;
-                verb.SubjectKind = verb.ObjectKind = CommonNoun.LeastUpperBound(verb.SubjectKind, verb.ObjectKind, Subject.CommonNoun);;
+                verb.SubjectKind = verb.ObjectKind = CommonNoun.LeastUpperBound(verb.SubjectKind, verb.ObjectKind, Subject.CommonNoun);
                 verb.IsReflexive = true;
             })
             .Check(VerbBaseForm, SubjectCommonNoun)
@@ -174,7 +174,7 @@ public partial class Syntax
             .Action(() =>
             {
                 var verb = Verb.Verb;
-                verb.SubjectKind = verb.ObjectKind = CommonNoun.LeastUpperBound(verb.SubjectKind, verb.ObjectKind, Subject.CommonNoun);;
+                verb.SubjectKind = verb.ObjectKind = CommonNoun.LeastUpperBound(verb.SubjectKind, verb.ObjectKind, Subject.CommonNoun);
                 verb.IsSymmetric = true;
             })
             .Check(VerbBaseForm, SubjectCommonNoun)
@@ -279,6 +279,36 @@ public partial class Syntax
             })
             .Check(SubjectVerbAgree)
             .Documentation("Declares that Subjects are always Adjective.  For example, 'cats are fuzzy' declares that all cats are also fuzzy."),
+
+        new Syntax(() => new object[] { Subject, Is, "any", LowerBound, "of", PredicateAPList })
+            .Action(() =>
+            {
+                var alternatives = PredicateAPList.Expressions.Select(ap => ap.MonadicConceptLiteral).ToArray();
+                var alternativeSet = new CommonNoun.AlternativeSet(alternatives, (int)lowerBound, (int)lowerBound);
+                Subject.CommonNoun.AlternativeSets.Add(alternativeSet);
+            })
+            .Check(SubjectVerbAgree, SubjectUnmodified)
+            .Documentation("Declares the specified number of Adjectives must be true of Subjects.  So 'cats are big or small' says cats are always either big or small, but not both or neither."),
+        
+        new Syntax(() => new object[] { Subject, Is, "between", LowerBound, "and", UpperBound, "of", PredicateAPList })
+            .Action(() =>
+            {
+                var alternatives = PredicateAPList.Expressions.Select(ap => ap.MonadicConceptLiteral).ToArray();
+                var alternativeSet = new CommonNoun.AlternativeSet(alternatives, (int)lowerBound, (int)upperBound);
+                Subject.CommonNoun.AlternativeSets.Add(alternativeSet);
+            })
+            .Check(SubjectVerbAgree, SubjectUnmodified)
+            .Documentation("Declares the specified number of Adjectives must be true of Subjects.  So 'cats are big or small' says cats are always either big or small, but not both or neither."),
+        
+        new Syntax(() => new object[] { Subject, "can", "be", "up", "to", LowerBound, "of", PredicateAPList })
+            .Action(() =>
+            {
+                var alternatives = PredicateAPList.Expressions.Select(ap => ap.MonadicConceptLiteral).ToArray();
+                var alternativeSet = new CommonNoun.AlternativeSet(alternatives, 0, (int)lowerBound);
+                Subject.CommonNoun.AlternativeSets.Add(alternativeSet);
+            })
+            .Check(SubjectVerbAgree, SubjectUnmodified)
+            .Documentation("Declares the specified number of Adjectives must be true of Subjects.  So 'cats are big or small' says cats are always either big or small, but not both or neither."),
 
         new Syntax(() => new object[] { Subject, Is, PredicateAPList })
             .Action(() =>

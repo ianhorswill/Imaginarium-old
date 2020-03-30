@@ -31,7 +31,7 @@ public class UIDriver : MonoBehaviour
             OutputField.text = "No generator selected";
         else
         {
-            OutputField.text = $"Using {Path.GetFileName(Parser.DefinitionsDirectory)} generator";
+            OutputField.text = $"Using {Path.GetFileName(generator)} generator";
             try
             {
                 Parser.DefinitionsDirectory = generator;

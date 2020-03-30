@@ -256,15 +256,19 @@ public class CommonNoun : Noun
         /// At most one of these may be true of the noun
         /// </summary>
         public readonly MonadicConceptLiteral[] Alternatives;
-        /// <summary>
-        /// Whether one of them *has* to be true of the noun
-        /// </summary>
-        public readonly bool IsRequired;
+
+        public readonly int MinCount;
+        public readonly int MaxCount;
 
         public AlternativeSet(MonadicConceptLiteral[] alternatives, bool isRequired)
+            : this(alternatives, isRequired ? 1 : 0, 1)
+        { }
+
+        public AlternativeSet(MonadicConceptLiteral[] alternatives, int minCount, int maxCount)
         {
             Alternatives = alternatives;
-            IsRequired = isRequired;
+            MinCount = minCount;
+            MaxCount = maxCount;
         }
     }
 

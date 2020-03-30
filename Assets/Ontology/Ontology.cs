@@ -100,7 +100,8 @@ public static class Ontology
         Driver.ClearLoadErrors();
 
         foreach (var file in Directory.GetFiles(Parser.DefinitionsDirectory))
-            if (Path.GetExtension(file) == ConfigurationFiles.SourceExtension)
+            if (!Path.GetFileName(file).StartsWith(".")
+                && Path.GetExtension(file) == ConfigurationFiles.SourceExtension)
             {
                 try
                 {
