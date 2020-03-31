@@ -27,7 +27,7 @@ public class UIDriver : MonoBehaviour
 
         var generator = PlayerPrefs.GetString("DefinitionsDirectory", null);
 
-        if (generator == null)
+        if (string.IsNullOrEmpty(generator))
             OutputField.text = "No generator selected";
         else
         {

@@ -150,7 +150,7 @@ public class Segment
     public virtual void ParseModifiers()
     { }
 
-    private void SetText(ScannerState from)
+    protected void SetText(ScannerState from)
     {
         SetText(from, State);
     }

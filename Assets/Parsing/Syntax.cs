@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using UnityEngine.iOS;
 
 /// <summary>
 /// Rules for parsing the top-level syntax of sentences.
@@ -64,7 +65,7 @@ public partial class Syntax
 
     private static bool VerbBaseForm()
     {
-        if (VerbNumber == Number.Singular)
+        if (Verb.Text[0] != "be" && VerbNumber == Number.Singular)
             return false;
         VerbNumber = Number.Plural;
         Verb.Conjugation = VerbConjugation.BaseForm;
@@ -238,11 +239,34 @@ public partial class Syntax
         ResetParser();
         var old = State;
 
-        if (MatchConstituents() && EndOfInput && (validityTests == null || validityTests.All(test => test())))
-        {
-            action();
-            return true;
-        }
+        if (MatchConstituents())
+            if (EndOfInput)
+            {
+                // Check validity tests and fail if one fails
+                if (validityTests != null)
+                {
+                    foreach (var test in validityTests)
+                        if (!test())
+                        {
+                            if (LogMatch)
+                            {
+                                var d = (Delegate)test;
+                                Driver.AppendResponseLine("Validity test failed: "+d.Method.Name);
+                            }
+
+                            goto fail;
+                        }
+                }
+
+                action();
+                return true;
+            }
+            else if (LogMatch)
+            {
+                Driver.AppendResponseLine("Remaining input blocked match: "+Parser.CurrentToken);
+            }
+
+        fail:
         ResetTo(old);
         return false;
     }
@@ -255,15 +279,11 @@ public partial class Syntax
     {
         var constituents = makeConstituents();
 
-        if (LogMatch)
-        {
-            Console.Write("Try parse rule: ");
-            foreach (var c in constituents)
-            {
-                Console.Write((ConstiuentToString(c)));
-                Console.Write(' ');
-            }
-        }
+        if (constituents[0] is string firstToken && CurrentToken != firstToken)
+            // Fast path.  This also reduces spam in the logging output
+            return false;
+
+        if (LogMatch) Driver.AppendResponseLine("Try parse rule: " + SentencePatternDescription);
 
         for (int i = 0; i < constituents.Length; i++)
         {
@@ -271,8 +291,8 @@ public partial class Syntax
             if (LogMatch)
             {
                 var conName = ConstiuentToString(c);
-                Console.WriteLine($"Constituent {conName}");
-                Console.WriteLine($"Remaining input: {Parser.RemainingInput}");
+                Driver.AppendResponseLine($"Constituent {conName}");
+                Driver.AppendResponseLine($"Remaining input: {Parser.RemainingInput}");
             }
             if (BreakOnMatch)
                 Debugger.Break();
@@ -334,7 +354,7 @@ public partial class Syntax
                 {
                     var text = seg.Text;
                     var untok = text != null ? text.Untokenize() : "(null)";
-                    Console.WriteLine($"{seg.Name} matches {untok}");
+                    Driver.AppendResponseLine($"{seg.Name} matches {untok}");
                 }
             }
             else if (c is Func<bool> test)
@@ -346,15 +366,7 @@ public partial class Syntax
 
         }
 
-        if (LogMatch)
-        {
-            Console.Write("Succeeded parsing rule: ");
-            foreach (var c in constituents)
-            {
-                Console.Write((ConstiuentToString(c)));
-                Console.Write(' ');
-            }
-        }
+        if (LogMatch) Driver.AppendResponseLine("Succeeded parsing rule: " + SentencePatternDescription);
         return true;
     }
 
@@ -383,7 +395,19 @@ public partial class Syntax
 
     public bool IsCommand;
     public bool BreakOnMatch;
-    public bool LogMatch;
+    /// <summary>
+    /// True if logging all parsing
+    /// </summary>
+    public static bool LogAllParsing;
+    /// <summary>
+    /// True if logging this one rule, regardless of LogAllParsing
+    /// </summary>
+    public bool _logMatch;
+
+    /// <summary>
+    /// True if we should log the parsing of this rule right now.
+    /// </summary>
+    public bool LogMatch => _logMatch || LogAllParsing;
 
     public Syntax DebugMatch()
     {
@@ -393,7 +417,7 @@ public partial class Syntax
 
     public Syntax Log()
     {
-        LogMatch = true;
+        _logMatch = true;
         return this;
     }
 

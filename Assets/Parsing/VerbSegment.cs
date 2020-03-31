@@ -111,6 +111,7 @@ public class VerbSegment : ReferringExpression<Verb>
             return false;
         }
 
+        SetText(old);
         Syntax.VerbNumber = Verb.Trie.LastMatchPlural ? Syntax.Number.Plural : Syntax.Number.Singular;
         return true;
     }

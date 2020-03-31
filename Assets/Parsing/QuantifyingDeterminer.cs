@@ -45,6 +45,7 @@ public class QuantifyingDeterminer : ClosedClassSegment
     private static readonly string[] SingularQuantifiers =
     {
         "one",
+        "another"
     };
 
     private static readonly string[] PluralQuantifiers =

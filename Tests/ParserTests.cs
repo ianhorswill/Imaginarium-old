@@ -103,5 +103,14 @@ namespace Tests
             var love = Verb.Find("love");
             Assert.IsNotNull(love);
         }
+
+        [TestMethod]
+        public void BeRelatedToTest()
+        {
+            Ontology.EraseConcepts();
+            ParseAndExecute("A character can be related to one other character");
+            var love = Verb.Find("be","related","to");
+            Assert.IsNotNull(love);
+        }
     }
 }

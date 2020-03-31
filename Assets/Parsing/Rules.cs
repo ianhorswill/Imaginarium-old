@@ -44,6 +44,10 @@ public partial class Syntax
     /// </summary>
     public static readonly Syntax[] AllRules =
     {
+        new Syntax("debug")
+            .Action( () => Syntax.LogAllParsing = !Syntax.LogAllParsing)
+            .Documentation("Toggles debugging of parser"), 
+
         new Syntax("help")
             .Action(() =>
             {
