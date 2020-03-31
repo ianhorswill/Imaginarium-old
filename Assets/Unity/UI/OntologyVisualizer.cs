@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class OntologyVisualizer : MonoBehaviour, IGraphGenerator
 {
-    public void GenerateGraph(GraphVisualization.Graph g)
+    public void GenerateGraph(Graph g)
     {
         var nounStyle = g.NodeStyleNamed("Noun");
         var adjectiveStyle = g.NodeStyleNamed("Adjective");
@@ -41,7 +41,11 @@ public class OntologyVisualizer : MonoBehaviour, IGraphGenerator
                         if (a.Conditions.Length==0)
                             yield return (c, a.Modifier.Concept, a.Modifier.IsPositive?"is always":"is never", null);
                         else
-                            yield return (c, a.Modifier, "can be", null);
+                            yield return (c, a.Modifier.Concept, a.Modifier.IsPositive?"can be":"can be not", null);
+                    foreach (var p in c.Parts)
+                        yield return (c, p, "has part", null);
+                    foreach (var prop in c.Properties)
+                        yield return (c, prop, "has property", null);
                     break;
 
                 case Verb v:
@@ -53,6 +57,10 @@ public class OntologyVisualizer : MonoBehaviour, IGraphGenerator
                         yield return (v, super, "implies", null);
                     foreach (var m in v.MutualExclusions)
                         yield return (v, m, "mutually exclusive", null);
+                    break;
+
+                case Part part:
+                    yield return (part, part.Kind, "is a", null);
                     break;
             }
         }
