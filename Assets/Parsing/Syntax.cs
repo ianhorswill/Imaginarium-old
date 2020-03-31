@@ -29,12 +29,11 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
-using UnityEngine.iOS;
 
 /// <summary>
 /// Rules for parsing the top-level syntax of sentences.
 /// </summary>
-[DebuggerDisplay("{HelpDescription}")]
+[DebuggerDisplay("{" + nameof(HelpDescription) + "}")]
 public partial class Syntax
 {
     /// <summary>
@@ -290,7 +289,7 @@ public partial class Syntax
             var c = constituents[i];
             if (LogMatch)
             {
-                var conName = ConstiuentToString(c);
+                var conName = ConstituentToString(c);
                 Driver.AppendResponseLine($"Constituent {conName}");
                 Driver.AppendResponseLine($"Remaining input: {Parser.RemainingInput}");
             }
@@ -353,8 +352,8 @@ public partial class Syntax
                 if (LogMatch)
                 {
                     var text = seg.Text;
-                    var untok = text != null ? text.Untokenize() : "(null)";
-                    Driver.AppendResponseLine($"{seg.Name} matches {untok}");
+                    var asString = text != null ? text.Untokenize() : "(null)";
+                    Driver.AppendResponseLine($"{seg.Name} matches {asString}");
                 }
             }
             else if (c is Func<bool> test)
@@ -370,10 +369,9 @@ public partial class Syntax
         return true;
     }
 
-    private static object ConstiuentToString(object c)
+    private static object ConstituentToString(object c)
     {
-        var seg = c as Segment;
-        var conName = seg != null ? seg.Name : c;
+        var conName = c is Segment seg ? seg.Name : c;
         return conName;
     }
 
@@ -402,6 +400,7 @@ public partial class Syntax
     /// <summary>
     /// True if logging this one rule, regardless of LogAllParsing
     /// </summary>
+    // ReSharper disable once InconsistentNaming
     public bool _logMatch;
 
     /// <summary>

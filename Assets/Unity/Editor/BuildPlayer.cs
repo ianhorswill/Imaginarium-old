@@ -22,7 +22,15 @@ public class BuildPlayer
 
         var options = new BuildPlayerOptions
         {
-            scenes = new[] { "Assets/Scenes/Help.unity" },
+            scenes = new[]
+            {
+                "Assets/Scenes/Help.unity",
+                "Assets/Scenes/Repl.unity",
+                "Assets/Scenes/Server.unity",
+                "Assets/Scenes/Main menu/Main menu.unity",
+                "Assets/Scenes/Project selector/Project selector.unity",
+                "Assets/Scenes/Repo manager/Repo manager.unity"
+            },
             locationPathName = locationPath,
             target = target,
             options = BuildOptions.None

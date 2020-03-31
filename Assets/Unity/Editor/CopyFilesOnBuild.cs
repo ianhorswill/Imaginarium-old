@@ -2,6 +2,7 @@
 using System.IO;
 using UnityEditor;
 using UnityEditor.Callbacks;
+using UnityEngine;
 
 /// <summary>
 /// Copy the definition files, etc. into the builds
@@ -13,6 +14,7 @@ public class CopyFilesOnBuild
     // ReSharper disable once IdentifierTypo
     public static void OnPostprocessBuild(BuildTarget target, string pathToBuiltProject)
     {
+        ConfigurationFiles.UnityPath = Application.dataPath;
         var buildDirectory = Path.GetDirectoryName(pathToBuiltProject);
         if (buildDirectory == null)
             throw new FileNotFoundException("Invalid build directory", pathToBuiltProject);
