@@ -325,8 +325,12 @@ public class UIDriver : MonoBehaviour
         RelationshipGraph.Clear();
         if (Invention == null)
             return;
-        foreach (var i in Invention.Individuals)
+        foreach (var i in Invention.Individuals) 
             RelationshipGraph.AddNode(i, Invention.NameString(i));
+        foreach (var i in Invention.Individuals)
+        foreach (var p in i.Parts)
+            RelationshipGraph.AddEdge(i, p.Value, p.Key.Text);
+
         foreach (var relationship in Invention.Relationships)
         {
             var v = relationship.Item1;

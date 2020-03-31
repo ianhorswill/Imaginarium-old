@@ -179,6 +179,7 @@ public class Generator
         foreach (var part in k.Parts)
         {
             var p = Individual.Ephemeral(part.MonadicConcepts, part.Name.Prepend("'s").ToArray(), i);
+            i.Parts[part] = p;
             EphemeralIndividuals.Add(p);
             AddParts(p);
         }
