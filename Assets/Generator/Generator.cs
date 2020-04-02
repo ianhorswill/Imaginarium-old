@@ -161,10 +161,22 @@ public class Generator
             if (v.Generalizations.Count > 0 || v.MutualExclusions.Count > 0)
                 foreach (var (s, o) in Domain(v))
                 {
+                    var vHolds = Holds(v, s, o);
                     foreach (var g in v.Generalizations)
-                        AddImplication(Holds(g, s, o), Holds(v, s, o));
+                        AddImplication(Holds(g, s, o), vHolds);
                     foreach (var e in v.MutualExclusions)
-                        Problem.AtMost(1, Holds(v, s, o), Holds(e, s, o));
+                        Problem.AtMost(1, vHolds, Holds(e, s, o));
+                }
+
+            if (v.Superspecies.Count > 0 || v.Subspecies.Count > 0)
+                foreach (var (s, o) in Domain(v))
+                {
+                    var vHolds = Holds(v, s, o);
+                    foreach (var g in v.Superspecies)
+                        // Subspecies implies superspecies
+                        AddImplication(Holds(g, s, o), vHolds);
+                    // Superspecies implies some subspecies
+                    Problem.AtMost(1, v.Subspecies.Select(sub => Holds(sub, s, o)).Append(Not(vHolds)));
                 }
         }
     }

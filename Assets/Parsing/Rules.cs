@@ -149,6 +149,25 @@ public partial class Syntax
             .Check(VerbGerundForm, Verb2GerundForm)
             .Documentation("States that two objects being related by the first verb means they must also be related by the second."), 
 
+        new Syntax(() => new object[] { Verb, "is", "a", "way", "of", Verb2 })
+            .Action(() =>
+            {
+                if (Verb.Verb.SubjectKind == null)
+                    Verb.Verb.SubjectKind = Verb2.Verb.SubjectKind;
+                if (Verb.Verb.ObjectKind == null)
+                    Verb.Verb.ObjectKind = Verb2.Verb.ObjectKind;
+
+                if (Verb2.Verb.SubjectKind == null)
+                    Verb2.Verb.SubjectKind = Verb.Verb.SubjectKind;
+                if (Verb2.Verb.ObjectKind == null)
+                    Verb2.Verb.ObjectKind = Verb.Verb.ObjectKind;
+
+                Verb.Verb.Superspecies.Add(Verb2.Verb);
+                Verb2.Verb.Subspecies.Add(Verb.Verb);
+            })
+            .Check(VerbGerundForm, Verb2GerundForm)
+            .Documentation("States that two objects being related by the first verb means they must also be related by the second."), 
+
         new Syntax(() => new object[] { Subject, "are", RareCommon })
             .Action(() => Subject.CommonNoun.InitialProbability = RareCommon.Value)
             .Check(SubjectPlural, SubjectUnmodified)

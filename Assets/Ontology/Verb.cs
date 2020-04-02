@@ -45,6 +45,10 @@ public class Verb : Concept
     /// </summary>
     public List<Verb> MutualExclusions = new List<Verb>();
 
+    public List<Verb> Subspecies = new List<Verb>();
+    // ReSharper disable once IdentifierTypo
+    public List<Verb> Superspecies = new List<Verb>();
+
     /// <summary>
     /// There is at most one object for each possible subject
     /// </summary>
@@ -127,7 +131,7 @@ public class Verb : Concept
             Ontology.EnsureUndefinedOrDefinedAsType(value, GetType());
             if (_singular != null) Trie.Store(_singular, null);
             _singular = value;
-            Trie.Store(_singular, this, false);
+            Trie.Store(_singular, this);
             EnsurePluralForm();
             EnsureGerundForm();
         }

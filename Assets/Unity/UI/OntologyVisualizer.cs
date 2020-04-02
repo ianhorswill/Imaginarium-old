@@ -55,6 +55,8 @@ public class OntologyVisualizer : MonoBehaviour, IGraphGenerator
                         yield return (v, v.ObjectKind, "object", null);
                     foreach (var super in v.Generalizations)
                         yield return (v, super, "implies", null);
+                    foreach (var super in v.Superspecies)
+                        yield return (v, super, "is a way of", null);
                     foreach (var m in v.MutualExclusions)
                         yield return (v, m, "mutually exclusive", null);
                     break;

@@ -337,7 +337,9 @@ public class UIDriver : MonoBehaviour
             var f = relationship.Item2;
             var t = relationship.Item3;
             var verb = v.Text;
-            RelationshipGraph.AddEdge(f, t, verb, VerbStyle(v));
+            // Don't bother drawing if this is implied by a subspecies.
+            if (v.Subspecies.Count == 0)
+                RelationshipGraph.AddEdge(f, t, verb, VerbStyle(v));
         }
     }
     #endregion

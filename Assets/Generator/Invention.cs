@@ -154,6 +154,31 @@ public class Invention
         return nouns.Where(n => !redundant.Contains(n));
     }
 
+    private CommonNoun KindWithNameTemplate(Individual i)
+    {
+        foreach (var kind in i.Kinds)
+        {
+            var k = KindWithNameTemplate(kind);
+            if (k != null)
+                return k;
+        }
+
+        return null;
+    }
+
+    private CommonNoun KindWithNameTemplate(CommonNoun k)
+    {
+        if (k.NameTemplate != null)
+            return k;
+        foreach (var super in k.Superkinds)
+        {
+            var s = KindWithNameTemplate(super);
+            if (s != null)
+                return s;
+        }
+        return null;
+    }
+
     public string NameString(Individual i, List<Property> suppressedProperties = null)
     {
         var containerPrefix = i.Container != null ? NameString(i.Container) : "";
@@ -168,9 +193,9 @@ public class Invention
             }
 
             Debug.AssertFormat(i.Kinds.Count > 0, "NameString({0}): individual has no kinds?", i);
-            var kind = i.Kinds[0];
-            return kind.NameTemplate != null
-                       ? FormatNameFromTemplate(i, suppressedProperties, kind)
+            var k = KindWithNameTemplate(i);
+            return k != null
+                       ? FormatNameFromTemplate(i, suppressedProperties, k)
                        : i.Text;
         }
 
