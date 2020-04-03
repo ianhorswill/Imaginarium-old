@@ -71,6 +71,11 @@ public class Adjective : MonadicConcept
     /// <inheritdoc />
     public override string[] StandardName => Name;
 
+    /// <summary>
+    /// Suppress this adjective during text generation.
+    /// </summary>
+    public bool IsSilent { get; set; }
+
     /// <inheritdoc />
     public override bool IsNamed(string[] tokens) => Name.SameAs(tokens);
 }

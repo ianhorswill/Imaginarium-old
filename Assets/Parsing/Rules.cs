@@ -265,6 +265,10 @@ public partial class Syntax
             .Check(SubjectUnmodified)
             .Documentation("Declares that Subjects can be Adjectives, but don't have to be."),
 
+        new Syntax(() => new object[] { "Do", "not", "mention", "being", PredicateAP })
+            .Action(() => { PredicateAP.Adjective.IsSilent = true; })
+            .Documentation("Declares that the specified adjective shouldn't be mentioned in descriptions."),
+
         new Syntax(() => new object[] { Subject, "is", Object })
             .Action(() =>
             {

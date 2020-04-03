@@ -64,7 +64,7 @@ public class Invention
         var suppressedProperties = new List<Property>();
         var name = NameString(i, suppressedProperties);
 
-        var adjectivalPhrases = AdjectivesDescribing(i).Select(a => a.StandardName).Cast<IEnumerable<string>>().ToList();
+        var adjectivalPhrases = AdjectivesDescribing(i).Where(a => !a.IsSilent).Select(a => a.StandardName).Cast<IEnumerable<string>>().ToList();
         // Add commas after all but the last adjectival phrase
         for (int n = 0; n < adjectivalPhrases.Count - 1; n++)
             adjectivalPhrases[n] = adjectivalPhrases[n].Append(",");
