@@ -278,7 +278,8 @@ public partial class Syntax
     {
         var constituents = makeConstituents();
 
-        if (constituents[0] is string firstToken && CurrentToken != firstToken)
+        if (constituents[0] is string firstToken 
+            && string.Compare(CurrentToken, firstToken, StringComparison.InvariantCultureIgnoreCase) != 0)
             // Fast path.  This also reduces spam in the logging output
             return false;
 

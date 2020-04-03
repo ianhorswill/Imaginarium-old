@@ -45,6 +45,7 @@ public class UIDriver : MonoBehaviour
 
         // Move keyboard focus to input
         SelectInput();
+        ScrollToTop();
     }
 
     private void CheckForLoadErrors()
