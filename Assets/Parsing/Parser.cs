@@ -438,7 +438,7 @@ public static class Parser
         /// <summary>
         /// Free-form text, e.g. from a quotation.
         /// </summary>
-        public Segment Text = new Segment() {Name = "AnyText"};
+        public Segment Text = new Segment() {Name = "AnyText", AllowListConjunctions = true };
 
         public QuantifyingDeterminer Quantifier = new QuantifyingDeterminer() {Name = "one/many/other"};
 

@@ -31,6 +31,8 @@ using static Parser;
 /// </summary>
 public class Segment
 {
+    public bool AllowListConjunctions;
+
     /// <summary>
     /// Scan forward from current position to the occurence of token.
     /// Text will not include token, and terminating token will not be skipped.
@@ -46,7 +48,7 @@ public class Segment
             return false;
         var beginning = State;
         while (!EndOfInput)
-            if (Syntax.ListConjunction(CurrentToken))
+            if (!AllowListConjunctions && Syntax.ListConjunction(CurrentToken))
                 return false;
             else if (token == CurrentToken)
             {

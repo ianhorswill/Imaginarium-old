@@ -256,6 +256,11 @@ public partial class Syntax
             .Check(SubjectUnmodified, SubjectCommonNoun)
             .Documentation("Tells the system how to print the name of an object."),
 
+        new Syntax(() => new object[] { Subject, Is, "described", "as", "\"", Text, "\"" })
+            .Action( () => Subject.CommonNoun.DescriptionTemplate = Text.Text)
+            .Check(SubjectUnmodified, SubjectCommonNoun)
+            .Documentation("Tells the system how to generate the description of an object."),
+
         new Syntax(() => new object[] { Subject, "can", "be", PredicateAP })
             .Action(() =>
             {

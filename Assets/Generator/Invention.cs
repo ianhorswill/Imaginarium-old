@@ -55,33 +55,135 @@ public class Invention
     }
 
     #region Description generation
+
+    private static readonly string[] DefaultDescriptionTemplate =
+        {"[", "NameString", "]", "is", "a", "[", "Modifiers", "]", "[", "Noun", "]"};
+
     /// <summary>
     /// A textual description of the Individual's attributes within Model.
     /// </summary>
     public string Description(Individual i, string startEmphasis="", string endEmphasis="")
     {
-        // Properties we shouldn't surface because they're implicit or already surfaced.
         var suppressedProperties = new List<Property>();
-        var name = NameString(i, suppressedProperties);
 
-        var adjectivalPhrases = AdjectivesDescribing(i).Where(a => !a.IsSilent).Select(a => a.StandardName).Cast<IEnumerable<string>>().ToList();
-        // Add commas after all but the last adjectival phrase
-        for (int n = 0; n < adjectivalPhrases.Count - 1; n++)
-            adjectivalPhrases[n] = adjectivalPhrases[n].Append(",");
-        var result = adjectivalPhrases.SelectMany(list => list).Append(startEmphasis).Concat(MostSpecificNouns(i).SelectMany(n => n.StandardName)).Append(endEmphasis).Prepend("a").Untokenize();
+        var descriptionKind = FindKindOrSuperKind(i, k => k.DescriptionTemplate != null);
+        var template = (descriptionKind != null) ? descriptionKind.DescriptionTemplate : DefaultDescriptionTemplate;
+
+        if (descriptionKind == null)
+            descriptionKind = i.Kinds[0];
+
+        var b = new StringBuilder();
+        var firstOne = true;
+
+        for (var n = 0; n < template.Length; n++)
+        {
+            if (firstOne)
+                firstOne = false;
+            else
+                b.Append(' ');
+
+            var token = template[n];
+            if (token == "[")
+            {
+                // Get a property name
+                var start = n+1;
+                var end = Array.IndexOf(template, "]", n);
+                if (end < 0)
+                    end = template.Length;
+                var propertyName = new string[end - start];
+                Array.Copy(template, start, propertyName, 0, end - start);
+                if (propertyName.Length == 1)
+                    AppendPropertyOrMetaPropertyValue(b, i, propertyName, suppressedProperties, descriptionKind, startEmphasis, endEmphasis);
+                else
+                    AppendPropertyValue(b, i, propertyName, descriptionKind, suppressedProperties);
+
+                n = end;
+            }
+            else
+                b.Append(token);
+        }
+
+        return b.ToString();
+    }
+
+    private void AppendPropertyOrMetaPropertyValue(StringBuilder b, Individual i, string[] propertyName,
+        List<Property> suppressedProperties, CommonNoun templateKind, string startEmphasis, string endEmphasis)
+    {
+        switch (propertyName[0])
+        {
+            case "NameString":
+                b.Append(NameString(i, suppressedProperties));
+                break;
+
+            case "Modifiers":
+                b.Append(AllModifiersOf(i));
+                break;
+
+            case "Noun":
+                b.Append(NounsDescribing(i, startEmphasis, endEmphasis));
+                break;
+
+            case "AllProperties":
+                DescribeAllProperties(i, suppressedProperties, b);
+                break;
+
+            default:
+                AppendPropertyValue(b, i, propertyName, templateKind, suppressedProperties);
+                break;
+        }
+    }
+
+    private void DescribeAllProperties(Individual i, List<Property> suppressedProperties, StringBuilder b)
+    {
         foreach (var pair in i.Properties)
         {
             var property = pair.Key;
             if (suppressedProperties.Contains(property))
                 continue;
 
-            var propertyName = property.Text;
+            var pName = property.Text;
             var prop = pair.Value;
             var value = FormatPropertyValue(prop, Model[prop]);
-            result = $"{result}, {propertyName}: {value}";
+            b.Append($", {pName}: {value}");
         }
+    }
 
-        return $"{startEmphasis}{name}{endEmphasis} is {result}";
+    private string NounsDescribing(Individual i, string startEmphasis, string endEmphasis)
+    {
+        return MostSpecificNouns(i).SelectMany(noun => noun.StandardName).Prepend(startEmphasis)
+            .Append(endEmphasis).Untokenize();
+    }
+
+    private string AllModifiersOf(Individual i)
+    {
+        var adjectivalPhrases = AdjectivesDescribing(i).Where(a => !a.IsSilent).Select(a => a.StandardName)
+            .Cast<IEnumerable<string>>().ToList();
+        // Add commas after all but the last adjectival phrase
+        for (int j = 0; j < adjectivalPhrases.Count - 1; j++)
+            adjectivalPhrases[j] = adjectivalPhrases[j].Append(",");
+        var untokenize = adjectivalPhrases.SelectMany(list => list).Untokenize();
+        return untokenize;
+    }
+
+    private void AppendPropertyValue(StringBuilder b, Individual i, string[] propertyName, CommonNoun templateKind,
+        List<Property> suppressedProperties)
+    {
+// Find the property
+        var property = templateKind.PropertyNamed(propertyName);
+        if (property != null)
+        {
+            // Print its value
+            b.Append(Model[i.Properties[property]]);
+            suppressedProperties?.Add(property);
+        }
+        else
+        {
+            var part = templateKind.PartNamed(propertyName);
+            if (part != null)
+                b.Append(Description(i.Parts[part]));
+            else
+                b.Append($"<unknown property {propertyName.Untokenize()}>");
+        }
     }
 
     // ReSharper disable once UnusedParameter.Local
@@ -154,11 +256,11 @@ public class Invention
         return nouns.Where(n => !redundant.Contains(n));
     }
 
-    private CommonNoun KindWithNameTemplate(Individual i)
+    private CommonNoun FindKindOrSuperKind(Individual i, Func<CommonNoun, bool> templateTest)
     {
         foreach (var kind in i.Kinds)
         {
-            var k = KindWithNameTemplate(kind);
+            var k = FindKindOrSuperKind(kind, templateTest);
             if (k != null)
                 return k;
         }
@@ -166,13 +268,13 @@ public class Invention
         return null;
     }
 
-    private CommonNoun KindWithNameTemplate(CommonNoun k)
+    private CommonNoun FindKindOrSuperKind(CommonNoun k, Func<CommonNoun, bool> templateTest)
     {
-        if (k.NameTemplate != null)
+        if (templateTest(k))
             return k;
         foreach (var super in k.Superkinds)
         {
-            var s = KindWithNameTemplate(super);
+            var s = FindKindOrSuperKind(super, templateTest);
             if (s != null)
                 return s;
         }
@@ -193,7 +295,7 @@ public class Invention
             }
 
             Debug.AssertFormat(i.Kinds.Count > 0, "NameString({0}): individual has no kinds?", i);
-            var k = KindWithNameTemplate(i);
+            var k = FindKindOrSuperKind(i, kind => kind.NameTemplate != null);
             return k != null
                        ? FormatNameFromTemplate(i, suppressedProperties, k)
                        : i.Text;

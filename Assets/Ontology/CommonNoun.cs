@@ -135,6 +135,11 @@ public class CommonNoun : Noun
     public string[] NameTemplate { get; set; }
 
     /// <summary>
+    /// Template used to generate a a description of the object
+    /// </summary>
+    public string[] DescriptionTemplate { get; set; }
+
+    /// <summary>
     /// Returns the common noun identified by the specified sequence of tokens, or null, if there is no such noun.
     /// </summary>
     /// <param name="name">Tokens identifying the noun</param>
