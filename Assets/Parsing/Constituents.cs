@@ -68,6 +68,11 @@ public partial class Syntax
     public static Segment ListName => Current.ListName;
 
     /// <summary>
+    /// Segment for the name of a button to be created
+    /// </summary>
+    public static Segment ButtonName => Current.ButtonName;
+
+    /// <summary>
     /// Free-form text, e.g. from a quotation.
     /// </summary>
     public static Segment Text => Current.Text;

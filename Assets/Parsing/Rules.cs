@@ -64,6 +64,12 @@ public partial class Syntax
             .Action(UnityEngine.Application.Quit)
             .Documentation("Ends the application"),
 
+        new Syntax(() => new object[] { "pressing", "\"", ButtonName, "\"", "means", "\"", Text, "\"" })
+            .Action(() =>
+            {
+                Driver.Repl.AddButton(ButtonName.Text.Untokenize(), Text.Text.Untokenize());
+            }),
+
         new Syntax(() => new object[] { "imagine", Object })
             .Action(() =>
             {

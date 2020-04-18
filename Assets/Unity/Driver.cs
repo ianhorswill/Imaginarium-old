@@ -27,7 +27,7 @@
 using System.IO;
 using System.Text;
 
-public class Driver
+public static class Driver
 {
     #region Command output
     private static readonly StringBuilder CommandBuffer = new StringBuilder();
@@ -67,4 +67,11 @@ public class Driver
             LoadErrorBuffer.AppendLine($"File {Path.GetFileName(filename)}, line {lineNumber}:\nWhile processing the command:\n<b>{Parser.InputTriggeringException}</b>\nThe following error occured:\n<b>{message}</b>");
     }
     #endregion
+
+    public static IRepl Repl;
+}
+
+public interface IRepl
+{
+    void AddButton(string buttonName, string command);
 }

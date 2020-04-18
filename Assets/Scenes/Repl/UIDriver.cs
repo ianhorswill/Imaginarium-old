@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using GraphVisualization;
 
-public class UIDriver : MonoBehaviour
+public class UIDriver : MonoBehaviour, IRepl
 {
     public static Invention Invention;
     private List<string> inventionDescriptions;
@@ -16,6 +16,8 @@ public class UIDriver : MonoBehaviour
     public Scrollbar OutputVerticalScroll;
     public ContentSizeFitter OutputFitter;
     public Graph RelationshipGraph;
+    public Transform ButtonBarContent;
+    public GameObject ButtonPrefab;
 
     /// <summary>
     /// Called at startup.
@@ -23,6 +25,8 @@ public class UIDriver : MonoBehaviour
     /// </summary>
     public void Start()
     {
+        Driver.Repl = this;
+
         ConfigurationFiles.UnityPath = Application.dataPath;
 
         var generator = PlayerPrefs.GetString("DefinitionsDirectory", null);
@@ -178,15 +182,7 @@ public class UIDriver : MonoBehaviour
         {
             if (Input != "")
                 Parser.UserCommand(Input);
-            if (Driver.CommandResponse == "" && Generator.Current != null)
-            {
-                Generator.Current.Rebuild();
-                ReSolve();
-                foreach (var s in inventionDescriptions)
-                    Driver.AppendResponseLine(s);
-
-                MakeGraph();
-            }
+            MaybeRegenerateInvention();
 
             Input = "";
         }
@@ -223,6 +219,19 @@ public class UIDriver : MonoBehaviour
         }
 
         Output = Driver.CommandResponse;
+    }
+
+    private void MaybeRegenerateInvention()
+    {
+        if (Driver.CommandResponse == "" && Generator.Current != null)
+        {
+            Generator.Current.Rebuild();
+            ReSolve();
+            foreach (var s in inventionDescriptions)
+                Driver.AppendResponseLine(s);
+
+            MakeGraph();
+        }
     }
 
     private static string FormatExceptionMessage(Exception ex)
@@ -342,6 +351,27 @@ public class UIDriver : MonoBehaviour
             if (v.Subspecies.Count == 0)
                 RelationshipGraph.AddEdge(f, t, verb, VerbStyle(v));
         }
+    }
+    #endregion
+
+    #region Button bar
+    /// <summary>
+    /// Adds a button to the button bar of the REPL
+    /// </summary>
+    /// <param name="buttonName">Text label for the button</param>
+    /// <param name="command">Command to execute when the button is pressed.</param>
+    public void AddButton(string buttonName, string command)
+    {
+        var button = Instantiate(ButtonPrefab, ButtonBarContent);
+        button.name = buttonName;
+        button.GetComponentInChildren<Text>().text = buttonName;
+        button.GetComponent<Button>().onClick.AddListener(() =>
+        {
+            Driver.ClearCommandBuffer();
+            Parser.ParseAndExecute(command);
+            MaybeRegenerateInvention();
+            Output = Driver.CommandResponse;
+        });
     }
     #endregion
 }

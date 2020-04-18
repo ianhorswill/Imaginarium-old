@@ -9,7 +9,7 @@ EditorBuildSettings:
     path: Assets/Scenes/Help.unity
     guid: d2c68b999da6ba3438470d0010f8b468
   - enabled: 1
-    path: Assets/Scenes/Repl.unity
+    path: Assets/Scenes/Repl/Repl.unity
     guid: cb22ad94f0937cf48826d107240f72ad
   - enabled: 1
     path: Assets/Scenes/Main menu/Main menu.unity

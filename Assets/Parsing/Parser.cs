@@ -436,6 +436,11 @@ public static class Parser
         public Segment ListName = new Segment() {Name = "ListName"};
 
         /// <summary>
+        /// Segment for the name of a button being created
+        /// </summary>
+        public Segment ButtonName = new Segment() {Name = "ButtonName"};
+        
+        /// <summary>
         /// Free-form text, e.g. from a quotation.
         /// </summary>
         public Segment Text = new Segment() {Name = "AnyText", AllowListConjunctions = true };
