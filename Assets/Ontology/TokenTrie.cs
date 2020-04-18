@@ -46,6 +46,8 @@ public abstract class TokenTrieBase
     public bool Contains(TokenString t) => Find(t) != null;
 
     public abstract object Find(TokenString t);
+
+    public bool IsCaseSensitive = false;
 }
 
 /// <summary>
@@ -76,8 +78,9 @@ public class TokenTrie<TReferent> : TokenTrieBase
     public void Store(string[] tokens, TReferent c, bool isPlural = false)
     {
         var node = root;
-        foreach (var t in tokens)
+        foreach (var tok in tokens)
         {
+            var t = IsCaseSensitive?tok:tok.ToLower();
             if (node.Dict.TryGetValue(t, out Node match))
             {
                 node = match;
@@ -111,7 +114,9 @@ public class TokenTrie<TReferent> : TokenTrieBase
         var node = root;
         while (index < tokens.Count)
         {
-            if (node.Dict.TryGetValue(tokens[index++], out Node match))
+            var tok = tokens[index++];
+            var t = IsCaseSensitive?tok:tok.ToLower();
+            if (node.Dict.TryGetValue(t, out Node match))
             {
                 node = match;
                 if (node.Concept != null)
