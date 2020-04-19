@@ -250,7 +250,11 @@ public static class Parser
 
         number = Array.IndexOf(NumberWords, token);
 
-        return number >= 0;
+        var success = number >= 0;
+        if (success)
+            SkipToken();
+
+        return success;
     }
 
     /// <summary>
@@ -553,7 +557,7 @@ public static class Parser
         {
             CurrentSourceLine++;
             var trimmed = def.Trim();
-            if (trimmed != "" && !trimmed.StartsWith("#"))
+            if (trimmed != "" && !trimmed.StartsWith("#") && !trimmed.StartsWith("//"))
                 ParseAndExecute(trimmed);
         }
 
