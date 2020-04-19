@@ -57,7 +57,18 @@ public class Invention
     #region Description generation
 
     private static readonly string[] DefaultDescriptionTemplate =
-        {"[", "NameString", "]", "is", "a", "[", "Modifiers", "]", "[", "Noun", "]"};
+        { "[", "NameString", "]", "is", "a", "[", "Modifiers", "]", "[", "Noun", "]", "[", "AllProperties", "]" };
+
+    public static bool EndsWithSpace(StringBuilder b)
+    {
+        return b.Length > 0 && b[b.Length - 1] == ' ';
+    }
+
+    public static void RemoveEndingSpace(StringBuilder b)
+    {
+        if (EndsWithSpace(b))
+            b.Length = b.Length - 1;
+    }
 
     /// <summary>
     /// A textual description of the Individual's attributes within Model.
@@ -144,6 +155,7 @@ public class Invention
             var pName = property.Text;
             var prop = pair.Value;
             var value = FormatPropertyValue(prop, Model[prop]);
+            RemoveEndingSpace(b);
             b.Append($", {pName}: {value}");
         }
     }
