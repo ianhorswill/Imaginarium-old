@@ -1,10 +1,15 @@
 a human is a kind of person.
 Humans have an age between 1 and 70.
-a human is male, female or non-binary.
+a human is male, female or nonbinary.
 a human is masculine-named or feminine-named.
 a male human is masculine-named.
 a female human is feminine-named
+Do not mention being masculine-named.
+Do not mention being feminine-named.
 a human has a surname from English surnames.
 a masculine-named human has a given name from male names.
 a feminine-named human has a given name from female names.
 a human is identified as "[given name] [surname]".
+
+Pressing "human" means "imagine a human".
+Pressing "5 humans" means "imagine 5 humans".

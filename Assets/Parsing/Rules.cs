@@ -46,7 +46,8 @@ public partial class Syntax
     {
         new Syntax("debug")
             .Action( () => Syntax.LogAllParsing = !Syntax.LogAllParsing)
-            .Documentation("Toggles debugging of parser"), 
+            .Documentation("Toggles debugging of input parsing")
+            .Command(), 
 
         new Syntax("help")
             .Action(() =>
@@ -54,21 +55,25 @@ public partial class Syntax
                 foreach (var r in AllRules) 
                     Driver.AppendResponseLine(r.HelpDescription);
             })
-            .Documentation("Prints this list of commands"),
+            .Documentation("Prints this list of commands")
+            .Command(),
 
         new Syntax("quit")
             .Action(UnityEngine.Application.Quit)
-            .Documentation("Ends the application"),
+            .Documentation("Ends the application")
+            .Command(),
 
         new Syntax("exit")
             .Action(UnityEngine.Application.Quit)
-            .Documentation("Ends the application"),
+            .Documentation("Ends the application")
+            .Command(),
 
         new Syntax(() => new object[] { "pressing", "!", "\"", ButtonName, "\"", "means", "\"", Text, "\"" })
             .Action(() =>
             {
                 Driver.Repl.AddButton(ButtonName.Text.Untokenize(), Text.Text.Untokenize());
-            }),
+            })
+            .Documentation("Instructs the system to add a new button to the button bar with the specified name.  When it is pressed, it will execute the specified text."),
 
         new Syntax(() => new object[] { "imagine", "!", Object })
             .Action(() =>
@@ -78,7 +83,7 @@ public partial class Syntax
                 Generator.Current = new Generator(Object.CommonNoun, Object.Modifiers, count);
             })
             .Command()
-            .Documentation("Generates one or more Objects.  For example, 'imagine a cat' or 'imagine long-haired cats'."),
+            .Documentation("Generates one or more Objects.  For example, 'imagine a cat' or 'imagine 10 long-haired cats'."),
 
         new Syntax("undo")
             .Action( () => History.Undo() )
@@ -131,21 +136,21 @@ public partial class Syntax
         new Syntax(() => new object[] { Verb, "is", RareCommon })
             .Action(() => Verb.Verb.Density = RareCommon.Value)
             // ReSharper disable once StringLiteralTypo
-            .Documentation("States that Verb'ing is rare/common."), 
+            .Documentation("States that Verb'ing is rare or common."), 
 
         new Syntax(() => new object[] { Verb, "and", Verb2, "are", "!", "mutually", "exclusive" })
             .Action(() =>
             {
                 Verb.Verb.MutualExclusions.Add(Verb2.Verb);
             })
-            .Documentation("States that two objects can be related by both verbs at once."),
+            .Documentation("States that two objects cannot be related by both verbs at once."),
         
         new Syntax(() => new object[] { Verb, "is", "mutually", "!", "exclusive", "with", Verb2 })
             .Action(() =>
             {
                 Verb.Verb.MutualExclusions.Add(Verb2.Verb);
             })
-            .Documentation("States that two objects can be related by both verbs at once."),
+            .Documentation("States that two objects cannot be related by both verbs at once."),
 
         new Syntax(() => new object[] { Verb, "implies", "!", Verb2 })
             .Action(() =>
@@ -172,7 +177,7 @@ public partial class Syntax
                 Verb2.Verb.Subspecies.Add(Verb.Verb);
             })
             .Check(VerbGerundForm, Verb2GerundForm)
-            .Documentation("States that two objects being related by the first verb means they must also be related by the second."), 
+            .Documentation("Like 'is a kind of' but for verbs.  Verb1 implies Verb2, but Verb2 implies that one of the Verbs that is a way of Verb2ing is also true."), 
 
         new Syntax(() => new object[] { Subject, "are", RareCommon })
             .Action(() => Subject.CommonNoun.InitialProbability = RareCommon.Value)
@@ -207,7 +212,7 @@ public partial class Syntax
                 verb.IsSymmetric = true;
             })
             .Check(VerbBaseForm, SubjectCommonNoun)
-            .Documentation("Introduces a new verb and states that it's symmetric: if a verbs b, then b verbs a."),
+            .Documentation("States that the verb is symmetric: if a verbs b, then b verbs a."),
 
         new Syntax(() => new object[] { Subject, Is, "a", "kind", "!", "of", Object })
             .Action(() =>
@@ -255,7 +260,7 @@ public partial class Syntax
                 Subject.CommonNoun.SingularForm = Object.Text;
             })
             .Check(SubjectUnmodified, ObjectUnmodified, SubjectCommonNoun, ObjectCommonNoun)
-            .Documentation("Lets you correct the system's guess as to the singular of a noun."),
+            .Documentation("Lets you correct the system's guess as to the singular form of a noun."),
 
         new Syntax(() => new object[] { Subject, Is, "identified", "!", "as", "\"", Text, "\"" })
             .Action( () => Subject.CommonNoun.NameTemplate = Text.Text)
@@ -287,7 +292,7 @@ public partial class Syntax
                 proper.Kinds.Add(Object.CommonNoun);
             })
             .Check(SubjectProperNoun, ObjectCommonNoun, ObjectExplicitlySingular)
-            .Documentation("States that person or thing Subject is of the type Object."),
+            .Documentation("States that proper noun Subject is of the type Object.  For example, 'Ben is a person'."),
 
         //new Syntax(() => new object[] { Subject, Is, Object })
         //    .Action(() =>
@@ -326,7 +331,7 @@ public partial class Syntax
                 Subject.CommonNoun.AlternativeSets.Add(alternativeSet);
             })
             .Check(SubjectVerbAgree, SubjectUnmodified)
-            .Documentation("Declares the specified number of Adjectives must be true of Subjects.  So 'cats are big or small' says cats are always either big or small, but not both or neither."),
+            .Documentation("Declares the specified number of Adjectives must be true of Subjects."),
         
         new Syntax(() => new object[] { Subject, Is, "between", "!", LowerBound, "and", UpperBound, "of", PredicateAPList })
             .Action(() =>
@@ -336,7 +341,7 @@ public partial class Syntax
                 Subject.CommonNoun.AlternativeSets.Add(alternativeSet);
             })
             .Check(SubjectVerbAgree, SubjectUnmodified)
-            .Documentation("Declares the specified number of Adjectives must be true of Subjects.  So 'cats are big or small' says cats are always either big or small, but not both or neither."),
+            .Documentation("Declares the number of Adjectives true of Subjects must be in the specified range."),
         
         new Syntax(() => new object[] { Subject, "can", "be", "up", "!", "to", LowerBound, "of", PredicateAPList })
             .Action(() =>
@@ -346,7 +351,7 @@ public partial class Syntax
                 Subject.CommonNoun.AlternativeSets.Add(alternativeSet);
             })
             .Check(SubjectVerbAgree, SubjectUnmodified)
-            .Documentation("Declares the specified number of Adjectives must be true of Subjects.  So 'cats are big or small' says cats are always either big or small, but not both or neither."),
+            .Documentation("Declares the number of Adjectives true of Subjects can never be more than the specified number."),
 
         new Syntax(() => new object[] { Subject, Is, PredicateAPList })
             .Action(() =>
@@ -390,13 +395,13 @@ public partial class Syntax
                 prop.MenuRules.Add(new Property.MenuRule(Subject.Modifiers.ToArray(), menu));
             })
             .Check(SubjectVerbAgree, ObjectUnmodified)
-            .Documentation("Say Subjects have a property whose possible values are given in the specified file.  For example 'cats have a name from cat names', or 'French cats have a name from French cat names'"),
+            .Documentation("States that Subjects have a property whose possible values are given in the specified file.  For example 'cats have a name from cat names', or 'French cats have a name from French cat names'"),
 
-        new Syntax(() => new object[] { Subject, Has, Object, "called", "!", "its", ListName })
+        new Syntax(() => new object[] { Subject, Has, Object, "called", "!", "its", Text })
             .Action(() =>
             {
 
-                var partName = ListName.Text;
+                var partName = Text.Text;
                 var part = Subject.CommonNoun.Parts.FirstOrDefault(p => p.IsNamed(partName));
                 if (part == null)
                 {
@@ -405,7 +410,7 @@ public partial class Syntax
                 }
             })
             .Check(SubjectVerbAgree, ObjectUnmodified)
-            .Documentation("Say Subjects have a property whose possible values are given in the specified file.  For example 'cats have a name from cat names', or 'French cats have a name from French cat names'"),
+            .Documentation("States that Subjects have part called Text that is a Object."),
 
         new Syntax(() => new object[] { Subject, "should", "!", ExistNotExist})
             .Action(() =>
