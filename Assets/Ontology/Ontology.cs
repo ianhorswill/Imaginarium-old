@@ -41,6 +41,8 @@ public static class Ontology
     /// </summary>
     public static readonly List<IDictionary> AllReferentTables = new List<IDictionary>();
 
+    public static readonly List<Test> Tests = new List<Test>();
+
     /// <summary>
     /// Return true if there's already a concept with the specified name.
     /// </summary>
@@ -69,6 +71,7 @@ public static class Ontology
         
         TokenTrieBase.ClearAllTries();
         Parser.LoadedFiles.Clear();
+        Tests.Clear();
     }
 
     /// <summary>
@@ -122,5 +125,19 @@ public static class Ontology
         var old = Find(name);
         if (old != null && old.GetType() != newType)
             throw new NameCollisionException(name, old.GetType(), newType);
+    }
+
+    public static void AddTest(CommonNoun noun, IEnumerable<MonadicConceptLiteral> modifiers, bool shouldExist, string succeedMessage, string failMessage)
+    {
+        Tests.Add(new Test(noun, modifiers, shouldExist, succeedMessage, failMessage));
+    }
+
+    public static IEnumerable<(Test test, bool success, Invention example)> TestResults()
+    {
+        foreach (var test in Tests)
+        {
+            var (success, example) = test.Run();
+            yield return (test, success, example);
+        }
     }
 }

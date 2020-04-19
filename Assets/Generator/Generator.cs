@@ -173,9 +173,9 @@ public class Generator
                 {
                     var vHolds = Holds(v, s, o);
                     foreach (var g in v.Superspecies)
-                        // Subspecies implies superspecies
+                        // Subspecies implies super-species
                         AddImplication(Holds(g, s, o), vHolds);
-                    // Superspecies implies some subspecies
+                    // Super-species implies some subspecies
                     Problem.AtMost(1, v.Subspecies.Select(sub => Holds(sub, s, o)).Append(Not(vHolds)));
                 }
         }

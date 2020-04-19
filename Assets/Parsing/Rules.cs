@@ -406,5 +406,38 @@ public partial class Syntax
             })
             .Check(SubjectVerbAgree, ObjectUnmodified)
             .Documentation("Say Subjects have a property whose possible values are given in the specified file.  For example 'cats have a name from cat names', or 'French cats have a name from French cat names'"),
+
+        new Syntax(() => new object[] { Subject, "should", "!", ExistNotExist})
+            .Action(() =>
+            {
+                var shouldExist = ExistNotExist.Match[0] == "exist";
+                var input = Input.Untokenize();
+                Ontology.AddTest(Subject.CommonNoun, Subject.Modifiers, shouldExist,
+                    $"Test succeeded: {input}",
+                    $"Test failed: {input}");
+            })
+            .Documentation("Adds a new test to the list of tests to perform when the test command is used."),
+        
+        new Syntax("test")
+            .Action(() =>
+            {
+                var gotOne = false;
+                foreach (var (test, success, example) in Ontology.TestResults())
+                {
+                    gotOne = true;
+                    Driver.AppendResponseLine(
+                        success?
+                            $"<B><color=green>{test.SucceedMessage}</color></b>"
+                            :$"<b><color=red>{test.FailMessage}</color></b>"
+                        );
+                    if (example != null)
+                        Driver.AppendResponseLine($"Example: {example.Description(example.Individuals[0])}");
+                }
+
+                if (!gotOne)
+                    Driver.AppendResponseLine("No tests have been defined.");
+            })
+            .Documentation("Run all tests currently defined")
+            .Command(), 
     };
 }

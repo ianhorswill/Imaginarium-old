@@ -23,7 +23,7 @@ public class UIDriver : MonoBehaviour, IRepl
     /// Called at startup.
     /// Initialize UI system.
     /// </summary>
-    public void Start()
+    public IEnumerator Start()
     {
         Driver.Repl = this;
 
@@ -49,7 +49,7 @@ public class UIDriver : MonoBehaviour, IRepl
 
         // Move keyboard focus to input
         SelectInput();
-        ScrollToTop();
+        return ScrollToTop();
     }
 
     private void CheckForLoadErrors()

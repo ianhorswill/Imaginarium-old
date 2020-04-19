@@ -110,6 +110,10 @@ public partial class Syntax
     /// </summary>
     private static readonly Func<bool> Has = MatchHave;
 
+    private static readonly SimpleClosedClassSegment ExistNotExist = new SimpleClosedClassSegment(
+            "exist", new[] {"not", "exist"}, new[] { "never", "exist" })
+        {Name = "exist/not exist"};
+
     private static readonly ClosedClassSegmentWithValue<float> RareCommon =
         new ClosedClassSegmentWithValue<float>(
                 new KeyValuePair<object, float>(new[] {"very", "rare"}, 0.05f),
