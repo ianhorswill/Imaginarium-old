@@ -193,7 +193,7 @@ public class UIDriver : MonoBehaviour, IRepl
             Driver.AppendResponseLine("<color=yellow>");
             Driver.AppendResponseLine(Parser.RuleTriggeringException == null
                 ? $"Uh oh.  I got confused by '<i>{Parser.InputTriggeringException ?? "none"}</i>'"
-                : $"    Uh oh.  I got confused while matching the input '<i>{Parser.InputTriggeringException ?? "none"}</i>' to the pattern '{Parser.RuleTriggeringException.SentencePatternDescription}' ({Parser.RuleTriggeringException.DocString.Trim('.')}).");
+                : $"    Uh oh.  I got confused while matching the input '<i>{Parser.InputTriggeringException ?? "none"}</i>' to the pattern '{Parser.RuleTriggeringException.SentencePatternDescription}' ({Parser.RuleTriggeringException.SentencePatternDescription}).");
             Driver.AppendResponseLine($"    {FormatExceptionMessage(ex)}.");
             Driver.AppendResponseLine("</color>");
 

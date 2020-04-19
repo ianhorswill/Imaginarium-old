@@ -285,9 +285,17 @@ public partial class Syntax
 
         if (LogMatch) Driver.AppendResponseLine("Try parse rule: " + SentencePatternDescription);
 
+        var cut = false;
         for (int i = 0; i < constituents.Length; i++)
         {
             var c = constituents[i];
+
+            if (c.Equals("!"))
+            {
+                cut = true;
+                continue;
+            }
+
             if (LogMatch)
             {
                 var conName = ConstituentToString(c);
@@ -299,7 +307,11 @@ public partial class Syntax
             if (c is string str)
             {
                 if (!Match(str))
+                {
+                    if (cut)
+                        ThrowFailedMatch($"I expected to see '{str}' but got '{CurrentToken}'");
                     return false;
+                }
             }
             else if (c is Segment seg)
             {
@@ -307,45 +319,80 @@ public partial class Syntax
                 {
                     // Last one
                     if (!seg.ScanToEnd())
+                    {
+                        if (cut)
+                            ThrowFailedMatch($"I could not match {seg.Name}");
                         return false;
+                    }
                 }
                 else
                 {
+                    // Look up the next constituent, skipping "!".
+                    if (constituents[i + 1].Equals("!"))
+                        i++;
                     var next = constituents[i + 1];
                     if (next is string nextStr)
                     {
                         if (!seg.ScanTo(nextStr))
+                        {
+                            if (cut)
+                                ThrowFailedMatch($"I could not match {seg.Name}");
                             return false;
+                        }
                     }
                     else if (ReferenceEquals(next, Is))
                     {
                         if (!seg.ScanTo(IsCopula))
+                        {
+                            if (cut)
+                                ThrowFailedMatch($"I could not match {seg.Name}");
                             return false;
+                        }
                     }
                     else if (ReferenceEquals(next, Has))
                     {
                         if (!seg.ScanTo(IsHave))
+                        {
+                            if (cut)
+                                ThrowFailedMatch($"I could not match {seg.Name}");
                             return false;
+                        }
                     }
                     else if (next is SimpleClosedClassSegment s)
                     {
                         if (!seg.ScanTo(s.IsPossibleStart))
+                        {
+                            if (cut)
+                                ThrowFailedMatch($"I could not match {seg.Name}");
                             return false;
+                        }
                     }
                     else if (seg is SimpleClosedClassSegment)
                     {
                         if (!seg.ScanTo(tok => true))
+                        {
+                            if (cut)
+                                ThrowFailedMatch($"I could not match {seg.Name}");
                             return false;
+                        }
                     }
                     else if (next is QuantifyingDeterminer q)
                     {
                         if (!seg.ScanTo(q.IsQuantifier))
+                        {
+                            if (cut)
+                                ThrowFailedMatch($"I could not match {seg.Name}");
                             return false;
+                        }
                     }
                     else if (seg is QuantifyingDeterminer)
                     {
                         if (!seg.ScanTo(tok => true))
+                        {
+                            if (cut)
+                                ThrowFailedMatch($"I could not match {seg.Name}");
                             return false;
+                        }
                     }
                     else throw new ArgumentException("Don't know how to scan to the next constituent type");
                 }
@@ -368,6 +415,11 @@ public partial class Syntax
 
         if (LogMatch) Driver.AppendResponseLine("Succeeded parsing rule: " + SentencePatternDescription);
         return true;
+    }
+
+    private void ThrowFailedMatch(string s)
+    {
+        throw new GrammaticalError(s, s);
     }
 
     private static object ConstituentToString(object c)
@@ -473,6 +525,9 @@ public partial class Syntax
             Buffer.Append("<b>");
             foreach (var c in makeConstituents())
             {
+                if (c.Equals("!"))
+                    continue;
+
                 if (firstOne)
                     firstOne = false;
                 else Buffer.Append(' ');
