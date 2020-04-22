@@ -35,6 +35,8 @@ using System.Linq;
 /// </summary>
 public static class Ontology
 {
+    public static event Action OnErase;
+
     /// <summary>
     /// List of all the tables of different kinds of referents.
     /// Used so we know what to clear when reinitializing the ontology.
@@ -72,6 +74,7 @@ public static class Ontology
         TokenTrieBase.ClearAllTries();
         Parser.LoadedFiles.Clear();
         Tests.Clear();
+        OnErase?.Invoke();
     }
 
     /// <summary>

@@ -26,6 +26,7 @@ public class UIDriver : MonoBehaviour, IRepl
     public IEnumerator Start()
     {
         Driver.Repl = this;
+        Ontology.OnErase += ClearButtons;
 
         ConfigurationFiles.UnityPath = Application.dataPath;
 
@@ -68,6 +69,14 @@ public class UIDriver : MonoBehaviour, IRepl
     public void OnDisable()
     {
         StopAllCoroutines();
+    }
+
+    /// <summary>
+    /// Called when the level is unloaded
+    /// </summary>
+    public void OnDestroy()
+    {
+        Ontology.OnErase -= ClearButtons;
     }
 
     /// <summary>
@@ -372,6 +381,11 @@ public class UIDriver : MonoBehaviour, IRepl
             MaybeRegenerateInvention();
             Output = Driver.CommandResponse;
         });
+    }
+
+    private void ClearButtons()
+    {
+        ButtonBarContent.DestroyAllChildren();
     }
     #endregion
 }

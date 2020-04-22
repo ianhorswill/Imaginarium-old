@@ -105,16 +105,31 @@ public class RepoManager : MonoBehaviour
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
-    private static void Pull(string localPath)
+    private void Pull(string localPath)
     {
-        using (var repo = new Repository(localPath))
+        var succeeded = false;
+        try
         {
-            var remote = repo.Network.Remotes["origin"];
-            var refSpecs = remote.FetchRefSpecs.Select(x => x.Specification);
-            Commands.Fetch(repo, remote.Name, refSpecs, null, "");
-            Commands.Checkout(repo, repo.Branches["master"],
-                new CheckoutOptions() {CheckoutModifiers = CheckoutModifiers.Force});
+            using (var repo = new Repository(localPath))
+            {
+
+                var remote = repo.Network.Remotes["origin"];
+                var refSpecs = remote.FetchRefSpecs.Select(x => x.Specification);
+
+                Commands.Fetch(repo, remote.Name, refSpecs, null, "");
+                Commands.Checkout(repo, repo.Branches["master"],
+                    new CheckoutOptions() {CheckoutModifiers = CheckoutModifiers.Force});
+                succeeded = true;
+            }
+
         }
+        catch (Exception e)
+        {
+            ServerResponse.text = e.Message;
+        }
+
+        if (succeeded)
+            ServerResponse.text = "Repo updated!";
     }
 
     // Currently non-functional because the current libgit2sharp leaves a symbolic
