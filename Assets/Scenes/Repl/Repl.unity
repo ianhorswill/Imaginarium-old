@@ -428,7 +428,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 822623673}
   m_Direction: 0
   m_Value: 1
-  m_Size: 0.99999994
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -710,7 +710,7 @@ MonoBehaviour:
   EdgePrefab: {fileID: 6472097822149504536, guid: 5f50d549902958c4bbfc257f338035d6,
     type: 3}
   SpringStiffness: 30
-  RepulsionGain: 1000000
+  RepulsionGain: 2000000
   NodeDamping: 0.5
   GreyOutFactor: 0.5
   Border: 100
@@ -811,7 +811,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 475.9564, y: -201.41272}
+  m_AnchoredPosition: {x: 476, y: -201.41272}
   m_SizeDelta: {x: -948.24, y: 200}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &227344434
@@ -1732,7 +1732,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 24.800049, y: 0.000030517578}
+  m_AnchoredPosition: {x: -0.00012207031, y: 0.000030517578}
   m_SizeDelta: {x: -49.6, y: 0}
   m_Pivot: {x: 0.5, y: 1.0000005}
 --- !u!114 &996344458
