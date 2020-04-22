@@ -711,7 +711,7 @@ MonoBehaviour:
     type: 3}
   SpringStiffness: 30
   RepulsionGain: 2000000
-  NodeDamping: 0.5
+  NodeDamping: 0.2
   GreyOutFactor: 0.5
   Border: 100
   ToolTip: {fileID: 0}
