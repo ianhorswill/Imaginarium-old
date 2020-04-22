@@ -503,6 +503,9 @@ public partial class Syntax
             Buffer.Append("<b>");
             foreach (var c in makeConstituents())
             {
+                if (c.Equals("!"))
+                    continue;
+
                 if (firstOne)
                     firstOne = false;
                 else Buffer.Append(' ');
@@ -512,6 +515,7 @@ public partial class Syntax
 
             Buffer.Append("</b>\n");
             Buffer.Append(DocString??"");
+            Buffer.AppendLine();
             return Buffer.ToString();
         }
     }
