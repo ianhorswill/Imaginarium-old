@@ -31,6 +31,11 @@ using static Parser;
 public class SimpleClosedClassSegment : ClosedClassSegment
 {
     public string[][] PossibleMatches;
+
+    /// <summary>
+    /// This constituent is always optional; it can match the empty string.
+    /// </summary>
+    public bool Optional;
     
     public SimpleClosedClassSegment(params object[] possibleMatches)
     {
@@ -53,7 +58,7 @@ public class SimpleClosedClassSegment : ClosedClassSegment
 
     public override bool ScanTo(Func<string, bool> endPredicate)
     {
-        if (!IsPossibleStart(CurrentToken))
+        if (!Optional && !IsPossibleStart(CurrentToken))
             return false;
         var old = State;
         Match = null;
@@ -68,12 +73,12 @@ public class SimpleClosedClassSegment : ClosedClassSegment
         }
 
         // Check against apostrophe is to keep from matching just the beginning of a contraction.
-        return Match != null && !EndOfInput && CurrentToken != "'" && endPredicate(CurrentToken);
+        return Optional || (Match != null && !EndOfInput && CurrentToken != "'" && endPredicate(CurrentToken));
     }
 
     public override bool ScanTo(string token)
     {
-        if (!IsPossibleStart(CurrentToken))
+        if (!Optional && !IsPossibleStart(CurrentToken))
             return false;
         var old = State;
         Match = null;
@@ -87,12 +92,12 @@ public class SimpleClosedClassSegment : ClosedClassSegment
             ResetTo(old);
         }
 
-        return !EndOfInput && CurrentToken == token;
+        return Optional || (!EndOfInput && CurrentToken == token);
     }
 
     public override bool ScanToEnd(bool failOnConjunction = true)
     {
-        if (!IsPossibleStart(CurrentToken))
+        if (!Optional && !IsPossibleStart(CurrentToken))
             return false;
         var old = State;
         Match = null;

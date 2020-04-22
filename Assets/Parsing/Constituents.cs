@@ -110,6 +110,14 @@ public partial class Syntax
     /// </summary>
     private static readonly Func<bool> Has = MatchHave;
 
+    private static readonly SimpleClosedClassSegment OptionalAll = new SimpleClosedClassSegment(
+        "all", "any", "every")
+        { Name = "[all]", Optional = true };
+
+    private static readonly SimpleClosedClassSegment OptionalAlways = new SimpleClosedClassSegment(
+            "always")
+        { Name = "[always]", Optional = true };
+
     private static readonly SimpleClosedClassSegment ExistNotExist = new SimpleClosedClassSegment(
             "exist", new[] {"not", "exist"}, new[] { "never", "exist" })
         {Name = "exist/not exist"};

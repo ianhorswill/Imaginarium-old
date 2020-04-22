@@ -119,7 +119,7 @@ public partial class Syntax
         //    .Command()
         //    .Documentation("Add new assertions to a file.  Use save command to save changes."),
         
-        new Syntax(() => new object[] { Subject, CanMust, Verb, Quantifier, "!", Object })
+        new Syntax(() => new object[] { OptionalAll, Subject, CanMust, Verb, Quantifier, "!", Object })
             .Action(() =>
             {
                 var verb = Verb.Verb;
@@ -184,7 +184,7 @@ public partial class Syntax
             .Check(SubjectPlural, SubjectUnmodified)
             .Documentation("States that the specified kind of object is rare/common."), 
 
-        new Syntax(() => new object[] { Subject, CanNot, Verb, Reflexive })
+        new Syntax(() => new object[] { OptionalAll, Subject, CanNot, Verb, Reflexive })
             .Action(() =>
             {
                 var verb = Verb.Verb;
@@ -194,7 +194,7 @@ public partial class Syntax
             .Check(VerbBaseForm, SubjectCommonNoun)
             .Documentation("States that the verb can't hold between an object and itself."),
 
-        new Syntax(() => new object[] { Subject, Always, Verb, Reflexive })
+        new Syntax(() => new object[] { OptionalAll, Subject, Always, Verb, Reflexive })
             .Action(() =>
             {
                 var verb = Verb.Verb;
@@ -204,7 +204,7 @@ public partial class Syntax
             .Check(VerbBaseForm, SubjectCommonNoun)
             .Documentation("States that the verb always holds between objects and themselves."),
 
-        new Syntax(() => new object[] { Subject, "can", Verb, EachOther })
+        new Syntax(() => new object[] { OptionalAll, Subject, "can", Verb, EachOther })
             .Action(() =>
             {
                 var verb = Verb.Verb;
@@ -272,7 +272,7 @@ public partial class Syntax
             .Check(SubjectUnmodified, SubjectCommonNoun)
             .Documentation("Tells the system how to generate the description of an object."),
 
-        new Syntax(() => new object[] { Subject, "can", "be", PredicateAP })
+        new Syntax(() => new object[] { OptionalAll, Subject, "can", "be", PredicateAP })
             .Action(() =>
             {
                 if (!PredicateAP.Adjective.RelevantTo(Subject.CommonNoun))
@@ -294,6 +294,16 @@ public partial class Syntax
             .Check(SubjectProperNoun, ObjectCommonNoun, ObjectExplicitlySingular)
             .Documentation("States that proper noun Subject is of the type Object.  For example, 'Ben is a person'."),
 
+        new Syntax(() => new object[] { Subject, "is", OptionalAlways, Object })
+            .Action(() =>
+            {
+                var subject = Subject.CommonNoun;
+                subject.ImpliedAdjectives.Add(new CommonNoun.ConditionalModifier(Subject.Modifiers.ToArray(),
+                    Object.CommonNoun));
+            })
+            .Check(SubjectCommonNoun, ObjectCommonNoun, ObjectExplicitlySingular)
+            .Documentation("States that a Subject is always also a Object.  Importnat: object *must* be singular, as in 'a noun', not just 'nouns'.  This is different from saying 'a kind of' which says that Objects must also be one of their subkinds.  This just says if you see a Subject, also make it be an Object."),
+
         //new Syntax(() => new object[] { Subject, Is, Object })
         //    .Action(() =>
         //    {
@@ -301,7 +311,7 @@ public partial class Syntax
         //        n.ImpliedAdjectives.Add(new CommonNoun.ConditionalAdjective(Subject.Modifiers.ToArray(), Object.CommonNoun));
         //    })
         //    .Check(SubjectCommonNoun, ObjectCommonNoun, SubjectVerbAgree),
-        new Syntax(() => new object[] { Subject, Is, PredicateAP })
+        new Syntax(() => new object[] { OptionalAll, Subject, Is, PredicateAP })
             .Action(() =>
             {
                 switch (Subject.Noun)
@@ -323,7 +333,7 @@ public partial class Syntax
             .Check(SubjectVerbAgree)
             .Documentation("Declares that Subjects are always Adjective.  For example, 'cats are fuzzy' declares that all cats are also fuzzy."),
 
-        new Syntax(() => new object[] { Subject, Is, "any", "!", LowerBound, "of", PredicateAPList })
+        new Syntax(() => new object[] { OptionalAll, Subject, Is, "any", "!", LowerBound, "of", PredicateAPList })
             .Action(() =>
             {
                 var alternatives = PredicateAPList.Expressions.Select(ap => ap.MonadicConceptLiteral).ToArray();
@@ -333,7 +343,7 @@ public partial class Syntax
             .Check(SubjectVerbAgree, SubjectUnmodified)
             .Documentation("Declares the specified number of Adjectives must be true of Subjects."),
         
-        new Syntax(() => new object[] { Subject, Is, "between", "!", LowerBound, "and", UpperBound, "of", PredicateAPList })
+        new Syntax(() => new object[] { OptionalAll, Subject, Is, "between", "!", LowerBound, "and", UpperBound, "of", PredicateAPList })
             .Action(() =>
             {
                 var alternatives = PredicateAPList.Expressions.Select(ap => ap.MonadicConceptLiteral).ToArray();
@@ -343,7 +353,7 @@ public partial class Syntax
             .Check(SubjectVerbAgree, SubjectUnmodified)
             .Documentation("Declares the number of Adjectives true of Subjects must be in the specified range."),
         
-        new Syntax(() => new object[] { Subject, "can", "be", "up", "!", "to", LowerBound, "of", PredicateAPList })
+        new Syntax(() => new object[] { OptionalAll, Subject, "can", "be", "up", "!", "to", LowerBound, "of", PredicateAPList })
             .Action(() =>
             {
                 var alternatives = PredicateAPList.Expressions.Select(ap => ap.MonadicConceptLiteral).ToArray();
@@ -353,7 +363,7 @@ public partial class Syntax
             .Check(SubjectVerbAgree, SubjectUnmodified)
             .Documentation("Declares the number of Adjectives true of Subjects can never be more than the specified number."),
 
-        new Syntax(() => new object[] { Subject, Is, PredicateAPList })
+        new Syntax(() => new object[] { OptionalAll, Subject, Is, PredicateAPList })
             .Action(() =>
             {
                     Subject.CommonNoun.AlternativeSets.Add(new CommonNoun.AlternativeSet(PredicateAPList.Expressions.Select(ap => ap.MonadicConceptLiteral).ToArray(), true));
@@ -361,7 +371,7 @@ public partial class Syntax
             .Check(SubjectVerbAgree, SubjectUnmodified)
             .Documentation("Declares that Subjects must be one of the Adjectives.  So 'cats are big or small' says cats are always either big or small, but not both or neither."),
 
-        new Syntax(() => new object[] { Subject, "can", "be", PredicateAPList })
+        new Syntax(() => new object[] { OptionalAll, Subject, "can", "be", PredicateAPList })
             .Action(() =>
             {
                 Subject.CommonNoun.AlternativeSets.Add(new CommonNoun.AlternativeSet(PredicateAPList.Expressions.Select(ap => ap.MonadicConceptLiteral).ToArray(), false));
@@ -369,7 +379,7 @@ public partial class Syntax
             .Check(SubjectDefaultPlural, SubjectUnmodified)
             .Documentation("Declares that Subjects can be any one of the Adjectives, but don't have to be.  So 'cats can be big or small' says cats can be big, small, or neither, but not both."),
 
-        new Syntax(() => new object[] { Subject, Has, Object, "between", "!", LowerBound, "and", UpperBound })
+        new Syntax(() => new object[] { OptionalAll, Subject, Has, Object, "between", "!", LowerBound, "and", UpperBound })
             .Action(() =>
                 {
                     Subject.CommonNoun.Properties.Add(new Property(Object.Text, new FloatDomain(Object.Text.Untokenize(), lowerBound, upperBound)));
@@ -377,7 +387,7 @@ public partial class Syntax
             .Check(SubjectVerbAgree, SubjectUnmodified, ObjectUnmodified)
             .Documentation("Says Subjects have a property, Object, that is a number in the specified range.  For example, 'cats have an age between 1 and 20'"),
         
-        new Syntax(() => new object[] { Subject, Has, Object, "from", "!", ListName })
+        new Syntax(() => new object[] { OptionalAll, Subject, Has, Object, "from", "!", ListName })
             .Action(() =>
             {
                 var menuName = ListName.Text.Untokenize();
@@ -397,7 +407,7 @@ public partial class Syntax
             .Check(SubjectVerbAgree, ObjectUnmodified)
             .Documentation("States that Subjects have a property whose possible values are given in the specified file.  For example 'cats have a name from cat names', or 'French cats have a name from French cat names'"),
 
-        new Syntax(() => new object[] { Subject, Has, Object, "called", "!", "its", Text })
+        new Syntax(() => new object[] { OptionalAll, Subject, Has, Object, "called", "!", "its", Text })
             .Action(() =>
             {
 
