@@ -211,7 +211,11 @@ public class NP : ReferringExpression<Noun>
         if (last != null && last.Concept is Noun n)
         {
             CachedConcept = n;
-            Number = MonadicConcept.LastMatchPlural ? Syntax.Number.Plural : Syntax.Number.Singular;
+            if (!Number.HasValue)
+                // Only update if Number wasn't already set by a determiner.
+                // This is to get around nouns that are their own plurals.
+                Number = MonadicConcept.LastMatchPlural ? Syntax.Number.Plural : Syntax.Number.Singular;
+
             return true;
         }
 
