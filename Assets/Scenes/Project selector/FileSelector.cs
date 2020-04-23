@@ -15,7 +15,7 @@ public class FileSelector : MonoBehaviour
 
     private string NewProjectName
     {
-        get => NewProjectNameField.text;
+        get => new string(NewProjectNameField.text.Where(c => (int) c < 128).ToArray());
         set
         {
             NewProjectNameField.text = value;
