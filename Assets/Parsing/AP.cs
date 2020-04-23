@@ -41,12 +41,18 @@ public class AP : ReferringExpression<Adjective>
 
     public override void ParseModifiers()
     {
-        if (CurrentToken == "not" | CurrentToken == "non" || CurrentToken == "never")
+        if (CurrentToken == "not" || CurrentToken == "non" || CurrentToken == "never")
         {
             IsNegated = true;
             SkipToken();
             if (!EndOfInput && CurrentToken == "-")
                 SkipToken();
         }
+    }
+
+    public override void Reset()
+    {
+        base.Reset();
+        IsNegated = false;
     }
 }
