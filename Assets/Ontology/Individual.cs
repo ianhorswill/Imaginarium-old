@@ -102,8 +102,8 @@ public class Individual : Referent, IComparable
         Name = name;
         Container = container;
         var enumerated = concepts as MonadicConceptLiteral[] ?? concepts.ToArray();
-        Kinds.AddRange(enumerated.Where(l => l.Concept is CommonNoun).Select(l => (CommonNoun)l.Concept));
-        Modifiers.AddRange(enumerated.Where(l => !(l.Concept is CommonNoun)));
+        Kinds.AddRange(enumerated.Where(l => l.IsPositive && l.Concept is CommonNoun).Select(l => (CommonNoun)l.Concept));
+        Modifiers.AddRange(enumerated.Where(l => !l.IsPositive || !(l.Concept is CommonNoun)));
     }
 
     public static Dictionary<TokenString, Individual> AllPermanentIndividuals = new Dictionary<TokenString, Individual>();

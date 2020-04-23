@@ -97,7 +97,7 @@ public class Generator
 
         EphemeralIndividuals.Clear();
 
-        var ca = Concepts.ToArray();
+        var ca = Concepts;
         if (Count == 1)
             EphemeralIndividuals.Add(Individual.Ephemeral(ca.Append(Noun),
                 Noun.SingularForm.Prepend("the").ToArray()));

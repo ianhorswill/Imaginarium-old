@@ -264,6 +264,11 @@ public class NP : ReferringExpression<Noun>
 
         noun = new CommonNoun();
 
+        if (!Number.HasValue)
+            // Don't know syntactically if it's supposed to be singular or plural, so guess.
+            Number = Inflection.NounAppearsPlural(text)
+                ? Syntax.Number.Plural
+                : Syntax.Number.Singular;
         if (Number == Syntax.Number.Singular)
             noun.SingularForm = text;
         else

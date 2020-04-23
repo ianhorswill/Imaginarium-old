@@ -239,7 +239,7 @@ public partial class Syntax
 
                 }
             })
-            .Check(ObjectSingular, ObjectCommonNoun)
+            .Check(ObjectCommonNoun)
             .Documentation("Declares that all the different nouns in the subject list are also kinds of the object noun.  So 'dogs and cats are kinds of animal' states that all dogs and all cats are also animals."),
 
         new Syntax(() => new object[] { "the", "plural", "!", "of", Subject, "is", Object })
@@ -430,6 +430,20 @@ public partial class Syntax
                 Ontology.AddTest(Subject.CommonNoun, Subject.Modifiers, shouldExist,
                     $"Test succeeded: {input}",
                     $"Test failed: {input}");
+            })
+            .Documentation("Adds a new test to the list of tests to perform when the test command is used."),
+        
+        new Syntax(() => new object[] { SubjectNounList, "should", "!", ExistNotExist})
+            .Action(() =>
+            {
+                var shouldExist = ExistNotExist.Match[0] == "exist";
+                var input = Input.Untokenize();
+                foreach (var noun in SubjectNounList.Concepts)
+                {
+                    Ontology.AddTest(noun as CommonNoun, new MonadicConceptLiteral[0], shouldExist,
+                        $"Test succeeded: {input}",
+                        $"Test failed: {input}");
+                }
             })
             .Documentation("Adds a new test to the list of tests to perform when the test command is used."),
         

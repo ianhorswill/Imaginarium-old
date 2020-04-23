@@ -73,6 +73,21 @@ public static class Inflection
         return singular;
     }
 
+    public static bool NounAppearsPlural(string plural)
+    {
+        if (IrregularSingulars.TryGetValue(plural, out string singular))
+            return true;
+        foreach (var i in Inflections)
+            if (i.MatchPluralForSingular(plural))
+                return true;
+        return false;
+    }
+
+    public static bool NounAppearsPlural(string[] plural)
+    {
+        return NounAppearsPlural(plural[plural.Length-1]);
+    }
+
     public static string[] SingularOfVerb(string[] plural)
     {
         if (ContainsCopula(plural))

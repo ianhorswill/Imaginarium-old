@@ -303,7 +303,10 @@ public class Invention
             if (nameProperty != null)
             {
                 suppressedProperties?.Add(nameProperty);
-                return Model[i.Properties[nameProperty]].ToString();
+                var prop = i.Properties[nameProperty];
+                if (Model.DefinesVariable(prop))
+                    return Model[prop].ToString();
+                return "<undefined name>";
             }
 
             Debug.AssertFormat(i.Kinds.Count > 0, "NameString({0}): individual has no kinds?", i);
