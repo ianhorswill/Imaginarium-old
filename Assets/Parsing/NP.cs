@@ -101,7 +101,7 @@ public class NP : ReferringExpression<Noun>
         ScanDeterminer();
         if (ScanComplexNP())
         {
-            if (endPredicate(CurrentToken))
+            if (!EndOfInput && endPredicate(CurrentToken))
                 return true;
         } else if (base.ScanTo(endPredicate))
             return true;

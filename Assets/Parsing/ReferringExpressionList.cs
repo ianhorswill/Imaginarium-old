@@ -92,6 +92,8 @@ public class ReferringExpressionList<TE, TR> : Segment
         return token => overallTerminator(token) || token == "," || Syntax.ListConjunction(token);
     }
 
+    public override bool ScanTo(string token) => ScanTo(t => t == token);
+
     /// <summary>
     /// Scan a list of constituent expressions until a token satisfying endPredicate is found.
     /// </summary>
