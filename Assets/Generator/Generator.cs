@@ -179,6 +179,7 @@ public class Generator
                     Problem.AtMost(1, v.Subspecies.Select(sub => Holds(sub, s, o)).Append(Not(vHolds)));
                 }
         }
+        Problem.Optimize();
     }
 
     private void AddParts(Individual i)
@@ -214,7 +215,10 @@ public class Generator
     /// </summary>
     public Invention Solve()
     {
-        var solution = Problem.Solve(false);
+        Problem.Timeout = 100000;
+        Solution solution = null;
+        for (var retry = 0; solution == null && retry < 10; retry++)
+            solution = Problem.Solve(false);
         return solution == null? null:new Invention(this, solution);
     }
 
@@ -258,6 +262,10 @@ public class Generator
         // We know that i MIGHT BE of kind k so add clauses stating that if it is, i
         void SolveForSubclass(Individual i, CommonNoun k)
         {
+            // Setting the probability to 0 means that it only has to make one subclass true
+            // To satisfy the uniqueness constraint below.  Otherwise, the probability is 0.5f
+            // and so it has to make separate moves to make a bunch of them false.
+            IsA(i, k).InitialProbability = 0;
             MaybeFormalizeKindInstance(i, k);
             if (k.Subkinds.Count == 0)
                 return;
@@ -285,6 +293,11 @@ public class Generator
                 IsA(i, adj);
             foreach (var set in k.AlternativeSets)
             {
+                if (set.MaxCount < 3)
+                    foreach (var lit in set.Alternatives)
+                        // Try to ensure that all the alternatives start false so it only has to set one or two of them
+                        // rather than clear a bunch of them.
+                        IsA(i, lit.Concept).InitialProbability = lit.IsPositive ? 0 : 1;
                 var clause = set.Alternatives.Select(a => Satisfies(i, a)).Append(Not(IsA(i, k)));
                 Problem.Quantify(set.MinCount, set.MaxCount, clause);
             }
