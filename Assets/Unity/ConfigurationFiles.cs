@@ -35,7 +35,7 @@ public static class ConfigurationFiles
     public static string ExamplesDirectory => Path.Combine(UnityPath, "Examples");
 
     public static string UserDataDirectory =>
-        #if UNITY_STANDALONE_OSX
+        #if UNITY_STANDALONE_OSX && !UNITY_EDITOR_WIN
         // This turns out to be a documented Mono issue.
         // See https://xamarin.github.io/bugzilla-archives/41/41258/bug.html
         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)+"/Documents", "Imaginarium");
