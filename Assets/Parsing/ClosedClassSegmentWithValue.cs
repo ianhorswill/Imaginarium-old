@@ -75,7 +75,7 @@ public class ClosedClassSegmentWithValue<T> : ClosedClassSegment
 
     public override bool ScanTo(string token)
     {
-        if (!IsPossibleStart(CurrentToken))
+        if (EndOfInput || !IsPossibleStart(CurrentToken))
             return false;
         var old = State;
         Match = null;

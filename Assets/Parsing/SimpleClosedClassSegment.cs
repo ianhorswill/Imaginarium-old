@@ -78,7 +78,7 @@ public class SimpleClosedClassSegment : ClosedClassSegment
 
     public override bool ScanTo(string token)
     {
-        if (!Optional && !IsPossibleStart(CurrentToken))
+        if (!Optional && (EndOfInput || !IsPossibleStart(CurrentToken)))
             return false;
         var old = State;
         Match = null;

@@ -58,7 +58,7 @@ public class VerbSegment : ReferringExpression<Verb>
     {
         if (ScanExistingVerb())
         {
-            if (CurrentToken == token)
+            if (!EndOfInput && CurrentToken == token)
                 return true;
         } else if (base.ScanTo(token))
             return true;

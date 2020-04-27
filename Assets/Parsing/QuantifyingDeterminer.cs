@@ -94,6 +94,9 @@ public class QuantifyingDeterminer : ClosedClassSegment
 
     public override bool ScanTo(string token)
     {
+        if (EndOfInput)
+            return false;
+
         Quantifier = CurrentToken;
         if (!Match(IsQuantifier))
             return false;

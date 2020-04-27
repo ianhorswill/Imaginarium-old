@@ -82,7 +82,7 @@ public class NP : ReferringExpression<Noun>
         ScanDeterminer();
         if (ScanComplexNP())
         {
-            if (CurrentToken == token)
+            if (!EndOfInput && CurrentToken == token)
                 return true;
         } else if (base.ScanTo(token))
             return true;
@@ -134,6 +134,9 @@ public class NP : ReferringExpression<Noun>
     /// </summary>
     private void ScanDeterminer()
     {
+        if (EndOfInput)
+            return;
+
         beginsWithDeterminer = true;
         if (Match("a") || Match("an"))
             Number = Syntax.Number.Singular;
