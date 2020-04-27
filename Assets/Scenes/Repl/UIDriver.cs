@@ -102,6 +102,7 @@ public class UIDriver : MonoBehaviour, IRepl
     /// </summary>
     private string Output
     {
+        get => OutputField.text;
         set
         {
             OutputField.text = value;
@@ -166,6 +167,10 @@ public class UIDriver : MonoBehaviour, IRepl
 
                 case KeyCode.PageUp:
                     ScrollPages(-1);
+                    break;
+
+                case KeyCode.Insert:
+                    GUIUtility.systemCopyBuffer = Output;
                     break;
             }
         }
