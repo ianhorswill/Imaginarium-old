@@ -393,7 +393,10 @@ public partial class Syntax
                 var menuName = ListName.Text.Untokenize();
                 if (!NameIsValidFilename(menuName))
                     throw new Exception($"The list name \"{menuName}\" is not a valid file name.");
-                var menu = new Menu<string>(menuName, File.ReadAllLines(ListFilePath(menuName)));
+                var possibleValues = File.ReadAllLines(ListFilePath(menuName)).Select(s => s.Trim()).Where(s => !string.IsNullOrEmpty(s)).ToArray();
+                if (possibleValues.Length == 0)
+                    throw new ArgumentException($"The file {menuName} has no entries in it!");
+                var menu = new Menu<string>(menuName, possibleValues);
                 var propertyName = Object.Text;
                 var prop = Subject.CommonNoun.Properties.FirstOrDefault(p => p.IsNamed(propertyName));
                 if (prop == null)
