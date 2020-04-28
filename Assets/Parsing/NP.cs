@@ -189,7 +189,8 @@ public class NP : ReferringExpression<Noun>
             var isPositive = true;
             if (EndOfInput)
                 break;
-            if (CurrentToken == "not" || CurrentToken == "non")
+            var tok = CurrentToken.ToLower();
+            if (tok == "not" || tok == "non")
             {
                 isPositive = false;
                 SkipToken();

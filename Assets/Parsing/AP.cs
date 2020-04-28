@@ -41,7 +41,8 @@ public class AP : ReferringExpression<Adjective>
 
     public override void ParseModifiers()
     {
-        if (CurrentToken == "not" || CurrentToken == "non" || CurrentToken == "never")
+        var tok = CurrentToken.ToLower();
+        if (tok == "not" || tok == "non" || tok == "never")
         {
             IsNegated = true;
             SkipToken();
