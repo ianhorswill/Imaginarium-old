@@ -215,7 +215,7 @@ public class Generator
     /// </summary>
     public Invention Solve()
     {
-        Problem.Timeout = 100000;
+        Problem.Timeout = 50000;
         Solution solution = null;
         for (var retry = 0; solution == null && retry < 10; retry++)
             solution = Problem.Solve(false);

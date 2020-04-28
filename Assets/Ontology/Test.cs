@@ -31,9 +31,9 @@ public class Test
 
     private Invention TestExistence(CommonNoun noun, IEnumerable<MonadicConceptLiteral> modifiers)
     {
-        var g = new Generator(Noun, Modifiers, 1);
         try
         {
+            var g = new Generator(Noun, Modifiers, 1);
             return g.Solve();
         }
         catch (CatSAT.ContradictionException)
