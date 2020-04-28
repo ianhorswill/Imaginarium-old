@@ -153,7 +153,7 @@ public class UIDriver : MonoBehaviour, IRepl
     // ReSharper disable once UnusedMember.Local
     private void OnGUI()
     {
-        Scenes.HandleSceneKeys(Scenes.Menu);
+        //Scenes.HandleSceneKeys(Scenes.Menu);
 
         var e = Event.current;
 

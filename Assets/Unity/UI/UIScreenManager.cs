@@ -41,6 +41,11 @@ public class UIScreenManager : MonoBehaviour
         #endif
     }
 
+    void OnGUI()
+    {
+        Scenes.HandleSceneKeys(Scenes.Menu);
+    }
+
     private int currentScreen;
     public void NextScreen()
     {
