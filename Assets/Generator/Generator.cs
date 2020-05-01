@@ -217,7 +217,7 @@ public class Generator
     {
         Problem.Timeout = 50000;
         Solution solution = null;
-        for (var retry = 0; solution == null && retry < 10; retry++)
+        for (var retry = 0; solution == null && retry < 20; retry++)
             solution = Problem.Solve(false);
         return solution == null? null:new Invention(this, solution);
     }

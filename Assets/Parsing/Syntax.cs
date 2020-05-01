@@ -123,8 +123,8 @@ public partial class Syntax
     private static bool SubjectUnmodified()
     {
         if (Subject.Modifiers.Count > 0)
-            throw new GrammaticalError($"The noun '{Subject.Text}' cannot take adjectives in this context",
-                $"The noun '{Subject.Text}' cannot take adjectives as the subject of this sentence pattern");
+            throw new GrammaticalError($"The noun '{Subject.Text.Untokenize()}' cannot take adjectives in this context",
+                $"The noun '{Subject.Text.Untokenize()}' cannot take adjectives as the subject of this sentence pattern");
         return true;
     }
 
@@ -135,8 +135,8 @@ public partial class Syntax
     private static bool ObjectUnmodified()
     {
         if (Object.Modifiers.Count > 0)
-            throw new GrammaticalError($"The noun '{Object.Text}' cannot take adjectives", 
-                $"The noun '<i>{Object.Text}</i>' cannot take any adjectives or other modifiers as the object of this sentence pattern.");
+            throw new GrammaticalError($"The noun '{Object.Text.Untokenize()}' cannot take adjectives", 
+                $"The noun '<i>{Object.Text.Untokenize()}</i>' cannot take any adjectives or other modifiers as the object of this sentence pattern.");
         return true;
     }
 
