@@ -427,8 +427,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 822623674}
   m_HandleRect: {fileID: 822623673}
   m_Direction: 0
-  m_Value: 1
-  m_Size: 0.9999999
+  m_Value: 0
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -448,6 +448,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
+  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -536,6 +537,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
+  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -569,8 +571,8 @@ GameObject:
   - component: {fileID: 204299350}
   - component: {fileID: 204299349}
   - component: {fileID: 204299348}
-  - component: {fileID: 204299347}
   - component: {fileID: 204299351}
+  - component: {fileID: 204299347}
   m_Layer: 5
   m_Name: Concepts
   m_TagString: Untagged
@@ -607,114 +609,38 @@ MonoBehaviour:
   m_GameObject: {fileID: 204299345}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 015532a2f74b3a84e9c8b49e4c8df7f7, type: 3}
+  m_Script: {fileID: 11500000, guid: c935dea8a2dcf70438d4dca364bbd0a2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   NodeStyles:
-  - Name: Noun
+  - Name: Default
     Color: {r: 1, g: 1, b: 1, a: 1}
     Font: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
     FontSize: 120
     FontStyle: 0
-    Prefab: {fileID: 6472097822149504536, guid: 02946b6d1e7dc33458ac04a44a85045a,
-      type: 3}
-  - Name: Verb
-    Color: {r: 1, g: 0.7529412, b: 0, a: 1}
-    Font: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-    FontSize: 120
-    FontStyle: 0
-    Prefab: {fileID: 6472097822149504536, guid: 02946b6d1e7dc33458ac04a44a85045a,
-      type: 3}
-  - Name: Error
-    Color: {r: 1, g: 0, b: 0, a: 1}
-    Font: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-    FontSize: 120
-    FontStyle: 0
-    Prefab: {fileID: 6472097822149504536, guid: 02946b6d1e7dc33458ac04a44a85045a,
-      type: 3}
-  - Name: Adjective
-    Color: {r: 0, g: 1, b: 0.1254902, a: 1}
-    Font: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-    FontSize: 120
-    FontStyle: 0
-    Prefab: {fileID: 6472097822149504536, guid: 02946b6d1e7dc33458ac04a44a85045a,
-      type: 3}
+    Prefab: {fileID: 0}
   EdgeStyles:
-  - Name: default
-    Color: {r: 0, g: 1, b: 0.1254902, a: 1}
-    LineWidth: 10
-    IsDirected: 1
-    DrawEdge: 1
-    ArrowheadLength: 7
-    ArrowheadWidth: 7
-    Font: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-    FontSize: 80
-    FontStyle: 0
-    Prefab: {fileID: 0}
-  - Name: kind of
+  - Name: Default
     Color: {r: 1, g: 1, b: 1, a: 1}
-    LineWidth: 10
+    LineWidth: 5
     IsDirected: 1
     DrawEdge: 1
-    ArrowheadLength: 7
-    ArrowheadWidth: 7
+    ArrowheadLength: 10
+    ArrowheadWidth: 10
     Font: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-    FontSize: 80
-    FontStyle: 0
-    Prefab: {fileID: 0}
-  - Name: can be
-    Color: {r: 0.627451, g: 0.627451, b: 0.627451, a: 1}
-    LineWidth: 10
-    IsDirected: 1
-    DrawEdge: 1
-    ArrowheadLength: 7
-    ArrowheadWidth: 7
-    Font: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-    FontSize: 80
-    FontStyle: 0
-    Prefab: {fileID: 0}
-  - Name: is always
-    Color: {r: 0.627451, g: 0.627451, b: 0.627451, a: 1}
-    LineWidth: 10
-    IsDirected: 1
-    DrawEdge: 1
-    ArrowheadLength: 7
-    ArrowheadWidth: 7
-    Font: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-    FontSize: 80
-    FontStyle: 0
-    Prefab: {fileID: 0}
-  - Name: mutually exclusive
-    Color: {r: 1, g: 0, b: 0, a: 1}
-    LineWidth: 10
-    IsDirected: 0
-    DrawEdge: 1
-    ArrowheadLength: 7
-    ArrowheadWidth: 7
-    Font: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-    FontSize: 80
-    FontStyle: 0
-    Prefab: {fileID: 0}
-  - Name: is never
-    Color: {r: 1, g: 0, b: 0, a: 1}
-    LineWidth: 10
-    IsDirected: 0
-    DrawEdge: 1
-    ArrowheadLength: 7
-    ArrowheadWidth: 7
-    Font: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-    FontSize: 80
+    FontSize: 100
     FontStyle: 0
     Prefab: {fileID: 0}
   NodePrefab: {fileID: 6472097822149504536, guid: 02946b6d1e7dc33458ac04a44a85045a,
     type: 3}
   EdgePrefab: {fileID: 6472097822149504536, guid: 5f50d549902958c4bbfc257f338035d6,
     type: 3}
-  SpringStiffness: 1
-  RepulsionGain: 100000
+  SpringStiffness: 30
+  RepulsionGain: 2000000
+  SiblingRepulsionBoost: 5
   NodeDamping: 0.5
   GreyOutFactor: 0.5
   Border: 100
@@ -985,6 +911,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 0.3490566, g: 0.34082413, b: 0.34082413, a: 1}
   m_RaycastTarget: 1
+  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -1058,6 +985,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
+  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -1207,6 +1135,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 0.02367392, g: 0.7169812, b: 0.12417288, a: 1}
   m_RaycastTarget: 1
+  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -1334,6 +1263,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 0.5283019, g: 0.5283019, b: 0.5283019, a: 1}
   m_RaycastTarget: 1
+  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -1436,8 +1366,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1269615879}
   m_HandleRect: {fileID: 1269615878}
   m_Direction: 2
-  m_Value: 1.000009
-  m_Size: 0.915
+  m_Value: 1.0000027
+  m_Size: 0.91500026
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -1457,6 +1387,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
+  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -1530,6 +1461,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
+  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -1603,6 +1535,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
+  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -1676,6 +1609,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 0.02367392, g: 0.7169812, b: 0.12417288, a: 1}
   m_RaycastTarget: 1
+  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -1736,7 +1670,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0.000030517578}
+  m_AnchoredPosition: {x: 24.800049, y: 0.000030517578}
   m_SizeDelta: {x: -49.6, y: 0}
   m_Pivot: {x: 0.5, y: 1.0000005}
 --- !u!114 &996344458
@@ -1754,6 +1688,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 0.9764151, b: 0.9764151, a: 1}
   m_RaycastTarget: 1
+  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -1861,6 +1796,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
+  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -1968,6 +1904,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 0.392}
   m_RaycastTarget: 1
+  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -2041,6 +1978,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
+  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -2118,6 +2056,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
+  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -2191,6 +2130,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
+  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -2265,44 +2205,43 @@ MonoBehaviour:
   m_GameObject: {fileID: 1392982997}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 015532a2f74b3a84e9c8b49e4c8df7f7, type: 3}
+  m_Script: {fileID: 11500000, guid: c935dea8a2dcf70438d4dca364bbd0a2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   NodeStyles:
-  - Name: default
-    Color: {r: 0, g: 1, b: 0.1254902, a: 1}
+  - Name: Default
+    Color: {r: 1, g: 1, b: 1, a: 1}
     Font: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-    FontSize: 80
+    FontSize: 120
     FontStyle: 0
-    Prefab: {fileID: 6472097822149504536, guid: 02946b6d1e7dc33458ac04a44a85045a,
-      type: 3}
+    Prefab: {fileID: 0}
   EdgeStyles:
-  - Name: default
-    Color: {r: 0, g: 1, b: 0.1254902, a: 1}
-    LineWidth: 10
+  - Name: Default
+    Color: {r: 1, g: 1, b: 1, a: 1}
+    LineWidth: 5
     IsDirected: 1
     DrawEdge: 1
-    ArrowheadLength: 7
-    ArrowheadWidth: 7
+    ArrowheadLength: 10
+    ArrowheadWidth: 10
     Font: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-    FontSize: 80
+    FontSize: 100
     FontStyle: 0
-    Prefab: {fileID: 6472097822149504536, guid: 5f50d549902958c4bbfc257f338035d6,
-      type: 3}
+    Prefab: {fileID: 0}
   NodePrefab: {fileID: 6472097822149504536, guid: 02946b6d1e7dc33458ac04a44a85045a,
     type: 3}
   EdgePrefab: {fileID: 6472097822149504536, guid: 5f50d549902958c4bbfc257f338035d6,
     type: 3}
   SpringStiffness: 30
-  RepulsionGain: 100000
+  RepulsionGain: 2000000
+  SiblingRepulsionBoost: 5
   NodeDamping: 0.5
   GreyOutFactor: 0.5
   Border: 100
-  ToolTip: {fileID: 1063538048}
-  ToolTipProperty: MostRecentDescription
+  ToolTip: {fileID: 0}
+  ToolTipProperty: 
 --- !u!222 &1392983000
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -2697,6 +2636,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
+  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -2886,6 +2826,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
+  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
