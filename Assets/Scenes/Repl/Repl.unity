@@ -617,21 +617,88 @@ MonoBehaviour:
   m_RaycastTarget: 1
   NodeStyles:
   - Name: Default
-    Color: {r: 1, g: 1, b: 1, a: 1}
+    Color: {r: 0.47058824, g: 0.47058824, b: 0.47058824, a: 1}
+    Font: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+    FontSize: 100
+    FontStyle: 0
+    Prefab: {fileID: 0}
+  - Name: Noun
+    Color: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
     Font: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
     FontSize: 120
-    FontStyle: 0
+    FontStyle: 1
+    Prefab: {fileID: 0}
+  - Name: Verb
+    Color: {r: 0.21444462, g: 0.745283, b: 0.46134618, a: 1}
+    Font: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+    FontSize: 120
+    FontStyle: 1
     Prefab: {fileID: 0}
   EdgeStyles:
   - Name: Default
-    Color: {r: 1, g: 1, b: 1, a: 1}
+    Color: {r: 0.47058824, g: 0.47058824, b: 0.47058824, a: 1}
     LineWidth: 5
     IsDirected: 1
     DrawEdge: 1
     ArrowheadLength: 10
     ArrowheadWidth: 10
     Font: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-    FontSize: 100
+    FontSize: 80
+    FontStyle: 0
+    Prefab: {fileID: 0}
+  - Name: subject
+    Color: {r: 0.21568629, g: 0.74509805, b: 0.46274513, a: 1}
+    LineWidth: 5
+    IsDirected: 1
+    DrawEdge: 1
+    ArrowheadLength: 10
+    ArrowheadWidth: 10
+    Font: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+    FontSize: 80
+    FontStyle: 0
+    Prefab: {fileID: 0}
+  - Name: object
+    Color: {r: 0.21568629, g: 0.74509805, b: 0.46274513, a: 1}
+    LineWidth: 5
+    IsDirected: 1
+    DrawEdge: 1
+    ArrowheadLength: 10
+    ArrowheadWidth: 10
+    Font: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+    FontSize: 80
+    FontStyle: 0
+    Prefab: {fileID: 0}
+  - Name: mutually exclusive
+    Color: {r: 0.74509805, g: 0.51421076, b: 0.21568626, a: 1}
+    LineWidth: 5
+    IsDirected: 1
+    DrawEdge: 1
+    ArrowheadLength: 10
+    ArrowheadWidth: 10
+    Font: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+    FontSize: 80
+    FontStyle: 0
+    Prefab: {fileID: 0}
+  - Name: kind of
+    Color: {r: 0.5849056, g: 0.5849056, b: 0.5849056, a: 1}
+    LineWidth: 15
+    IsDirected: 1
+    DrawEdge: 1
+    ArrowheadLength: 5
+    ArrowheadWidth: 2
+    Font: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+    FontSize: 80
+    FontStyle: 0
+    Prefab: {fileID: 0}
+  - Name: is a way of
+    Color: {r: 0.21568629, g: 0.74509805, b: 0.46274513, a: 1}
+    LineWidth: 15
+    IsDirected: 1
+    DrawEdge: 1
+    ArrowheadLength: 5
+    ArrowheadWidth: 2
+    Font: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+    FontSize: 80
     FontStyle: 0
     Prefab: {fileID: 0}
   NodePrefab: {fileID: 6472097822149504536, guid: 02946b6d1e7dc33458ac04a44a85045a,
@@ -641,7 +708,7 @@ MonoBehaviour:
   SpringStiffness: 30
   RepulsionGain: 2000000
   SiblingRepulsionBoost: 5
-  NodeDamping: 0.5
+  NodeDamping: 0.2
   GreyOutFactor: 0.5
   Border: 100
   ToolTip: {fileID: 0}
@@ -2213,19 +2280,19 @@ MonoBehaviour:
   m_RaycastTarget: 1
   NodeStyles:
   - Name: Default
-    Color: {r: 1, g: 1, b: 1, a: 1}
+    Color: {r: 0.627451, g: 0.627451, b: 0.627451, a: 1}
     Font: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
     FontSize: 120
     FontStyle: 0
     Prefab: {fileID: 0}
   EdgeStyles:
   - Name: Default
-    Color: {r: 1, g: 1, b: 1, a: 1}
-    LineWidth: 5
+    Color: {r: 0.627451, g: 0.627451, b: 0.627451, a: 1}
+    LineWidth: 8
     IsDirected: 1
     DrawEdge: 1
     ArrowheadLength: 10
-    ArrowheadWidth: 10
+    ArrowheadWidth: 5
     Font: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
     FontSize: 100
     FontStyle: 0
@@ -2237,7 +2304,7 @@ MonoBehaviour:
   SpringStiffness: 30
   RepulsionGain: 2000000
   SiblingRepulsionBoost: 5
-  NodeDamping: 0.5
+  NodeDamping: 0.2
   GreyOutFactor: 0.5
   Border: 100
   ToolTip: {fileID: 0}
