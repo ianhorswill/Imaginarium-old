@@ -629,7 +629,7 @@ MonoBehaviour:
     FontStyle: 1
     Prefab: {fileID: 0}
   - Name: Verb
-    Color: {r: 0.21444462, g: 0.745283, b: 0.46134618, a: 1}
+    Color: {r: 0.5564379, g: 0.74509805, b: 0.14509805, a: 1}
     Font: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
     FontSize: 120
     FontStyle: 1
@@ -647,7 +647,7 @@ MonoBehaviour:
     FontStyle: 0
     Prefab: {fileID: 0}
   - Name: subject
-    Color: {r: 0.21568629, g: 0.74509805, b: 0.46274513, a: 1}
+    Color: {r: 0.5568628, g: 0.74509805, b: 0.14509805, a: 1}
     LineWidth: 5
     IsDirected: 1
     DrawEdge: 1
@@ -658,7 +658,7 @@ MonoBehaviour:
     FontStyle: 0
     Prefab: {fileID: 0}
   - Name: object
-    Color: {r: 0.21568629, g: 0.74509805, b: 0.46274513, a: 1}
+    Color: {r: 0.5568628, g: 0.74509805, b: 0.14509805, a: 1}
     LineWidth: 5
     IsDirected: 1
     DrawEdge: 1
@@ -691,7 +691,7 @@ MonoBehaviour:
     FontStyle: 0
     Prefab: {fileID: 0}
   - Name: is a way of
-    Color: {r: 0.21568629, g: 0.74509805, b: 0.46274513, a: 1}
+    Color: {r: 0.5568628, g: 0.74509805, b: 0.14509805, a: 1}
     LineWidth: 15
     IsDirected: 1
     DrawEdge: 1

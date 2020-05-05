@@ -213,11 +213,11 @@ public class Generator
     /// <summary>
     /// Make a new Model
     /// </summary>
-    public Invention Solve()
+    public Invention Solve(int retries = 100, int timeout = 50000)
     {
-        Problem.Timeout = 50000;
+        Problem.Timeout = timeout;
         Solution solution = null;
-        for (var retry = 0; solution == null && retry < 20; retry++)
+        for (var retry = 0; solution == null && retry < retries; retry++)
             solution = Problem.Solve(false);
         return solution == null? null:new Invention(this, solution);
     }
