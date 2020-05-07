@@ -93,4 +93,6 @@ public static class ConfigurationFiles
         return Path.Combine(ConfigurationDirectory(directoryName), fileName);
     }
 
+    public static string GradingDirectory => Path.Combine(UserDataDirectory, "Grading");
+
 }

@@ -393,4 +393,14 @@ public class UIDriver : MonoBehaviour, IRepl
         ButtonBarContent.DestroyAllChildren();
     }
     #endregion
+
+    #region Other IRepl stuff
+
+    public void SetOutputWindow(string contents)
+    {
+        Output = contents;
+    }
+
+    Coroutine IRepl.StartCoroutine(IEnumerator coroutine) => StartCoroutine(coroutine);
+    #endregion
 }

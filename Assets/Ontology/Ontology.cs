@@ -43,8 +43,6 @@ public static class Ontology
     /// </summary>
     public static readonly List<IDictionary> AllReferentTables = new List<IDictionary>();
 
-    public static readonly List<Test> Tests = new List<Test>();
-
     /// <summary>
     /// Return true if there's already a concept with the specified name.
     /// </summary>
@@ -130,6 +128,14 @@ public static class Ontology
             throw new NameCollisionException(name, old.GetType(), newType);
     }
 
+    #region Testing
+    private static readonly List<Test> Tests = new List<Test>();
+
+    public static void ClearTests()
+    {
+        Tests.Clear();
+    }
+    
     public static void AddTest(CommonNoun noun, IEnumerable<MonadicConceptLiteral> modifiers, bool shouldExist, string succeedMessage, string failMessage)
     {
         Tests.Add(new Test(noun, modifiers, shouldExist, succeedMessage, failMessage));
@@ -143,4 +149,5 @@ public static class Ontology
             yield return (test, success, example);
         }
     }
+    #endregion
 }

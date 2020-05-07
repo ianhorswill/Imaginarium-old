@@ -534,10 +534,10 @@ public static class Parser
         LoadDefinitions(path);
     }
 
-    public static void LoadDefinitions(string path)
+    public static List<Exception> LoadDefinitions(string path, bool throwOnErrors = true)
     {
         if (LoadedFiles.Contains(path))
-            return;
+            return null;
 
         LogFile.Log("Loading " + path);
         LoadedFiles.Add(path);
@@ -553,18 +553,36 @@ public static class Parser
         Push();
 
         var assertions = File.ReadAllLines(path);
+        List<Exception> errors = throwOnErrors ? null : new List<Exception>();
         foreach (var def in assertions)
         {
             CurrentSourceLine++;
             var trimmed = def.Trim();
             if (trimmed != "" && !trimmed.StartsWith("#") && !trimmed.StartsWith("//"))
-                ParseAndExecute(trimmed);
+            {
+                if (throwOnErrors)
+                    ParseAndExecute(trimmed);
+                else
+                {
+                    try
+                    {
+                        ParseAndExecute(trimmed);
+                    }
+                    catch (Exception e)
+                    {
+                        errors.Add(e);
+                    }
+                }
+
+            }
         }
 
         Pop();
         LogFile.Log("Finished loading of " + path);
         CurrentSourceFile = oldPath;
         CurrentSourceLine = oldLine;
+
+        return errors;
     }
 
     #endregion

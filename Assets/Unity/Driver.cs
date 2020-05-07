@@ -24,8 +24,10 @@
 #endregion
 
 
+using System.Collections;
 using System.IO;
 using System.Text;
+using UnityEngine;
 
 public static class Driver
 {
@@ -76,9 +78,14 @@ public static class Driver
     #endregion
 
     public static IRepl Repl;
+
+    public static Coroutine StartCoroutine(IEnumerator c) => Repl.StartCoroutine(c);
+    public static void SetOutputWindow(string contents) => Repl.SetOutputWindow(contents);
 }
 
 public interface IRepl
 {
     void AddButton(string buttonName, string command);
+    Coroutine StartCoroutine(IEnumerator coroutine);
+    void SetOutputWindow(string contents);
 }

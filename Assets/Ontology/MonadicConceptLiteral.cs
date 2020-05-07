@@ -23,4 +23,9 @@ public class MonadicConceptLiteral
     {
         return new MonadicConceptLiteral(c);
     }
+
+    public MonadicConceptLiteral Inverse()
+    {
+        return new MonadicConceptLiteral(Concept, !IsPositive);
+    }
 }

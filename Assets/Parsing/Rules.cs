@@ -336,47 +336,62 @@ public partial class Syntax
         new Syntax(() => new object[] { OptionalAll, Subject, Is, "any", "!", LowerBound, "of", PredicateAPList })
             .Action(() =>
             {
-                var alternatives = PredicateAPList.Expressions.Select(ap => ap.MonadicConceptLiteral).ToArray();
+                var alternatives = PredicateAPList.Expressions.Select(ap => ap.MonadicConceptLiteral)
+                    .Concat(Subject.Modifiers.Select(l => l.Inverse()))
+                    .ToArray();
                 var alternativeSet = new CommonNoun.AlternativeSet(alternatives, (int)lowerBound, (int)lowerBound);
                 Subject.CommonNoun.AlternativeSets.Add(alternativeSet);
             })
-            .Check(SubjectVerbAgree, SubjectUnmodified)
+            .Check(SubjectVerbAgree)
             .Documentation("Declares the specified number of Adjectives must be true of Subjects."),
         
         new Syntax(() => new object[] { OptionalAll, Subject, Is, "between", "!", LowerBound, "and", UpperBound, "of", PredicateAPList })
             .Action(() =>
             {
-                var alternatives = PredicateAPList.Expressions.Select(ap => ap.MonadicConceptLiteral).ToArray();
+                var alternatives = PredicateAPList.Expressions.Select(ap => ap.MonadicConceptLiteral)
+                    .Concat(Subject.Modifiers.Select(l => l.Inverse()))
+                    .ToArray();
                 var alternativeSet = new CommonNoun.AlternativeSet(alternatives, (int)lowerBound, (int)upperBound);
                 Subject.CommonNoun.AlternativeSets.Add(alternativeSet);
             })
-            .Check(SubjectVerbAgree, SubjectUnmodified)
+            .Check(SubjectVerbAgree)
             .Documentation("Declares the number of Adjectives true of Subjects must be in the specified range."),
         
         new Syntax(() => new object[] { OptionalAll, Subject, "can", "be", "up", "!", "to", LowerBound, "of", PredicateAPList })
             .Action(() =>
             {
-                var alternatives = PredicateAPList.Expressions.Select(ap => ap.MonadicConceptLiteral).ToArray();
+                var alternatives = PredicateAPList.Expressions.Select(ap => ap.MonadicConceptLiteral)
+                    .Concat(Subject.Modifiers.Select(l => l.Inverse()))
+                    .ToArray();
                 var alternativeSet = new CommonNoun.AlternativeSet(alternatives, 0, (int)lowerBound);
                 Subject.CommonNoun.AlternativeSets.Add(alternativeSet);
             })
-            .Check(SubjectVerbAgree, SubjectUnmodified)
+            .Check(SubjectVerbAgree)
             .Documentation("Declares the number of Adjectives true of Subjects can never be more than the specified number."),
 
         new Syntax(() => new object[] { OptionalAll, Subject, Is, PredicateAPList })
             .Action(() =>
             {
-                    Subject.CommonNoun.AlternativeSets.Add(new CommonNoun.AlternativeSet(PredicateAPList.Expressions.Select(ap => ap.MonadicConceptLiteral).ToArray(), true));
+                    Subject.CommonNoun.AlternativeSets.Add(new CommonNoun.AlternativeSet(
+                        PredicateAPList.Expressions.Select(ap => ap.MonadicConceptLiteral)
+                            .Concat(Subject.Modifiers.Select(l => l.Inverse()))
+                            .ToArray(),
+                        true));
             })
-            .Check(SubjectVerbAgree, SubjectUnmodified)
+            .Check(SubjectVerbAgree)
             .Documentation("Declares that Subjects must be one of the Adjectives.  So 'cats are big or small' says cats are always either big or small, but not both or neither."),
 
         new Syntax(() => new object[] { OptionalAll, Subject, "can", "be", PredicateAPList })
             .Action(() =>
             {
-                Subject.CommonNoun.AlternativeSets.Add(new CommonNoun.AlternativeSet(PredicateAPList.Expressions.Select(ap => ap.MonadicConceptLiteral).ToArray(), false));
+                Subject.CommonNoun.AlternativeSets.Add(
+                    new CommonNoun.AlternativeSet(
+                        PredicateAPList.Expressions.Select(ap => ap.MonadicConceptLiteral)
+                            .Concat(Subject.Modifiers.Select(l => l.Inverse()))
+                            .ToArray(),
+                        false));
             })
-            .Check(SubjectDefaultPlural, SubjectUnmodified)
+            .Check(SubjectDefaultPlural)
             .Documentation("Declares that Subjects can be any one of the Adjectives, but don't have to be.  So 'cats can be big or small' says cats can be big, small, or neither, but not both."),
 
         new Syntax(() => new object[] { OptionalAll, Subject, Has, Object, "between", "!", LowerBound, "and", UpperBound })
@@ -468,6 +483,14 @@ public partial class Syntax
 
                 if (!gotOne)
                     Driver.AppendResponseLine("No tests have been defined.");
+            })
+            .Documentation("Run all tests currently defined")
+            .Command(), 
+
+        new Syntax(() => new object[] { "grade", Text })
+            .Action(() =>
+            {
+                Driver.StartCoroutine(AutoGrader.GradeAssignment(Text.Text.Untokenize()));
             })
             .Documentation("Run all tests currently defined")
             .Command(), 
