@@ -108,7 +108,12 @@ public partial class Syntax
     /// <summary>
     /// Object is syntactically singular, i.e. it starts with "a", "an", etc.
     /// </summary>
-    private static bool ObjectExplicitlySingular() => Object.Number == Number.Singular;
+    private static bool ObjectExplicitlySingular() => Object.Number == Number.Singular && Object.BeginsWithDeterminer;
+
+    /// <summary>
+    /// Subject is syntactically singular, i.e. it starts with "a", "an", etc.
+    /// </summary>
+    private static bool SubjectExplicitlySingular() => Subject.Number == Number.Singular && Subject.BeginsWithDeterminer;
 
     private static bool ObjectQuantifierAgree()
     {

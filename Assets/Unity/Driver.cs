@@ -42,6 +42,11 @@ public static class Driver
         CommandBuffer.Length = 0;
     }
 
+    public static void PrependResponseLine(string s)
+    {
+        CommandBuffer.Insert(0, s);
+    }
+
     public static void AppendResponseLine(string s)
     {
         CommandBuffer.AppendLine(s);

@@ -301,7 +301,7 @@ public partial class Syntax
                 subject.ImpliedAdjectives.Add(new CommonNoun.ConditionalModifier(Subject.Modifiers.ToArray(),
                     Object.CommonNoun));
             })
-            .Check(SubjectCommonNoun, ObjectCommonNoun, ObjectExplicitlySingular)
+            .Check(SubjectCommonNoun, ObjectCommonNoun, SubjectExplicitlySingular, ObjectExplicitlySingular)
             .Documentation("States that a Subject is always also a Object.  Importnat: object *must* be singular, as in 'a noun', not just 'nouns'.  This is different from saying 'a kind of' which says that Objects must also be one of their subkinds.  This just says if you see a Subject, also make it be an Object."),
 
         //new Syntax(() => new object[] { Subject, Is, Object })
@@ -311,7 +311,7 @@ public partial class Syntax
         //        n.ImpliedAdjectives.Add(new CommonNoun.ConditionalAdjective(Subject.Modifiers.ToArray(), Object.CommonNoun));
         //    })
         //    .Check(SubjectCommonNoun, ObjectCommonNoun, SubjectVerbAgree),
-        new Syntax(() => new object[] { OptionalAll, Subject, Is, PredicateAP })
+        new Syntax(() => new object[] { OptionalAll, Subject, Is, OptionalAlways, PredicateAP })
             .Action(() =>
             {
                 switch (Subject.Noun)
@@ -468,10 +468,12 @@ public partial class Syntax
         new Syntax("test")
             .Action(() =>
             {
-                var gotOne = false;
+                var total = 0;
+                var failed = 0;
                 foreach (var (test, success, example) in Ontology.TestResults())
                 {
-                    gotOne = true;
+                    total++;
+                    if (!success) failed++;
                     Driver.AppendResponseLine(
                         success?
                             $"<B><color=green>{test.SucceedMessage}</color></b>"
@@ -481,7 +483,13 @@ public partial class Syntax
                         Driver.AppendResponseLine($"Example: {example.Description(example.Individuals[0])}");
                 }
 
-                if (!gotOne)
+                if (total > 0)
+                {
+                    if (failed == 0)
+                        Driver.PrependResponseLine($"<color=green><b>All {total} tests passed.</b></color>\n\n");
+                    else 
+                        Driver.PrependResponseLine($"<color=red><b>{failed} of {total} tests failed.</b></color>\n\n");
+                } else
                     Driver.AppendResponseLine("No tests have been defined.");
             })
             .Documentation("Run all tests currently defined")

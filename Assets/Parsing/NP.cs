@@ -63,7 +63,7 @@ public class NP : ReferringExpression<Noun>
     /// <summary>
     /// True if the segment starts with a determiner
     /// </summary>
-    private bool beginsWithDeterminer;
+    public bool BeginsWithDeterminer;
     /// <summary>
     /// True if we've been told by our syntax rule that this has to be a common noun.
     /// </summary>
@@ -137,7 +137,7 @@ public class NP : ReferringExpression<Noun>
         if (EndOfInput)
             return;
 
-        beginsWithDeterminer = true;
+        BeginsWithDeterminer = true;
         if (Match("a") || Match("an"))
             Number = Syntax.Number.Singular;
         else if (Match("all"))
@@ -168,7 +168,7 @@ public class NP : ReferringExpression<Noun>
             SkipToken();
         }
         else
-            beginsWithDeterminer = false;
+            BeginsWithDeterminer = false;
     }
 
     /// <summary>
@@ -240,7 +240,7 @@ public class NP : ReferringExpression<Noun>
     {
         var text = Text;
 
-        if (Number == Syntax.Number.Plural || beginsWithDeterminer || ForceCommonNoun)
+        if (Number == Syntax.Number.Plural || BeginsWithDeterminer || ForceCommonNoun)
             return GetCommonNoun(text);
 
         return GetProperNoun(text);
@@ -317,7 +317,7 @@ public class NP : ReferringExpression<Noun>
         Modifiers.Clear();
         Number = null;
         ExplicitCount = null;
-        beginsWithDeterminer = false;
+        BeginsWithDeterminer = false;
         ForceCommonNoun = false;
     }
 }
