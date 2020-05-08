@@ -130,9 +130,12 @@ public static class Inflection
         else if (plural.Length == 1)
         {
             var s = plural[0];
-            yield return new[] {s + "ing"};
+            if (EndsWithVowel(s))
+                yield return new[] { WithoutFinalCharacter(s) + "ing" };
+            else
+                yield return new[] {s + "ing"};
 
-            if (EndsWithConsonant(s, out var terminalConsonant))
+            if (EndingConsonant(s, out var terminalConsonant))
             {
                 yield return new [] { s + terminalConsonant.ToString() + "ing" };
             }
@@ -168,12 +171,22 @@ public static class Inflection
     private static readonly char[] Vowels = {'a', 'e', 'i', 'o', 'u'};
     private static bool IsVowel(char c) => Vowels.Contains(c);
     private static bool IsConsonant(char c) => !IsVowel(c);
-    private static bool EndsWithConsonant(string s, out char c)
+    private static bool EndsWithVowel(string s) => IsVowel(FinalCharacter(s));
+    private static bool EndsWithConsonant(string s) => IsConsonant(FinalCharacter(s));
+
+    private static bool EndingConsonant(string s, out char c)
     {
         System.Diagnostics.Debug.Assert(s.Length > 0);
-        c = s[s.Length - 1];
+        c = FinalCharacter(s);
         return IsVowel(c);
     }
+
+    private static char FinalCharacter(string s)
+    {
+        return s[s.Length - 1];
+    }
+
+    private static string WithoutFinalCharacter(string s) => s.Substring(0, s.Length - 1);
 
     // ReSharper disable once IdentifierTypo
     private static readonly string[] CopularForms = {"is", "are", "being", "be" };
