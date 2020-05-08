@@ -34,6 +34,16 @@ public class Spreadsheet
         get => this[key][ColumnIndex(column)];
         set => this[key][ColumnIndex(column)] = value;
     }
+
+    /// <summary>
+    /// Return the value of specified column in the row identified by key.
+    /// If there is no row matching key, then return null.
+    /// </summary>
+    public object LookupOrNull(object key, string column)
+    {
+        var row = Data.FirstOrDefault(r => r[idColumnIndex].Equals(key));
+        return row?[ColumnIndex(column)];
+    }
     
     public static object[][] Read(string path, char delimiter)
     {

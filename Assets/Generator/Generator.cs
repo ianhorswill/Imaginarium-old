@@ -95,6 +95,21 @@ public class Generator
         // Do this first so that Problem.Current gets set.
         Problem = new Problem("invention");
 
+        DetermineIndividuals();
+
+        foreach (var i in Individuals)
+            AddFormalization(i);
+
+        BuildVerbPropositionsAndClauses();
+
+        Problem.Optimize();
+    }
+
+    /// <summary>
+    /// Find all the individuals that need to exist in these inventions
+    /// </summary>
+    private void DetermineIndividuals()
+    {
         EphemeralIndividuals.Clear();
 
         var ca = Concepts;
@@ -103,7 +118,8 @@ public class Generator
                 Noun.SingularForm.Prepend("the").ToArray()));
         else
             for (var i = 0; i < Count; i++)
-                EphemeralIndividuals.Add(Individual.Ephemeral(ca.Append(Noun), Noun.SingularForm.Append(i.ToString()).ToArray()));
+                EphemeralIndividuals.Add(Individual.Ephemeral(ca.Append(Noun),
+                    Noun.SingularForm.Append(i.ToString()).ToArray()));
 
         foreach (var i in EphemeralIndividuals.ToArray())
             AddParts(i);
@@ -112,23 +128,31 @@ public class Generator
         Individuals.AddRange(EphemeralIndividuals);
         Individuals.AddRange(Individual.AllPermanentIndividuals.Select(pair => pair.Value));
         ResetPredicateTables();
+    }
 
-        foreach (var i in Individuals)
-            AddFormalization(i);
-
+    /// <summary>
+    /// Add all the propositions and clauses for the verbs
+    /// </summary>
+    private void BuildVerbPropositionsAndClauses()
+    {
         var verbs = Verb.AllVerbs.ToArray();
 
-        foreach (var i1 in Individuals)
-        foreach (var i2 in Individuals)
+        foreach (var subj in Individuals)
+        foreach (var obj in Individuals)
         foreach (var v in verbs)
             // v can't hold of i1,i2 unless they're both in the v's domain
-            if (CanBeA(i1, v.SubjectKind) && CanBeA(i2, v.ObjectKind))
+            if (CanBeA(subj, v.SubjectKind) && CanBeA(obj, v.ObjectKind))
             {
-                var proposition = Holds(v, i1, i2);
-                proposition.InitialProbability = v.Density;
-                var relationDoesNotHold = Not(proposition);
-                AddImplication(relationDoesNotHold, Not(IsA(i1, v.SubjectKind)));
-                AddImplication(relationDoesNotHold, Not(IsA(i2, v.ObjectKind)));
+                var related = Holds(v, subj, obj);
+                related.InitialProbability = v.Density;
+                AddImplication(IsA(subj, v.SubjectKind), related);
+                if (v.SubjectModifiers != null)
+                    foreach (var lit in v.SubjectModifiers)
+                        AddImplication(Satisfies(subj, lit), related);
+                AddImplication(IsA(obj, v.ObjectKind), related);
+                if (v.ObjectModifiers != null)
+                    foreach (var lit in v.ObjectModifiers)
+                        AddImplication(Satisfies(obj, lit), related);
             }
 
         foreach (var v in verbs)
@@ -139,7 +163,8 @@ public class Generator
                 var max = v.IsFunction ? 1 : Individuals.Count;
                 foreach (var i1 in Individuals)
                     if (CanBeA(i1, v.SubjectKind))
-                        Problem.Quantify(min, max, Individuals.Where(i2=>CanBeA(i2, v.ObjectKind)).Select(i2 => Holds(v, i1, i2)));
+                        Problem.Quantify(min, max,
+                            Individuals.Where(i2 => CanBeA(i2, v.ObjectKind)).Select(i2 => Holds(v, i1, i2)));
             }
 
             if (v.IsAntiReflexive)
@@ -179,7 +204,6 @@ public class Generator
                     Problem.AtMost(1, v.Subspecies.Select(sub => Holds(sub, s, o)).Append(Not(vHolds)));
                 }
         }
-        Problem.Optimize();
     }
 
     private void AddParts(Individual i)

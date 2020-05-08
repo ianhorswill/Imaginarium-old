@@ -124,13 +124,15 @@ public partial class Syntax
             {
                 var verb = Verb.Verb;
                 verb.SubjectKind = CommonNoun.LeastUpperBound(verb.SubjectKind, Subject.CommonNoun);
+                verb.SubjectModifiers = Subject.Modifiers.ToArray();
                 verb.ObjectKind = CommonNoun.LeastUpperBound(verb.ObjectKind, Object.CommonNoun);
+                verb.ObjectModifiers = Object.Modifiers.ToArray();
                 verb.IsFunction |= !Quantifier.IsPlural;
                 // "Cats can love other cats" means anti-reflexive, whereas "cats can love many cats" doesn't.
                 verb.IsAntiReflexive |= Quantifier.IsOther;
                 verb.IsTotal |= CanMust.Match[0] == "must";
             })
-            .Check(VerbBaseForm, ObjectUnmodified, ObjectQuantifierAgree, SubjectCommonNoun, ObjectCommonNoun)
+            .Check(VerbBaseForm, ObjectQuantifierAgree, SubjectCommonNoun, ObjectCommonNoun)
             .Documentation("Specifies how many Objects a given Subject can Verb."),
 
         new Syntax(() => new object[] { Verb, "is", RareCommon })
@@ -164,14 +166,28 @@ public partial class Syntax
             .Action(() =>
             {
                 if (Verb.Verb.SubjectKind == null)
+                {
                     Verb.Verb.SubjectKind = Verb2.Verb.SubjectKind;
+                    Verb.Verb.SubjectModifiers = Verb2.Verb.SubjectModifiers;
+                }
+
                 if (Verb.Verb.ObjectKind == null)
+                {
                     Verb.Verb.ObjectKind = Verb2.Verb.ObjectKind;
+                    Verb.Verb.ObjectModifiers = Verb2.Verb.ObjectModifiers;
+                }
 
                 if (Verb2.Verb.SubjectKind == null)
+                {
                     Verb2.Verb.SubjectKind = Verb.Verb.SubjectKind;
+                    Verb2.Verb.SubjectModifiers = Verb.Verb.SubjectModifiers;
+                }
+
                 if (Verb2.Verb.ObjectKind == null)
+                {
                     Verb2.Verb.ObjectKind = Verb.Verb.ObjectKind;
+                    Verb2.Verb.ObjectModifiers = Verb.Verb.ObjectModifiers;
+                }
 
                 Verb.Verb.Superspecies.Add(Verb2.Verb);
                 Verb2.Verb.Subspecies.Add(Verb.Verb);
@@ -189,6 +205,7 @@ public partial class Syntax
             {
                 var verb = Verb.Verb;
                 verb.SubjectKind = verb.ObjectKind = CommonNoun.LeastUpperBound(verb.SubjectKind, verb.ObjectKind, Subject.CommonNoun);
+                verb.SubjectModifiers = verb.ObjectModifiers = Subject.Modifiers.ToArray();
                 verb.IsAntiReflexive = true;
             })
             .Check(VerbBaseForm, SubjectCommonNoun)
@@ -199,6 +216,7 @@ public partial class Syntax
             {
                 var verb = Verb.Verb;
                 verb.SubjectKind = verb.ObjectKind = CommonNoun.LeastUpperBound(verb.SubjectKind, verb.ObjectKind, Subject.CommonNoun);
+                verb.SubjectModifiers = verb.ObjectModifiers = Subject.Modifiers.ToArray();
                 verb.IsReflexive = true;
             })
             .Check(VerbBaseForm, SubjectCommonNoun)
@@ -209,6 +227,7 @@ public partial class Syntax
             {
                 var verb = Verb.Verb;
                 verb.SubjectKind = verb.ObjectKind = CommonNoun.LeastUpperBound(verb.SubjectKind, verb.ObjectKind, Subject.CommonNoun);
+                verb.SubjectModifiers = verb.ObjectModifiers = Subject.Modifiers.ToArray();
                 verb.IsSymmetric = true;
             })
             .Check(VerbBaseForm, SubjectCommonNoun)

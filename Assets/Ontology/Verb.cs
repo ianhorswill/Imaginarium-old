@@ -80,6 +80,7 @@ public class Verb : Concept
     // ReSharper disable InconsistentNaming
     private string[] _baseForm;
     private string[] _gerundForm;
+
     // ReSharper restore InconsistentNaming
 
     public string[] BaseForm
@@ -90,10 +91,13 @@ public class Verb : Concept
             _baseForm = value;
             Trie.Store(value, this);
             EnsureGerundForm();
+            EnsurePassiveParticiple();
             EnsurePluralForm();
             EnsureSingularForm();
         }
     }
+
+    public string[] PassiveParticiple { get; private set;  }
 
     public string[] GerundForm
     {
@@ -154,6 +158,19 @@ public class Verb : Concept
         }
     }
 
+    /// <summary>
+    /// Add likely spellings of the gerund of this verb.
+    /// They are stored as if they are plural inflections.
+    /// </summary>
+    private void EnsurePassiveParticiple()
+    {
+        if (PassiveParticiple != null)
+            return;
+        EnsureBaseForm();
+        PassiveParticiple = Inflection.PassiveParticiple(BaseForm);
+        Trie.Store(PassiveParticiple, this, true);
+    }
+
     private void EnsureBaseForm()
     {
         if (_baseForm != null)
@@ -200,7 +217,9 @@ public class Verb : Concept
     }
 
     public CommonNoun SubjectKind { get; set; }
+    public MonadicConceptLiteral[] SubjectModifiers { get; set; }
     public CommonNoun ObjectKind { get; set; }
+    public MonadicConceptLiteral[] ObjectModifiers { get; set; }
 
     private void EnsurePluralForm()
     {
@@ -226,5 +245,6 @@ public enum VerbConjugation
 {
     ThirdPerson,
     BaseForm,
-    Gerund
+    Gerund,
+    PassiveParticiple
 };

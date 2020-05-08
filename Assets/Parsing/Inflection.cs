@@ -33,6 +33,25 @@ using File = System.IO.File;
 /// </summary>
 public static class Inflection
 {
+    static Inflection()
+    {
+        Inflections = InflectionProcess.FromFile(ConfigurationFiles.PathTo("Inflections", "Regular nouns"));
+
+        foreach (var entry in File.ReadAllLines(ConfigurationFiles.PathTo("Inflections", "Irregular nouns")))
+        {
+            var split = entry.Split('\t');
+            var singular = split[0];
+            var plural = split[1];
+            IrregularPlurals[singular] = plural;
+            IrregularSingulars[plural] = singular;
+        }
+
+        irregularVerbs = new Spreadsheet(ConfigurationFiles.PathTo(
+                "Inflections", "Irregular verbs", ".csv"),
+                "Base form");
+    }
+
+    private static readonly Spreadsheet irregularVerbs;
     public static string[] PluralOfNoun(string[] singular)
     {
         var plural = new string[singular.Length];
@@ -147,11 +166,13 @@ public static class Inflection
     }
 
     private static readonly char[] Vowels = {'a', 'e', 'i', 'o', 'u'};
+    private static bool IsVowel(char c) => Vowels.Contains(c);
+    private static bool IsConsonant(char c) => !IsVowel(c);
     private static bool EndsWithConsonant(string s, out char c)
     {
         System.Diagnostics.Debug.Assert(s.Length > 0);
         c = s[s.Length - 1];
-        return !Vowels.Contains(c);
+        return IsVowel(c);
     }
 
     // ReSharper disable once IdentifierTypo
@@ -166,20 +187,6 @@ public static class Inflection
     private static readonly Dictionary<string, string> IrregularPlurals = new Dictionary<string, string>();
 
     private static readonly  Dictionary<string, string> IrregularSingulars = new Dictionary<string, string>();
-
-    static Inflection()
-    {
-        Inflections = InflectionProcess.FromFile(ConfigurationFiles.PathTo("Inflections", "Regular nouns"));
-
-        foreach (var entry in File.ReadAllLines(ConfigurationFiles.PathTo("Inflections", "Irregular nouns")))
-        {
-            var split = entry.Split('\t');
-            var singular = split[0];
-            var plural = split[1];
-            IrregularPlurals[singular] = plural;
-            IrregularSingulars[plural] = singular;
-        }
-    }
 
     private static readonly InflectionProcess[] Inflections;
 
@@ -208,5 +215,33 @@ public static class Inflection
             var columns = lines.Select(line => line.Split('\t'));
             return columns.Select(line => new InflectionProcess(line[0], line[1])).ToArray();
         }
+    }
+
+    public static string[] PassiveParticiple(string[] baseForm)
+    {
+        if (baseForm.Length == 1 && irregularVerbs.LookupOrNull(baseForm[0], "Passive participle") is string irregular)
+        {
+            return new string[] {irregular};
+        }
+
+        var passive = (string[]) baseForm.Clone();
+        var end = passive.Length - 1;
+        var last = passive[end];
+        var len = last.Length;
+
+        if (last.EndsWith("e"))
+            last = last + "d";
+        if (last.EndsWith("y") && len > 1 && IsConsonant(last[len - 2]))
+            last = last.Substring(0, len - 1) + "ied";
+        else if (last.EndsWith("c"))
+            last = last + "ked";
+        else if (IsConsonant(last[len - 1]) && len > 1 && IsVowel(last[len - 2]))
+            last = last + last[len - 1] + "ed";
+        else
+            last = last + "ed";
+
+        passive[end] = last;
+
+        return passive;
     }
 }
