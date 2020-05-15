@@ -98,9 +98,12 @@ public static class AutoGrader
             yield return null;
         }
 
-        var score = (100 * passed) / count;
+        var score = (count>0)?(100 * passed) / count : 0;
         results.WriteLine($"{studentName},{score},{errors}");
-        grades[studentId, scoreColumnName] = score;
+        if (!grades.ContainsKey(studentId))
+            Debug.Log($"Student does not appear in spreadsheet: {studentName} {studentId}");
+        else
+            grades[studentId, scoreColumnName] = score;
         Debug.Log($"{studentName}: {score}% passed");
         Driver.SetOutputWindow($"{studentName}: {score}% passed");
 

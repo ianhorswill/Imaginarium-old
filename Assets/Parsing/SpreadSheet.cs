@@ -44,7 +44,9 @@ public class Spreadsheet
         var row = Data.FirstOrDefault(r => r[idColumnIndex].Equals(key));
         return row?[ColumnIndex(column)];
     }
-    
+
+    public bool ContainsKey(object key) => Data.FirstOrDefault(r => r[idColumnIndex].Equals(key)) != null;
+
     public static object[][] Read(string path, char delimiter)
     {
         using (TextReader r = File.OpenText(path))
