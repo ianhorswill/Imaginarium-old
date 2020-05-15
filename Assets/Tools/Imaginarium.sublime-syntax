@@ -1,0 +1,202 @@
+%YAML 1.2
+---
+# See http://www.sublimetext.com/docs/3/syntax.html
+name: Imaginarium
+file_extensions: [gen]
+scope: source.gen
+
+variables:
+  all: '^ *[Aa]ll'
+  ident: '[a-zA-Z][a-zA-Z0-9 -]+'
+  kword: '(cannot|can be|can|must|implies|is a way of|has|have|is|are)'
+
+contexts:
+  # The prototype context is prepended to all contexts but those setting
+  # meta_include_prototype: false.
+  prototype:
+    - include: comments
+
+  main:
+    - include: strings
+    - include: markupAndTests
+    - include: specialCases
+    - include: sentenceStart
+
+  strings:
+    # Strings begin and end with quotes, and use backslashes as an escape
+    # character.
+    - match: '"'
+      scope: punctuation.definition.string.begin.gen
+      push: inside_string
+
+  inside_string:
+    - meta_include_prototype: false
+    - meta_scope: string.quoted.double.gen
+    - match: '\.'
+      scope: constant.character.escape.gen
+    - match: '"'
+      scope: punctuation.definition.string.end.gen
+      pop: true
+
+  comments:
+    - match: '#'
+      scope: punctuation.definition.comment.gen
+      push:
+        # This is an anonymous context push for brevity.
+        - meta_scope: comment.line.hash.gen
+        - match: $\n?
+          pop: true
+
+  markupAndTests:
+    - match: '([Tt]he (plural|singular) of) ({{ident}}) (is) ({{ident}})'
+      captures:
+        1: constant.language.gen
+        3: entity.name.gen
+        4: keyword.operator.word.gen
+        5: entity.name.gen
+    - match: '({{ident}}) (is|are) ((identified|described) as)'
+      captures:
+        1: entity.name.gen
+        2: keyword.operator.word.gen
+        3: constant.language.gen
+    - match: '([Dd]o not mention) (being) ({{ident}})'
+      captures:
+        1: constant.language.gen
+        2: keyword.operator.word.gen
+        3: entity.name.gen
+    - match: '({{ident}}) ((should|should not) exist)'
+      captures:
+        1: entity.name.gen
+        2: constant.language.gen
+    - match: '[Pp]ressing'
+      scope: keyword.control.gen
+      push:
+        - include: strings
+        - match: means
+          scope: keyword.control.gen
+        - match: $\n?
+          pop: true
+
+  specialCases:
+    - match: '({{all}} )?({{ident}}) (always) ({{ident}}) (itself)'
+      captures:
+        1: keyword.operator.word.gen
+        2: entity.name.gen
+        3: keyword.operator.word.gen
+        4: entity.name.gen
+        5: constant.language.gen
+
+  sentenceStart:
+    - match: '({{ident}}) (and) ({{ident}}) ({{kword}})'
+      push: sentenceBody
+      captures:
+        1: entity.name.gen
+        2: keyword.operator.word.gen
+        3: entity.name.gen
+        4: keyword.operator.word.gen
+    - match: '({{all}} )?({{ident}}) ({{kword}})'
+      push: sentenceBody
+      captures:
+        1: keyword.operator.word.gen
+        2: entity.name.gen
+        3: keyword.operator.word.gen
+
+    - match: '({{ident}})(,)'
+      captures:
+        1: entity.name.gen
+        2: punctuation.separator.gen
+      set: identifiersChain
+
+
+  identifiersChain:
+    - match: '(and|or) ({{ident}})\.?$\n?'
+      captures:
+        1: keyword.operator.word.gen
+        2: entity.name.gen
+      set: main
+    - match: '(and|or) ({{ident}}) ({{kword}})'
+      captures:
+        1: keyword.operator.word.gen
+        2: entity.name.gen
+        3: keyword.operator.word.gen
+      set: sentenceBody
+    - match: '({{ident}})(,)'
+      captures:
+        1: entity.name.gen
+        2: punctuation.separator.gen
+      set: identifiersChain
+
+
+  sentenceBody:
+    - match: $\n?
+      pop: true
+    - match: '({{ident}}) (between) ([0-9]+) (and) ([0-9]+)'
+      captures:
+        1: entity.name.gen
+        2: keyword.operator.word.gen
+        3: constant.numeric.gen
+        4: keyword.operator.word.gen
+        5: constant.numeric.gen
+    - match: '({{ident}}) (from) ({{ident}})'
+      captures:
+        1: entity.name.gen
+        2: keyword.operator.word.gen
+        3: variable.parameter.gen
+    - match: '({{ident}}) (called its) ({{ident}})'
+      captures:
+        1: entity.name.gen
+        2: keyword.operator.word.gen
+        3: entity.name.gen
+    - match: '(any|up to) ([0-9]+) (of) ({{ident}})'
+      captures:
+        1: keyword.operator.word
+        2: constant.numeric.gen
+        3: keyword.operator.word
+        4: entity.name.gen
+    - match: '(between) ([0-9]+) (and) ([0-9]+) (of) ({{ident}})'
+      captures:
+        1: keyword.operator.word
+        2: constant.numeric.gen
+        3: keyword.operator.word
+        4: constant.numeric.gen
+        5: keyword.operator.word
+        6: entity.name.gen
+    - match: '({{ident}}) (one|many|other) ({{ident}})'
+      captures:
+        1: entity.name.gen
+        2: keyword.control.gen
+        3: entity.name.gen
+    - match: '(mutually exclusive with) ({{ident}})'
+      captures:
+        1: constant.language.gen
+        2: entity.name.gen
+    - match: '(rare|common|mutually exclusive)'
+      scope: constant.language.gen
+    - match: '({{ident}}) (implies|is a way of) ({{ident}})'
+      captures:
+        1: entity.name.gen
+        2: keyword.operator.word.gen
+        3: entity.name.gen
+    - match: '({{ident}}) (itself|each other)'
+      captures:
+        1: entity.name.gen
+        2: constant.language.gen
+    - match: '({{ident}}) (another) ({{ident}})'
+      captures:
+        1: entity.name.gen
+        2: constant.language.gen
+        3: entity.name.gen
+    - match: '(a kind of|kinds of) ({{ident}})'
+      captures:
+        1: constant.language.gen
+        2: entity.name.gen
+    # - match: '(always )?({{ident}})(,)'
+    #   captures:
+    #     1: keyword.operator.word.gen
+    #     2: entity.name.gen
+    #     3: punctuation.separator.gen
+    #   set: identifiersChain
+    - match: '(always )?({{ident}})'
+      captures:
+        1: keyword.operator.word.gen
+        2: entity.name.gen

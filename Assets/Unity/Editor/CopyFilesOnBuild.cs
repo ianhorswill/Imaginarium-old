@@ -9,7 +9,7 @@ using UnityEngine;
 /// </summary>
 public class CopyFilesOnBuild
 {
-    private static readonly string[] DataDirectories = {"Inflections", "Examples"};
+    private static readonly string[] DataDirectories = {"Inflections", "Examples", "Tools"};
     [PostProcessBuild()]
     // ReSharper disable once IdentifierTypo
     public static void OnPostprocessBuild(BuildTarget target, string pathToBuiltProject)
