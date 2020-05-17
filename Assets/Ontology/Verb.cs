@@ -43,22 +43,47 @@ public class Verb : Concept
         {
             var b = new StringBuilder();
             b.Append(base.Description);
-            if (IsReflexive)
-                b.Append(" reflexive");
-            if (IsAntiReflexive)
-                b.Append(" anti-reflexive");
-            if (IsSymmetric)
-                b.Append(" symmetric");
-            if (IsAntiSymmetric)
-                b.Append(" anti-symmetric");
-            if (ObjectLowerBound > 0)
-                b.Append($" objects>={ObjectLowerBound}");
-            if (ObjectUpperBound < int.MaxValue)
-                b.Append($" objects<={ObjectUpperBound}");
-            if (SubjectLowerBound > 0)
-                b.Append($" subjects>={SubjectLowerBound}");
-            if (SubjectUpperBound < int.MaxValue)
-                b.Append($" subjects<={SubjectUpperBound}");
+            b.Append(
+                $" ({SingularForm.Untokenize()}/{PluralForm.Untokenize()}/{GerundForm.Untokenize()}/is {PassiveParticiple.Untokenize()} by)\n");
+            if (IsReflexive || IsAntiReflexive || IsSymmetric || IsAntiSymmetric)
+            {
+                if (IsReflexive)
+                    b.Append("reflexive ");
+                if (IsAntiReflexive)
+                    b.Append("anti-reflexive ");
+                if (IsSymmetric)
+                    b.Append("symmetric ");
+                if (IsAntiSymmetric)
+                    b.Append("anti-symmetric ");
+                b.AppendLine();
+            }
+
+            if (ObjectLowerBound > 0 || ObjectUpperBound < int.MaxValue)
+            {
+                if (ObjectLowerBound == ObjectUpperBound)
+                    b.Append($"Subjects {PluralForm.Untokenize()} {ObjectLowerBound} objects");
+                else if (ObjectUpperBound == int.MaxValue)
+                    b.Append($"Subjects {PluralForm.Untokenize()} at least {ObjectLowerBound} objects");
+                else if (ObjectLowerBound == 0)
+                    b.Append($"Subjects {PluralForm.Untokenize()} at most {ObjectUpperBound} objects");
+                else 
+                    b.Append($"Subjects {PluralForm.Untokenize()} {ObjectLowerBound}-{ObjectUpperBound} objects");
+                b.AppendLine();
+            }
+
+            if (SubjectLowerBound > 0 || SubjectUpperBound < int.MaxValue)
+            {
+                if (SubjectLowerBound == SubjectUpperBound)
+                    b.Append($"Objects are {PassiveParticiple} by {SubjectLowerBound} subjects");
+                else if (SubjectUpperBound == int.MaxValue)
+                    b.Append($"Objects are {PassiveParticiple} by at least {SubjectLowerBound} subjects");
+                else if (SubjectLowerBound == 0)
+                    b.Append($"Objects are {PassiveParticiple} by at most {SubjectUpperBound} subjects");
+                else 
+                    b.Append($"Objects are {PassiveParticiple} by {SubjectLowerBound}-{SubjectUpperBound} subjects");
+                b.AppendLine();
+            }
+
             return b.ToString();
         }
     }

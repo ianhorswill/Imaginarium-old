@@ -58,7 +58,7 @@ public static class Extensions
     /// <summary>
     /// Convert a token string back into its corresponding text string
     /// </summary>
-    public static string Untokenize(this IEnumerable<string> tokens) => Tokenizer.Untokenize(tokens);
+    public static string Untokenize(this IEnumerable<string> tokens) => tokens == null?"null":Tokenizer.Untokenize(tokens);
 
     /// <summary>
     /// Returns the item in dictionary or a default value if they key is not present
