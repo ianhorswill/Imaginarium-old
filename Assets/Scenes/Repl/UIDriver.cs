@@ -33,10 +33,10 @@ public class UIDriver : MonoBehaviour, IRepl
         var generator = PlayerPrefs.GetString("DefinitionsDirectory", null);
 
         if (string.IsNullOrEmpty(generator))
-            OutputField.text = "No generator selected";
+            OutputField.text = "No generator selected.  Press <b>F1 for help</b>, ESC for menu.";
         else
         {
-            OutputField.text = $"Using {Path.GetFileName(generator)} generator";
+            OutputField.text = $"<size=120>Using <b>{Path.GetFileName(generator)}</b> generator.</size>\nPress <b>F1 for help</b>, ESC for menu.";
             try
             {
                 Parser.DefinitionsDirectory = generator;
@@ -310,7 +310,7 @@ public class UIDriver : MonoBehaviour, IRepl
                         return;
                     walked.Add(i);
 
-                    inventionDescriptions.Add(Invention.Description(i, "<b><color=grey>", "</color></b>"));
+                    inventionDescriptions.Add(Invention.Description(i, "<b><color=#808080>", "</color></b>"));
                     foreach (var sub in Invention.Individuals)
                         if (sub.Container == i)
                             Walk(sub);

@@ -114,7 +114,9 @@ public class Invention
                 b.Append(token);
         }
 
-        return b.ToString();
+        var description = b.ToString();
+        i.MostRecentDescription = description;
+        return description;
     }
 
     private void AppendPropertyOrMetaPropertyValue(StringBuilder b, Individual i, string[] propertyName,
