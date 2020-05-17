@@ -216,7 +216,9 @@ public class CommonNoun : Noun
     public bool IsImmediateSuperKindOf(CommonNoun sub) => Subkinds.Contains(sub);
     public bool IsImmediateSubKindOf(CommonNoun super) => Superkinds.Contains(super);
 
-    public bool IsSuperKindOf(CommonNoun sub) => sub == this || Subkinds.Any(IsSuperKindOf);
+    public bool IsSuperKindOf(CommonNoun sub) =>
+        sub == this                         // A is a super kind of A
+        || Subkinds.Any(s => s.IsSuperKindOf(sub));
 
     public bool IsSubKindOf(CommonNoun super) => super.IsSuperKindOf(this);
 
