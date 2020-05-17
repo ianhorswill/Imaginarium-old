@@ -128,9 +128,12 @@ public partial class Syntax
                 verb.ObjectKind = CommonNoun.LeastUpperBound(verb.ObjectKind, Object.CommonNoun);
                 verb.ObjectModifiers = Object.Modifiers.ToArray();
                 verb.IsFunction |= !Quantifier.IsPlural;
+                if (Quantifier.ExplicitCount.HasValue)
+                    verb.ObjectUpperBound = Quantifier.ExplicitCount.Value;
                 // "Cats can love other cats" means anti-reflexive, whereas "cats can love many cats" doesn't.
                 verb.IsAntiReflexive |= Quantifier.IsOther;
-                verb.IsTotal |= CanMust.Match[0] == "must";
+                if (CanMust.Match[0] == "must")
+                    verb.ObjectLowerBound = Quantifier.ExplicitCount.HasValue ? Quantifier.ExplicitCount.Value : 1;
             })
             .Check(VerbBaseForm, ObjectQuantifierAgree, SubjectCommonNoun, ObjectCommonNoun)
             .Documentation("Specifies how many Objects a given Subject can Verb."),

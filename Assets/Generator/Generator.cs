@@ -157,13 +157,11 @@ public class Generator
 
         foreach (var v in verbs)
         {
-            if (v.IsFunction || v.IsTotal)
+            if (v.ObjectUpperBound < int.MaxValue || v.ObjectLowerBound > 0)
             {
-                var min = v.IsTotal ? 1 : 0;
-                var max = v.IsFunction ? 1 : Individuals.Count;
                 foreach (var i1 in Individuals)
                     if (CanBeA(i1, v.SubjectKind))
-                        Problem.Quantify(min, max,
+                        Problem.Quantify(v.ObjectLowerBound, v.ObjectUpperBound,
                             Individuals.Where(i2 => CanBeA(i2, v.ObjectKind)).Select(i2 => Holds(v, i1, i2)));
             }
 

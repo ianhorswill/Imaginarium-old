@@ -39,8 +39,14 @@ public class QuantifyingDeterminer : ClosedClassSegment
     /// Tests if the token is one of the known quantifiers
     /// </summary>
     public readonly Func<string, bool> IsQuantifier = token => 
-        SingularQuantifiers.Contains(token) || PluralQuantifiers.Contains(token)
-                                            || InvalidQuantifiers.Contains(token);
+        NonNumberQuantifierWord(token) || IntFromWord(token).HasValue;
+
+    private static bool NonNumberQuantifierWord(string token)
+    {
+        return SingularQuantifiers.Contains(token)
+               || PluralQuantifiers.Contains(token)
+               || InvalidQuantifiers.Contains(token);
+    }
 
     private static readonly string[] SingularQuantifiers =
     {
@@ -71,17 +77,24 @@ public class QuantifyingDeterminer : ClosedClassSegment
         "a",
     };
 
-    public bool IsPlural => PluralQuantifiers.Contains(Quantifier);
+    public bool IsPlural => PluralQuantifiers.Contains(Quantifier) || (ExplicitCount.HasValue && ExplicitCount.Value > 1);
     public bool IsOther;
     public bool IsInvalid => InvalidQuantifiers.Contains(Quantifier);
+    public int? ExplicitCount;
 
     public override bool ScanTo(Func<string, bool> endPredicate)
     {
         Quantifier = CurrentToken;
-        if (!Match(IsQuantifier))
-            return false;
-
-        IsOther = Quantifier == "other";
+        if (!Match(NonNumberQuantifierWord))
+        {
+            ExplicitCount = Parser.IntFromWord(Quantifier);
+            if (ExplicitCount == null)
+                return false;
+            SkipToken();
+            Quantifier = CurrentToken;
+        }
+        else
+            IsOther = Quantifier == "other";
 
         if (!IsOther && !EndOfInput && CurrentToken == "other")
         {

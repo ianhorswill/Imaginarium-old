@@ -23,6 +23,7 @@
 // --------------------------------------------------------------------------------------------------------------------
 #endregion
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -50,13 +51,40 @@ public class Verb : Concept
     public List<Verb> Superspecies = new List<Verb>();
 
     /// <summary>
+    /// The maximum number of elements in the Object domain, a given member of the Subject domain can be related to.
+    /// </summary>
+    public int ObjectUpperBound = int.MaxValue;
+    /// <summary>
+    /// The minimum number of elements in the Object domain, a given member of the Subject domain can be related to.
+    /// </summary>
+    public int ObjectLowerBound;
+
+    /// <summary>
+    /// The maximum number of elements in the Subject domain, a given member of the Object domain can be related to.
+    /// </summary>
+    public int SubjectUpperBound = int.MaxValue;
+    /// <summary>
+    /// The minimum number of elements in the Subject domain, a given member of the Object domain can be related to.
+    /// </summary>
+    public int SubjectLowerBound;
+
+    /// <summary>
     /// There is at most one object for each possible subject
     /// </summary>
-    public bool IsFunction;
-    /// <summary>
-    /// There is an object for every possible subject.
-    /// </summary>
-    public bool IsTotal;
+    public bool IsFunction
+    {
+        get => ObjectUpperBound == 1;
+        set => ObjectUpperBound = value ? 1:ObjectUpperBound;
+    }
+
+///// <summary>
+///// There is an object for every possible subject.
+///// </summary>
+//public bool IsTotal
+//    {
+//        get => ObjectLowerBound == 1;
+//        set => ObjectLowerBound = value?Math.Max(1, ObjectLowerBound):ObjectLowerBound;
+//    }
 
     public bool IsReflexive;
 

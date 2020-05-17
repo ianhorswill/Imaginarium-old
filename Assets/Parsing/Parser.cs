@@ -234,6 +234,16 @@ public static class Parser
 
     private static readonly string[] NumberWords =
         { "zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten"};
+    
+    public static int? IntFromWord(string s)
+    {
+        var value = Array.IndexOf(NumberWords, s);
+        if (value >= 0 || int.TryParse(s, out value))
+            return value;
+
+        return null;
+    }
+
     /// <summary>
     /// Attempt to match token to a number.  If successful, writes number to out arg.
     /// </summary>
