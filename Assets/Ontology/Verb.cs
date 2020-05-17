@@ -26,6 +26,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using UnityEngine;
 
 /// <summary>
@@ -35,6 +36,34 @@ public class Verb : Concept
 {
     public Verb() : base(null)
     { }
+
+    public override string Description
+    {
+        get
+        {
+            var b = new StringBuilder();
+            b.Append(base.Description);
+            if (IsReflexive)
+                b.Append(" reflexive");
+            if (IsAntiReflexive)
+                b.Append(" anti-reflexive");
+            if (IsSymmetric)
+                b.Append(" symmetric");
+            if (IsAntiSymmetric)
+                b.Append(" anti-symmetric");
+            if (ObjectLowerBound > 0)
+                b.Append($" objects>={ObjectLowerBound}");
+            if (ObjectUpperBound < int.MaxValue)
+                b.Append($" objects<={ObjectUpperBound}");
+            if (SubjectLowerBound > 0)
+                b.Append($" subjects>={SubjectLowerBound}");
+            if (SubjectUpperBound < int.MaxValue)
+                b.Append($" subjects<={SubjectUpperBound}");
+            return b.ToString();
+        }
+    }
+
+    protected override string DictionaryStylePartOfSpeech => "v.";
 
     /// <summary>
     /// Verbs that are implied by this verb

@@ -47,4 +47,11 @@ public abstract class Concept : Referent
                 return t.Name.ToLower();
         }
     }
+
+    protected virtual string DictionaryStylePartOfSpeech => GetType().Name.ToLower();
+
+    /// <summary>
+    /// A description of the concept.  Used for tooltips in Concepts visualization
+    /// </summary>
+    public virtual string Description => $"<b>{ToString()}</b> <i>{DictionaryStylePartOfSpeech}</i>";
 }

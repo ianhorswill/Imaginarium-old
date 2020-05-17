@@ -38,6 +38,8 @@ public class ProperNoun : Noun
         AllNouns[Name] = this;
     }
 
+    protected override string DictionaryStylePartOfSpeech => "prop. n.";
+
     public override bool IsNamed(string[] tokens) => Name.SameAs(tokens);
 
     public override string[] StandardName => Name;

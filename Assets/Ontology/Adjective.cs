@@ -36,6 +36,17 @@ public class Adjective : MonadicConcept
         Ontology.AllReferentTables.Add(AllAdjectives);
     }
 
+    public override string Description
+    {
+        get
+        {
+            var d = base.Description;
+            return IsSilent ? $"{d} silent" : d;
+        }
+    }
+
+    protected override string DictionaryStylePartOfSpeech => "adj.";
+
     public Adjective(string[] name) : base(name)
     {
         Name = name;

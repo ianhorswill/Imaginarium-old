@@ -18,7 +18,7 @@ public class Part : Concept
         Kind = kind;
         Modifiers = modifiers.ToArray();
     }
-
+    
     /// <summary>
     /// The CatSAT domain of this variable
     /// </summary>

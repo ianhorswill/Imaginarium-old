@@ -37,6 +37,10 @@ public class CommonNoun : Noun
     public CommonNoun() : base(null)
     { }
 
+    public override string Description => $"<b>{ToString()}</b> <i>{DictionaryStylePartOfSpeech}</i> plural: <i>{PluralForm.Untokenize()}</i>";
+
+    protected override string DictionaryStylePartOfSpeech => "n.";
+
     /// <summary>
     /// List of all common nouns (i.e. kinds/types) in the ontology.
     /// </summary>

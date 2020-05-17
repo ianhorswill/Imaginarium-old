@@ -25,6 +25,7 @@
 
 using System.Collections.Generic;
 using CatSAT;
+using CatSAT.NonBoolean.SMT.Float;
 using CatSAT.NonBoolean.SMT.MenuVariables;
 
 /// <summary>
@@ -42,6 +43,31 @@ public class Property : Concept
         Name = name;
         AllProperties[name] = this;
         Type = type;
+    }
+
+    public override string Description
+    {
+        get
+        {
+            var baseDescription = base.Description;
+            if (MenuRules != null && MenuRules.Count > 0)
+            {
+                switch (MenuRules.Count)
+                {
+                    case 1:
+                        return $"{baseDescription} chosen from {MenuRules[0].Menu.Name}";
+                    case 2:
+                        return $"{baseDescription} chosen from {MenuRules[0].Menu.Name} or {MenuRules[1].Menu.Name}";
+                    case 3:
+                        return $"{baseDescription} chosen from {MenuRules[0].Menu.Name}, {MenuRules[1].Menu.Name}, or {MenuRules[2].Menu.Name}";
+                    default:
+                        return $"{baseDescription} chosen from a number of files";
+                }
+            }
+            else if (Type is FloatDomain d)
+                return $"{baseDescription} between {d.Bounds.Lower} and {d.Bounds.Upper}";
+            else return baseDescription;
+        }
     }
 
     /// <summary>
