@@ -128,15 +128,21 @@ public class Individual : Referent, IComparable
 
     public override bool IsNamed(string[] tokens) => Name.SameAs(tokens);
 
-    // ReSharper disable once InconsistentNaming
-    private static int UIDCounter;
-    // ReSharper disable once InconsistentNaming
-    private readonly int UID = UIDCounter++;
+    #region Comparisons
+    private static int uidCounter;
+    private readonly int uid = uidCounter++;
 
     public int CompareTo(object obj)
     {
         if (obj is Individual i)
-            return UID.CompareTo(i.UID);
+            return uid.CompareTo(i.uid);
         return -1;
     }
+
+    public static bool operator <(Individual a, Individual b) => a.uid < b.uid;
+    public static bool operator >(Individual a, Individual b) => a.uid > b.uid;
+
+    public static bool operator <=(Individual a, Individual b) => a.uid <= b.uid;
+    public static bool operator >=(Individual a, Individual b) => a.uid >= b.uid;
+    #endregion
 }
