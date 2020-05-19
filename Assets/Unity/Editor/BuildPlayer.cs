@@ -24,8 +24,8 @@ public class BuildPlayer
         {
             scenes = new[]
             {
-                "Assets/Scenes/Help.unity",
                 "Assets/Scenes/Repl/Repl.unity",
+                "Assets/Scenes/Help.unity",
                 "Assets/Scenes/Server.unity",
                 "Assets/Scenes/Main menu/Main menu.unity",
                 "Assets/Scenes/Project selector/Project selector.unity",
