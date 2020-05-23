@@ -142,7 +142,11 @@ public class Verb : Concept
 
     public bool IsReflexive;
 
+    public bool AncestorIsReflexive => IsReflexive || Superspecies.Any(sup => sup.AncestorIsReflexive);
+
     public bool IsAntiReflexive;
+
+    public bool AncestorIsAntiReflexive => IsAntiReflexive || Superspecies.Any(sup => sup.AncestorIsAntiReflexive);
 
     public bool IsSymmetric;
 

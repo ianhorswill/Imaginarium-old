@@ -394,8 +394,9 @@ public class Invention
             foreach (var i1 in Individuals)
             foreach (var i2 in Individuals)
             foreach (var v in verbs)
-                if (Generator.CanBeA(i1, v.SubjectKind) && Generator.CanBeA(i2, v.ObjectKind) && Holds(v, i1, i2))
-                    yield return new Tuple<Verb, Individual, Individual>(v, i1, i2);
+                if (i1 <= i2 || !v.IsSymmetric)
+                    if (Generator.CanBeA(i1, v.SubjectKind) && Generator.CanBeA(i2, v.ObjectKind) && Holds(v, i1, i2))
+                        yield return new Tuple<Verb, Individual, Individual>(v, i1, i2);
         }
     }
 

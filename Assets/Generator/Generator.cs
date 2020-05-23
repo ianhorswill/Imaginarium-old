@@ -157,51 +157,80 @@ public class Generator
 
         foreach (var v in verbs)
         {
-            if (v.ObjectUpperBound < int.MaxValue || v.ObjectLowerBound > 0)
-            {
-                foreach (var i1 in Individuals)
-                    if (CanBeA(i1, v.SubjectKind))
-                        Problem.Quantify(v.ObjectLowerBound, v.ObjectUpperBound,
-                            Individuals.Where(i2 => CanBeA(i2, v.ObjectKind)).Select(i2 => Holds(v, i1, i2)));
-            }
+            BuildVerbClauses(v);
+        }
+    }
 
-            if (v.IsAntiReflexive)
-                // No individuals can self-relate
-            {
-                foreach (var i in Individuals)
-                    if (CanBeA(i, v.SubjectKind))
-                        Problem.Assert(Not(Holds(v, i, i)));
-            }
-
-            if (v.IsReflexive)
-            {
-                // All eligible individuals must self-relate
-                foreach (var i in Individuals)
-                    if (CanBeA(i, v.SubjectKind))
-                        Problem.Assert(Holds(v, i, i));
-            }
-
-            if (v.Generalizations.Count > 0 || v.MutualExclusions.Count > 0)
-                foreach (var (s, o) in Domain(v))
+    private void BuildVerbClauses(Verb v)
+    {
+        // Bound instantiations
+        if (v.ObjectUpperBound < int.MaxValue || v.ObjectLowerBound > 0)
+        {
+            foreach (var i1 in Individuals)
+                if (CanBeA(i1, v.SubjectKind))
                 {
-                    var vHolds = Holds(v, s, o);
-                    foreach (var g in v.Generalizations)
-                        AddImplication(Holds(g, s, o), vHolds);
-                    foreach (var e in v.MutualExclusions)
-                        Problem.AtMost(1, vHolds, Holds(e, s, o));
-                }
-
-            if (v.Superspecies.Count > 0 || v.Subspecies.Count > 0)
-                foreach (var (s, o) in Domain(v))
-                {
-                    var vHolds = Holds(v, s, o);
-                    foreach (var g in v.Superspecies)
-                        // Subspecies implies super-species
-                        AddImplication(Holds(g, s, o), vHolds);
-                    // Super-species implies some subspecies
-                    Problem.AtMost(1, v.Subspecies.Select(sub => Holds(sub, s, o)).Append(Not(vHolds)));
+                    var propositions = Individuals.Where(i2 => CanBeA(i2, v.ObjectKind)).Select(i2 => Holds(v, i1, i2)).Cast<Literal>().ToArray();
+                    if (propositions.Length < v.ObjectLowerBound)
+                        throw new ContradictionException(Problem, $"Each {v.SubjectKind.SingularForm.Untokenize()} must {v.SingularForm.Untokenize()} at least {v.ObjectLowerBound} {v.ObjectKind.PluralForm.Untokenize()}, but there are only {propositions.Length} total {v.ObjectKind.PluralForm.Untokenize()}.");
+                    Problem.Quantify(v.ObjectLowerBound, v.ObjectUpperBound, propositions);
                 }
         }
+
+        // Force diagonal values if (anti-)reflexive
+        if (v.AncestorIsAntiReflexive)
+            // No individuals can self-relate
+        {
+            foreach (var i in Individuals)
+                if (CanBeA(i, v.SubjectKind))
+                    Problem.Assert(Not(Holds(v, i, i)));
+        }
+
+        if (v.AncestorIsReflexive)
+        {
+            // All eligible individuals must self-relate
+            foreach (var i in Individuals)
+                if (CanBeA(i, v.SubjectKind))
+                    Problem.Assert(Holds(v, i, i));
+        }
+
+        // Implications and exclusions
+        if (v.Generalizations.Count > 0 || v.MutualExclusions.Count > 0)
+            foreach (var (s, o) in Domain(v))
+            {
+                var vHolds = Holds(v, s, o);
+                foreach (var g in v.Generalizations)
+                    AddImplication(Holds(g, s, o), vHolds);
+                foreach (var e in v.MutualExclusions)
+                    Problem.AtMost(1, vHolds, Holds(e, s, o));
+            }
+
+        // Link to superspecies and subspecies
+        if (v.Superspecies.Count > 0 || v.Subspecies.Count > 0)
+            foreach (var (s, o) in Domain(v))
+            {
+                var vHolds = Holds(v, s, o);
+                foreach (var g in v.Superspecies)
+                    // Subspecies implies super-species
+                    AddImplication(Holds(g, s, o), vHolds);
+
+                if (v.Subspecies.Count > 0)
+                {
+                    // Super-species implies some subspecies
+                    if (v.IsSymmetric)
+                    {
+                        var lits = v.Subspecies.Select(sub => Holds(sub, s, o))
+                            .Concat(v.Subspecies.Select(sub => Holds(sub, o, s)))
+                            .Append(Not(vHolds)).Distinct().ToArray();
+                        Problem.Exactly(1, lits
+                        );
+                    }
+                    else
+                    {
+                        var lits = v.Subspecies.Select(sub => Holds(sub, s, o)).Append(Not(vHolds)).ToArray();
+                        Problem.Exactly(1, lits);
+                    }
+                }
+            }
     }
 
     private void AddParts(Individual i)
@@ -228,7 +257,7 @@ public class Generator
         foreach (var i1 in Individuals)
             if (CanBeA(i1, v.SubjectKind))
                 foreach (var i2 in Individuals)
-                    if (CanBeA(i1, v.ObjectKind))
+                    if ((i1 != i2 || !v.IsAntiReflexive) && CanBeA(i1, v.ObjectKind))
                         yield return (i1, i2);
     }
 

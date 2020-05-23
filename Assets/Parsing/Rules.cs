@@ -27,6 +27,7 @@ using System;
 using static Parser;
 using System.IO;
 using System.Linq;
+using CatSAT;
 using CatSAT.NonBoolean.SMT.Float;
 using CatSAT.NonBoolean.SMT.MenuVariables;
 
@@ -80,7 +81,15 @@ public partial class Syntax
             {
                 var countRequest = Object.ExplicitCount;
                 var count = countRequest ?? (Object.Number == Number.Plural?9:1);
-                Generator.Current = new Generator(Object.CommonNoun, Object.Modifiers, count);
+                try
+                {
+                    Generator.Current = new Generator(Object.CommonNoun, Object.Modifiers, count);
+                }
+                catch (ContradictionException e)
+                {
+                    Driver.AppendResponseLine($"<color=red><b>Contradiction found.</b></color>");
+                    Driver.AppendResponseLine($"Internal error message: {e.Message}");
+                }
             })
             .Command()
             .Documentation("Generates one or more Objects.  For example, 'imagine a cat' or 'imagine 10 long-haired cats'."),
@@ -123,9 +132,15 @@ public partial class Syntax
             .Action(() =>
             {
                 var verb = Verb.Verb;
-                verb.SubjectKind = CommonNoun.LeastUpperBound(verb.SubjectKind, Subject.CommonNoun);
+                var verbSubjectKind = CommonNoun.LeastUpperBound(verb.SubjectKind, Subject.CommonNoun);
+                if (verbSubjectKind == null)
+                    throw new ContradictionException(null, $"Verb {verb.BaseForm.Untokenize()} was previously declared to take subjects that were {verb.SubjectKind.PluralForm.Untokenize()}, but is now being declared to take subjects of the unrelated type {Subject.CommonNoun.SingularForm.Untokenize()}.");
+                verb.SubjectKind = verbSubjectKind;
                 verb.SubjectModifiers = Subject.Modifiers.ToArray();
-                verb.ObjectKind = CommonNoun.LeastUpperBound(verb.ObjectKind, Object.CommonNoun);
+                var verbObjectKind = CommonNoun.LeastUpperBound(verb.ObjectKind, Object.CommonNoun);
+                if (verbObjectKind == null)
+                    throw new ContradictionException(null, $"Verb {verb.BaseForm.Untokenize()} was previously declared to take objects that were {verb.ObjectKind.PluralForm.Untokenize()}, but is now being declared to take objects of the unrelated type {Object.CommonNoun.SingularForm.Untokenize()}.");
+                verb.ObjectKind = verbObjectKind;
                 verb.ObjectModifiers = Object.Modifiers.ToArray();
                 verb.IsFunction |= !Quantifier.IsPlural;
                 if (Quantifier.ExplicitCount.HasValue)
@@ -146,21 +161,21 @@ public partial class Syntax
         new Syntax(() => new object[] { Verb, "and", Verb2, "are", "!", "mutually", "exclusive" })
             .Action(() =>
             {
-                Verb.Verb.MutualExclusions.Add(Verb2.Verb);
+                Verb.Verb.MutualExclusions.AddNew(Verb2.Verb);
             })
             .Documentation("States that two objects cannot be related by both verbs at once."),
         
         new Syntax(() => new object[] { Verb, "is", "mutually", "!", "exclusive", "with", Verb2 })
             .Action(() =>
             {
-                Verb.Verb.MutualExclusions.Add(Verb2.Verb);
+                Verb.Verb.MutualExclusions.AddNew(Verb2.Verb);
             })
             .Documentation("States that two objects cannot be related by both verbs at once."),
 
         new Syntax(() => new object[] { Verb, "implies", "!", Verb2 })
             .Action(() =>
             {
-                Verb.Verb.Generalizations.Add(Verb2.Verb);
+                Verb.Verb.Generalizations.AddNew(Verb2.Verb);
             })
             .Check(VerbGerundForm, Verb2GerundForm)
             .Documentation("States that two objects being related by the first verb means they must also be related by the second."), 
@@ -168,32 +183,34 @@ public partial class Syntax
         new Syntax(() => new object[] { Verb, "is", "a", "way", "!", "of", Verb2 })
             .Action(() =>
             {
-                if (Verb.Verb.SubjectKind == null)
+                var sub = Verb.Verb;
+                var super = Verb2.Verb;
+                if (sub.SubjectKind == null)
                 {
-                    Verb.Verb.SubjectKind = Verb2.Verb.SubjectKind;
-                    Verb.Verb.SubjectModifiers = Verb2.Verb.SubjectModifiers;
+                    sub.SubjectKind = super.SubjectKind;
+                    sub.SubjectModifiers = super.SubjectModifiers;
                 }
 
-                if (Verb.Verb.ObjectKind == null)
+                if (sub.ObjectKind == null)
                 {
-                    Verb.Verb.ObjectKind = Verb2.Verb.ObjectKind;
-                    Verb.Verb.ObjectModifiers = Verb2.Verb.ObjectModifiers;
+                    sub.ObjectKind = super.ObjectKind;
+                    sub.ObjectModifiers = super.ObjectModifiers;
                 }
 
-                if (Verb2.Verb.SubjectKind == null)
+                if (super.SubjectKind == null)
                 {
-                    Verb2.Verb.SubjectKind = Verb.Verb.SubjectKind;
-                    Verb2.Verb.SubjectModifiers = Verb.Verb.SubjectModifiers;
+                    super.SubjectKind = sub.SubjectKind;
+                    super.SubjectModifiers = sub.SubjectModifiers;
                 }
 
-                if (Verb2.Verb.ObjectKind == null)
+                if (super.ObjectKind == null)
                 {
-                    Verb2.Verb.ObjectKind = Verb.Verb.ObjectKind;
-                    Verb2.Verb.ObjectModifiers = Verb.Verb.ObjectModifiers;
+                    super.ObjectKind = sub.ObjectKind;
+                    super.ObjectModifiers = sub.ObjectModifiers;
                 }
 
-                Verb.Verb.Superspecies.Add(Verb2.Verb);
-                Verb2.Verb.Subspecies.Add(Verb.Verb);
+                sub.Superspecies.AddNew(super);
+                super.Subspecies.AddNew(sub);
             })
             .Check(VerbGerundForm, Verb2GerundForm)
             .Documentation("Like 'is a kind of' but for verbs.  Verb1 implies Verb2, but Verb2 implies that one of the Verbs that is a way of Verb2ing is also true."), 
@@ -311,7 +328,7 @@ public partial class Syntax
             .Action(() =>
             {
                 var proper = (ProperNoun) Subject.Noun;
-                proper.Kinds.Add(Object.CommonNoun);
+                proper.Kinds.AddNew(Object.CommonNoun);
             })
             .Check(SubjectProperNoun, ObjectCommonNoun, ObjectExplicitlySingular)
             .Documentation("States that proper noun Subject is of the type Object.  For example, 'Ben is a person'."),
@@ -344,7 +361,7 @@ public partial class Syntax
                         break;
 
                     case ProperNoun n:
-                        n.Individual.Modifiers.Add(PredicateAP.MonadicConceptLiteral);
+                        n.Individual.Modifiers.AddNew(PredicateAP.MonadicConceptLiteral);
                         break;
 
                     default:
@@ -524,5 +541,14 @@ public partial class Syntax
             })
             .Documentation("Run all tests currently defined")
             .Command(), 
+
+        new Syntax(() => new object[] { "decompile" })
+            .Action(() =>
+            {
+                Driver.AppendResponseLine(Generator.Current.Problem.Decompiled);
+            })
+            .Documentation("Dump the clauses of the compiled SAT problem")
+            .Command(), 
+
     };
 }
