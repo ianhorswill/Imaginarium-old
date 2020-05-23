@@ -206,4 +206,9 @@ public class Segment
     /// Name of this segment, for use in printing doc strings
     /// </summary>
     public string Name;
+
+    public virtual void Reset()
+    {
+
+    }
 }

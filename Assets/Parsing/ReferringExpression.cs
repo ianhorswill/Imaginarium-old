@@ -43,7 +43,7 @@ public abstract class ReferringExpression<TR> : Segment
     /// <summary>
     /// Clears any stored state in this expression, for example the CachedConcept.
     /// </summary>
-    public virtual void Reset()
+    public override void Reset()
     {
         CachedConcept = null;
     }

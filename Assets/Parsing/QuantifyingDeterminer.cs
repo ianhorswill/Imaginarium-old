@@ -130,4 +130,11 @@ public class QuantifyingDeterminer : ClosedClassSegment
         Quantifier = CurrentToken;
         return Match(IsQuantifier) && EndOfInput;
     }
+
+    public override void Reset()
+    {
+        base.Reset();
+        IsOther = false;
+        ExplicitCount = null;
+    }
 }

@@ -407,6 +407,7 @@ public static class Parser
             PredicateAP.Reset();
             SubjectNounList.Reset();
             PredicateAPList.Reset();
+            Quantifier.Reset();
             VerbNumber = null;
         }
 
@@ -546,11 +547,12 @@ public static class Parser
 
     public static List<Exception> LoadDefinitions(string path, bool throwOnErrors = true)
     {
-        if (LoadedFiles.Contains(path))
+        var downCased = path.ToLower();
+        if (LoadedFiles.Contains(downCased))
             return null;
 
         LogFile.Log("Loading " + path);
-        LoadedFiles.Add(path);
+        LoadedFiles.Add(downCased);
         var oldPath = CurrentSourceFile;
         var oldLine = CurrentSourceLine;
         CurrentSourceFile = path;

@@ -75,7 +75,7 @@ public class ReferringExpressionList<TE, TR> : Segment
     /// <summary>
     /// Reset internal state so we can reparse.
     /// </summary>
-    public virtual void Reset()
+    public override void Reset()
     {
         concepts.Clear();
         Expressions.Clear();
