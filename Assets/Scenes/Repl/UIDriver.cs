@@ -340,6 +340,7 @@ public class UIDriver : MonoBehaviour, IRepl
             return style;
         style = RelationshipGraph.EdgeStyles[0].Clone();
         style.Color = Colors[verbColorCounter++ % Colors.Length];
+        style.IsDirected = !v.IsSymmetric;
         verbColors[v] = style;
         return style;
     }
