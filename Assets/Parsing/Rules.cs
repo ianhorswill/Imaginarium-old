@@ -545,10 +545,27 @@ public partial class Syntax
         new Syntax(() => new object[] { "decompile" })
             .Action(() =>
             {
-                Driver.AppendResponseLine(Generator.Current.Problem.Decompiled);
+                var g = Generator.Current;
+                Driver.AppendResponseLine(g!=null?g.Problem.Decompiled:"Please type an imagine command first");
             })
             .Documentation("Dump the clauses of the compiled SAT problem")
             .Command(), 
+
+        new Syntax(() => new object[] { "stats" })
+            .Action(() =>
+            {
+                var g = Generator.Current;
+                if (g == null)
+                    Driver.AppendResponseLine("Please type an imagine command first.");
+                else
+                {
+                    Driver.AppendResponseLine(g.Problem.Stats);
+                    Driver.AppendResponseLine(g.Problem.PerformanceStatistics);
+                }
+            })
+            .Documentation("Dump the clauses of the compiled SAT problem")
+            .Command(), 
+
 
     };
 }
