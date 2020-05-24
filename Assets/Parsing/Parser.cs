@@ -569,8 +569,9 @@ public static class Parser
         foreach (var def in assertions)
         {
             CurrentSourceLine++;
-            var trimmed = def.Trim();
-            if (trimmed != "" && !trimmed.StartsWith("#") && !trimmed.StartsWith("//"))
+            var uncommented = RemoveAfter(RemoveAfter(def, "#"), "//");
+            var trimmed = uncommented.Trim();
+            if (trimmed != "")
             {
                 if (throwOnErrors)
                     ParseAndExecute(trimmed);
@@ -597,5 +598,16 @@ public static class Parser
         return errors;
     }
 
+    /// <summary>
+    /// Remove all text from s starting with the first occurrence of commentMarker.
+    /// If commentMarker doesn't appear, string is left unchanged.
+    /// </summary>
+    private static string RemoveAfter(string s, string commentMarker)
+    {
+        var index = s.IndexOf(commentMarker,StringComparison.InvariantCulture);
+        if (index < 0)
+            return s;
+        return s.Substring(0, index);
+    }
     #endregion
 }
