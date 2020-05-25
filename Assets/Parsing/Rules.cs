@@ -361,6 +361,9 @@ public partial class Syntax
                         break;
 
                     case ProperNoun n:
+                        if (n.Kinds.Count == 0)
+                            throw new Exception(
+                                $"Using a new proper noun <i>{n.Name.Untokenize()}</i>, which hasn't been been given a kind.  If you intend to use this term, please first add a line of the form \"{n.Name.Untokenize()} is <i>noun</i>\".");
                         n.Individual.Modifiers.AddNew(PredicateAP.MonadicConceptLiteral);
                         break;
 

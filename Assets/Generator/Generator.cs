@@ -279,6 +279,7 @@ public class Generator
     private void AddFormalization(Individual ind)
     {
         // We know that i IS of kind k, so assert that and its implications
+        // Returns true if we hadn't already generated the code for i and k.
         bool AssertKind(Individual i, CommonNoun k)
         {
             var isK = IsA(i, k);

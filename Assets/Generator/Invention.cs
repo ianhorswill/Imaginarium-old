@@ -75,6 +75,11 @@ public class Invention
     /// </summary>
     public string Description(Individual i, string startEmphasis="", string endEmphasis="")
     {
+        if (i.Kinds.Count == 0)
+        {
+            return i.MostRecentDescription = $"{i.Name.Untokenize()} has no nouns that apply to it";
+        }
+
         var suppressedProperties = new List<Property>();
 
         var descriptionKind = FindKindOrSuperKind(i, k => k.DescriptionTemplate != null);
@@ -380,7 +385,14 @@ public class Invention
     /// <param name="i">Individual to test</param>
     /// <param name="c">Concept to test the truth of</param>
     /// <returns>True if i is an instance of c in the current Model</returns>
-    public bool IsA(Individual i, MonadicConcept c) => Model[Generator.IsA(i, c)];
+    public bool IsA(Individual i, MonadicConcept c)
+    {
+        if (c is CommonNoun n)
+            // In case we're doing a test for a noun that the generator had already determined
+            // at compile time could not be an instance.
+            return Generator.CanBeA(i, n) && Model[Generator.IsA(i, c)];
+        return Model[Generator.IsA(i, c)];
+    }
 
     public bool Holds(Verb v, Individual i1, Individual i2) => Model[Generator.Holds(v, i1, i2)];
 
