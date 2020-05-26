@@ -102,7 +102,19 @@ public class Individual : Referent, IComparable
         Name = name;
         Container = container;
         var enumerated = concepts as MonadicConceptLiteral[] ?? concepts.ToArray();
-        Kinds.AddRange(enumerated.Where(l => l.IsPositive && l.Concept is CommonNoun).Select(l => (CommonNoun)l.Concept));
+        Kinds.AddRange(enumerated.Where(l => l.IsPositive && l.Concept is CommonNoun).Select(l => (CommonNoun)l.Concept).Distinct());
+        // Remove redundant kinds
+        for (var i = Kinds.Count - 1; i >= 0; i--)
+        {
+            var kind = Kinds[i];
+            foreach (var possibleSubKind in Kinds)
+                if (possibleSubKind != kind && possibleSubKind.IsSubKindOf(kind))
+                {
+                    // Listing kind is redundant
+                    Kinds.RemoveAt(i);
+                    break;
+                }
+        }
         Modifiers.AddRange(enumerated.Where(l => !l.IsPositive || !(l.Concept is CommonNoun)));
     }
 
