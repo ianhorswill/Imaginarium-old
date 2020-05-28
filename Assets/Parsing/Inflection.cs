@@ -248,7 +248,7 @@ public static class Inflection
             last = last.Substring(0, len - 1) + "ied";
         else if (last.EndsWith("c"))
             last = last + "ked";
-        else if (IsConsonant(last[len - 1]) && len > 1 && IsVowel(last[len - 2]))
+        else if (IsConsonant(last[len - 1]) && last[len-1] != 'y' && len > 1 && IsVowel(last[len - 2]))
             last = last + last[len - 1] + "ed";
         else
             last = last + "ed";

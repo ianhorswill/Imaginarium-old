@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using CatSAT.NonBoolean.SMT.MenuVariables;
+using UnityEngine.Analytics;
 using static CatSAT.Language;
 
 /// <summary>
@@ -163,34 +164,79 @@ public class Generator
 
     private void BuildVerbClauses(Verb v)
     {
-        // Bound instantiations
-        if (v.ObjectUpperBound < int.MaxValue || v.ObjectLowerBound > 0)
+        // Domain axioms
+        foreach (var (s, o) in Domain(v))
         {
-            foreach (var i1 in Individuals)
-                if (CanBeA(i1, v.SubjectKind))
-                {
-                    var propositions = Individuals.Where(i2 => CanBeA(i2, v.ObjectKind)).Select(i2 => Holds(v, i1, i2)).Cast<Literal>().ToArray();
-                    if (propositions.Length < v.ObjectLowerBound)
-                        throw new ContradictionException(Problem, $"Each {v.SubjectKind.SingularForm.Untokenize()} must {v.SingularForm.Untokenize()} at least {v.ObjectLowerBound} {v.ObjectKind.PluralForm.Untokenize()}, but there are only {propositions.Length} total {v.ObjectKind.PluralForm.Untokenize()}.");
-                    Problem.Quantify(v.ObjectLowerBound, v.ObjectUpperBound, propositions);
-                }
+            var h = Holds(v, s, o);
+            AddImplication(IsA(s, v.SubjectKind), h);
+            foreach (var m in v.SubjectModifiers)
+                AddImplication(Satisfies(s, m), h);
+
+            AddImplication(IsA(o, v.ObjectKind), h);
+            foreach (var m in v.ObjectModifiers)
+                AddImplication(Satisfies(o, m), h);
         }
+
+        var subjectDomain = Individuals.Where(i => CanBeA(i, v.SubjectKind)).ToArray();
+        var objectDomain = Individuals.Where(i => CanBeA(i, v.ObjectKind)).ToArray();
+
+        // Bound instantiations
+        if (v.ObjectUpperBound < Verb.Unbounded || v.ObjectLowerBound > 0)
+            foreach (var i1 in subjectDomain)
+            {
+                if (objectDomain.Length < v.ObjectLowerBound)
+                    throw new ContradictionException(Problem,
+                        $"Each {v.SubjectKind.SingularForm.Untokenize()} must {v.SingularForm.Untokenize()} at least {v.ObjectLowerBound} {v.ObjectKind.PluralForm.Untokenize()}, but there are only {objectDomain.Length} total {v.ObjectKind.PluralForm.Untokenize()}.");
+                Problem.Quantify(v.ObjectLowerBound, v.ObjectUpperBound, 
+                    objectDomain.Select(i2 => Holds(v, i1, i2)).Concat(NTimes(v.ObjectLowerBound, Not(IsA(i1, v.SubjectKind))))
+                        // KLUGE - We need this to bypass the optimizations that are performed when we pass in an IEnumerable
+                        // In particular, we *don't* want it to eliminate duplicate literals
+                        // TODO - Fix this when we have a proper implementation of pseudo-Boolean constraints in CatSAT
+                        // then we can just give the duplicated term a higher weight.
+                        .ToArray());
+            }
+
+        if (v.SubjectUpperBound < Verb.Unbounded || v.SubjectLowerBound > 0)
+            foreach (var i1 in objectDomain)
+            {
+                if (subjectDomain.Length < v.SubjectLowerBound)
+                    throw new ContradictionException(Problem,
+                        $"Each {v.SubjectKind.SingularForm.Untokenize()} must be {v.PassiveParticiple.Untokenize()} by at least {v.ObjectLowerBound} {v.ObjectKind.PluralForm.Untokenize()}, but there are only {subjectDomain.Length} total {v.ObjectKind.PluralForm.Untokenize()}.");
+                Problem.Quantify(v.SubjectLowerBound, v.SubjectUpperBound,
+                    subjectDomain.Select(i2 => Holds(v, i2, i1)).Concat(NTimes(v.SubjectLowerBound, Not(IsA(i1, v.ObjectKind))))
+                        // KLUGE - We need this to bypass the optimizations that are performed when we pass in an IEnumerable
+                        // In particular, we *don't* want it to eliminate duplicate literals
+                        // TODO - Fix this when we have a proper implementation of pseudo-Boolean constraints in CatSAT
+                        // then we can just give the duplicated term a higher weight.
+                        .ToArray());
+            }
 
         // Force diagonal values if (anti-)reflexive
         if (v.AncestorIsAntiReflexive)
             // No individuals can self-relate
         {
-            foreach (var i in Individuals)
-                if (CanBeA(i, v.SubjectKind))
-                    Problem.Assert(Not(Holds(v, i, i)));
+            foreach (var i in subjectDomain)
+                Problem.Assert(Not(Holds(v, i, i)));
         }
 
         if (v.AncestorIsReflexive)
         {
             // All eligible individuals must self-relate
-            foreach (var i in Individuals)
-                if (CanBeA(i, v.SubjectKind))
-                    Problem.Assert(Holds(v, i, i));
+            foreach (var i in subjectDomain)
+                Problem.Assert(Holds(v, i, i));
+        }
+
+        if (v.IsAntiSymmetric)
+        {
+            for (int i = 0; i < subjectDomain.Length; i++)
+            {
+                var i1 = subjectDomain[i];
+                for (var j = i + 1; j < subjectDomain.Length; j++)
+                {
+                    var i2 = subjectDomain[j];
+                    Problem.AtLeast(1, Not(Holds(v, i1, i2)), Not(Holds(v, i1, i2)));
+                }
+            }
         }
 
         // Implications and exclusions
@@ -204,7 +250,7 @@ public class Generator
                     Problem.AtMost(1, vHolds, Holds(e, s, o));
             }
 
-        // Link to superspecies and subspecies
+        // Link to super-species and subspecies
         if (v.Superspecies.Count > 0 || v.Subspecies.Count > 0)
             foreach (var (s, o) in Domain(v))
             {
@@ -218,19 +264,25 @@ public class Generator
                     // Super-species implies some subspecies
                     if (v.IsSymmetric)
                     {
-                        var lits = v.Subspecies.Select(sub => Holds(sub, s, o))
+                        var literals = v.Subspecies.Select(sub => Holds(sub, s, o))
                             .Concat(v.Subspecies.Select(sub => Holds(sub, o, s)))
                             .Append(Not(vHolds)).Distinct().ToArray();
-                        Problem.Exactly(1, lits
+                        Problem.Exactly(1, literals
                         );
                     }
                     else
                     {
-                        var lits = v.Subspecies.Select(sub => Holds(sub, s, o)).Append(Not(vHolds)).ToArray();
-                        Problem.Exactly(1, lits);
+                        var literals = v.Subspecies.Select(sub => Holds(sub, s, o)).Append(Not(vHolds)).ToArray();
+                        Problem.Exactly(1, literals);
                     }
                 }
             }
+    }
+
+    private IEnumerable<T> NTimes<T>(int count, T item)
+    {
+        for (var i = 0; i < count; i++)
+            yield return item;
     }
 
     private void AddParts(Individual i)

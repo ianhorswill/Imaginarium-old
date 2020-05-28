@@ -58,11 +58,11 @@ public class Verb : Concept
                 b.AppendLine();
             }
 
-            if (ObjectLowerBound > 0 || ObjectUpperBound < int.MaxValue)
+            if (ObjectLowerBound > 0 || ObjectUpperBound < Unbounded)
             {
                 if (ObjectLowerBound == ObjectUpperBound)
                     b.Append($"Subjects {PluralForm.Untokenize()} {ObjectLowerBound} objects");
-                else if (ObjectUpperBound == int.MaxValue)
+                else if (ObjectUpperBound == Verb.Unbounded)
                     b.Append($"Subjects {PluralForm.Untokenize()} at least {ObjectLowerBound} objects");
                 else if (ObjectLowerBound == 0)
                     b.Append($"Subjects {PluralForm.Untokenize()} at most {ObjectUpperBound} objects");
@@ -71,16 +71,16 @@ public class Verb : Concept
                 b.AppendLine();
             }
 
-            if (SubjectLowerBound > 0 || SubjectUpperBound < int.MaxValue)
+            if (SubjectLowerBound > 0 || SubjectUpperBound < Unbounded)
             {
                 if (SubjectLowerBound == SubjectUpperBound)
-                    b.Append($"Objects are {PassiveParticiple} by {SubjectLowerBound} subjects");
-                else if (SubjectUpperBound == int.MaxValue)
-                    b.Append($"Objects are {PassiveParticiple} by at least {SubjectLowerBound} subjects");
+                    b.Append($"Objects are {PassiveParticiple.Untokenize()} by {SubjectLowerBound} subjects");
+                else if (SubjectUpperBound == Unbounded)
+                    b.Append($"Objects are {PassiveParticiple.Untokenize()} by at least {SubjectLowerBound} subjects");
                 else if (SubjectLowerBound == 0)
-                    b.Append($"Objects are {PassiveParticiple} by at most {SubjectUpperBound} subjects");
+                    b.Append($"Objects are {PassiveParticiple.Untokenize()} by at most {SubjectUpperBound} subjects");
                 else 
-                    b.Append($"Objects are {PassiveParticiple} by {SubjectLowerBound}-{SubjectUpperBound} subjects");
+                    b.Append($"Objects are {PassiveParticiple.Untokenize()} by {SubjectLowerBound}-{SubjectUpperBound} subjects");
                 b.AppendLine();
             }
 
@@ -105,9 +105,15 @@ public class Verb : Concept
     public List<Verb> Superspecies = new List<Verb>();
 
     /// <summary>
+    /// The value for an upper bound that means there is no upper bound
+    /// This can be any large value but must not be short.MaxValue, or there will be overflow errors.
+    /// </summary>
+    public const int Unbounded = 10000;
+
+    /// <summary>
     /// The maximum number of elements in the Object domain, a given member of the Subject domain can be related to.
     /// </summary>
-    public int ObjectUpperBound = int.MaxValue;
+    public int ObjectUpperBound = Unbounded;
     /// <summary>
     /// The minimum number of elements in the Object domain, a given member of the Subject domain can be related to.
     /// </summary>
@@ -116,20 +122,11 @@ public class Verb : Concept
     /// <summary>
     /// The maximum number of elements in the Subject domain, a given member of the Object domain can be related to.
     /// </summary>
-    public int SubjectUpperBound = int.MaxValue;
+    public int SubjectUpperBound = Unbounded;
     /// <summary>
     /// The minimum number of elements in the Subject domain, a given member of the Object domain can be related to.
     /// </summary>
     public int SubjectLowerBound;
-
-    /// <summary>
-    /// There is at most one object for each possible subject
-    /// </summary>
-    public bool IsFunction
-    {
-        get => ObjectUpperBound == 1;
-        set => ObjectUpperBound = value ? 1:ObjectUpperBound;
-    }
 
 ///// <summary>
 ///// There is an object for every possible subject.

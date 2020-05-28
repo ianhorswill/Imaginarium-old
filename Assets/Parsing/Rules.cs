@@ -128,27 +128,70 @@ public partial class Syntax
         //    .Command()
         //    .Documentation("Add new assertions to a file.  Use save command to save changes."),
         
+        new Syntax(() => new object[] { OptionalAll, Object, "can", "be", Verb, "by", "up", "!", "to", UpperBound, Subject })
+            .Action(() =>
+            {
+                var verb = ConfigureVerb(Verb, Subject, Object);
+
+                verb.SubjectUpperBound = (int)upperBound;
+            })
+            .Check(VerbBaseForm, ObjectQuantifierAgree, SubjectCommonNoun, ObjectCommonNoun)
+            .Documentation("Specifies how many Subject a given Object can be Verb'ed by."),
+
+        new Syntax(() => new object[] { OptionalAll, Subject, "can", Verb, "up", "!", "to", UpperBound, Object })
+            .Action(() =>
+            {
+                var verb = ConfigureVerb(Verb, Subject, Object);
+
+                verb.ObjectUpperBound = (int)upperBound;
+            })
+            .Check(VerbBaseForm, ObjectQuantifierAgree, SubjectCommonNoun, ObjectCommonNoun)
+            .Documentation("Specifies how many Objects a given Subject can Verb."),
+
+        new Syntax(() => new object[] { OptionalAll, Object, "must", "be", Verb, "by", "at", "!", "least", LowerBound, Subject })
+            .Action(() =>
+            {
+                var verb = ConfigureVerb(Verb, Subject, Object);
+                verb.SubjectLowerBound = (int)lowerBound;
+            })
+            .Check(VerbBaseForm, ObjectQuantifierAgree, SubjectCommonNoun, ObjectCommonNoun)
+            .Documentation("Specifies how many Subject a given Object can be Verb'ed by"),
+
+        new Syntax(() => new object[] { OptionalAll, Subject, "must", Verb, "at", "!", "least", LowerBound, Object })
+            .Action(() =>
+            {
+                var verb = ConfigureVerb(Verb, Subject, Object);
+                verb.ObjectLowerBound = (int)lowerBound;
+            })
+            .Check(VerbBaseForm, ObjectQuantifierAgree, SubjectCommonNoun, ObjectCommonNoun)
+            .Documentation("Specifies how many Objects a given Subject can Verb."),
+
+        new Syntax(() => new object[] { OptionalAll, Object, CanMust, "be", Verb, "by", Quantifier, "!", Subject })
+            .Action(() =>
+            {
+                var verb = ConfigureVerb(Verb, Subject, Object);
+
+                if (Quantifier.ExplicitCount.HasValue)
+                    verb.SubjectUpperBound = Quantifier.ExplicitCount.Value;
+                // "Cats can love other cats" means anti-reflexive, whereas "cats can love many cats" doesn't.
+                verb.IsAntiReflexive |= Quantifier.IsOther;
+                if (CanMust.Match[0] == "must")
+                    verb.SubjectLowerBound = Quantifier.ExplicitCount ?? 1;
+            })
+            .Check(VerbBaseForm, ObjectQuantifierAgree, SubjectCommonNoun, ObjectCommonNoun)
+            .Documentation("Specifies how many Subjects a given Object can be Verb'ed by."),
+
         new Syntax(() => new object[] { OptionalAll, Subject, CanMust, Verb, Quantifier, "!", Object })
             .Action(() =>
             {
-                var verb = Verb.Verb;
-                var verbSubjectKind = CommonNoun.LeastUpperBound(verb.SubjectKind, Subject.CommonNoun);
-                if (verbSubjectKind == null)
-                    throw new ContradictionException(null, $"Verb {verb.BaseForm.Untokenize()} was previously declared to take subjects that were {verb.SubjectKind.PluralForm.Untokenize()}, but is now being declared to take subjects of the unrelated type {Subject.CommonNoun.SingularForm.Untokenize()}.");
-                verb.SubjectKind = verbSubjectKind;
-                verb.SubjectModifiers = Subject.Modifiers.ToArray();
-                var verbObjectKind = CommonNoun.LeastUpperBound(verb.ObjectKind, Object.CommonNoun);
-                if (verbObjectKind == null)
-                    throw new ContradictionException(null, $"Verb {verb.BaseForm.Untokenize()} was previously declared to take objects that were {verb.ObjectKind.PluralForm.Untokenize()}, but is now being declared to take objects of the unrelated type {Object.CommonNoun.SingularForm.Untokenize()}.");
-                verb.ObjectKind = verbObjectKind;
-                verb.ObjectModifiers = Object.Modifiers.ToArray();
-                verb.IsFunction |= !Quantifier.IsPlural;
+                var verb = ConfigureVerb(Verb, Subject, Object);
+
                 if (Quantifier.ExplicitCount.HasValue)
                     verb.ObjectUpperBound = Quantifier.ExplicitCount.Value;
                 // "Cats can love other cats" means anti-reflexive, whereas "cats can love many cats" doesn't.
                 verb.IsAntiReflexive |= Quantifier.IsOther;
                 if (CanMust.Match[0] == "must")
-                    verb.ObjectLowerBound = Quantifier.ExplicitCount.HasValue ? Quantifier.ExplicitCount.Value : 1;
+                    verb.ObjectLowerBound = Quantifier.ExplicitCount ?? 1;
             })
             .Check(VerbBaseForm, ObjectQuantifierAgree, SubjectCommonNoun, ObjectCommonNoun)
             .Documentation("Specifies how many Objects a given Subject can Verb."),
@@ -223,20 +266,25 @@ public partial class Syntax
         new Syntax(() => new object[] { OptionalAll, Subject, CanNot, Verb, Reflexive })
             .Action(() =>
             {
-                var verb = Verb.Verb;
-                verb.SubjectKind = verb.ObjectKind = CommonNoun.LeastUpperBound(verb.SubjectKind, verb.ObjectKind, Subject.CommonNoun);
-                verb.SubjectModifiers = verb.ObjectModifiers = Subject.Modifiers.ToArray();
+                var verb = ConfigureVerb(Verb, Subject, Subject);
                 verb.IsAntiReflexive = true;
             })
             .Check(VerbBaseForm, SubjectCommonNoun)
             .Documentation("States that the verb can't hold between an object and itself."),
 
+        new Syntax(() => new object[] { OptionalAll, Subject, CanNot, Verb, "each", "other" })
+            .Action(() =>
+            {
+                var verb = ConfigureVerb(Verb, Subject, Subject);
+                verb.IsAntiSymmetric = true;
+            })
+            .Check(VerbBaseForm, SubjectCommonNoun)
+            .Documentation("States that if A Verbs B, then B can't verb A."),
+
         new Syntax(() => new object[] { OptionalAll, Subject, Always, Verb, Reflexive })
             .Action(() =>
             {
-                var verb = Verb.Verb;
-                verb.SubjectKind = verb.ObjectKind = CommonNoun.LeastUpperBound(verb.SubjectKind, verb.ObjectKind, Subject.CommonNoun);
-                verb.SubjectModifiers = verb.ObjectModifiers = Subject.Modifiers.ToArray();
+                var verb = ConfigureVerb(Verb, Subject, Subject);
                 verb.IsReflexive = true;
             })
             .Check(VerbBaseForm, SubjectCommonNoun)
@@ -245,9 +293,7 @@ public partial class Syntax
         new Syntax(() => new object[] { OptionalAll, Subject, "can", Verb, EachOther })
             .Action(() =>
             {
-                var verb = Verb.Verb;
-                verb.SubjectKind = verb.ObjectKind = CommonNoun.LeastUpperBound(verb.SubjectKind, verb.ObjectKind, Subject.CommonNoun);
-                verb.SubjectModifiers = verb.ObjectModifiers = Subject.Modifiers.ToArray();
+                var verb = ConfigureVerb(Verb, Subject, Subject);
                 verb.IsSymmetric = true;
             })
             .Check(VerbBaseForm, SubjectCommonNoun)
@@ -571,4 +617,29 @@ public partial class Syntax
 
 
     };
+
+    /// <summary>
+    /// Set the subject and object kind and modifiers of Verb based on Subject and Object.
+    /// </summary>
+    /// <returns>The verb</returns>
+    private static Verb ConfigureVerb(VerbSegment verbSegment, NP subjectNP, NP objectNP)
+    {
+        var verb = verbSegment.Verb;
+        var verbSubjectKind = CommonNoun.LeastUpperBound(verb.SubjectKind, subjectNP.CommonNoun);
+        if (verbSubjectKind == null)
+            throw new ContradictionException(null,
+                $"Verb {verb.BaseForm.Untokenize()} was previously declared to take subjects that were {verb.SubjectKind.PluralForm.Untokenize()}, but is now being declared to take subjects of the unrelated type {subjectNP.CommonNoun.SingularForm.Untokenize()}.");
+        verb.SubjectKind = verbSubjectKind;
+        if (verb.SubjectModifiers == null)
+            verb.SubjectModifiers = subjectNP.Modifiers.ToArray();
+
+        var verbObjectKind = CommonNoun.LeastUpperBound(verb.ObjectKind, objectNP.CommonNoun);
+        if (verbObjectKind == null)
+            throw new ContradictionException(null,
+                $"Verb {verb.BaseForm.Untokenize()} was previously declared to take objects that were {verb.ObjectKind.PluralForm.Untokenize()}, but is now being declared to take objects of the unrelated type {objectNP.CommonNoun.SingularForm.Untokenize()}.");
+        verb.ObjectKind = verbObjectKind;
+        if (verb.ObjectModifiers == null)
+            verb.ObjectModifiers = objectNP.Modifiers.ToArray();
+        return verb;
+    }
 }

@@ -43,6 +43,9 @@ public class QuantifyingDeterminer : ClosedClassSegment
 
     private static bool NonNumberQuantifierWord(string token)
     {
+        if (token == "one")
+            return false;
+
         return SingularQuantifiers.Contains(token)
                || PluralQuantifiers.Contains(token)
                || InvalidQuantifiers.Contains(token);
