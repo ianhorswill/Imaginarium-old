@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.Globalization;
 using UnityEditor;
 using UnityEngine;
 using UnityEditor.Build.Reporting;
@@ -8,9 +9,13 @@ using UnityEditor.Build.Reporting;
 public class BuildPlayer
     : MonoBehaviour
 {
+    public static readonly string Version = "0.0.1 beta";
+
     [MenuItem("Build/Build all")]
     public static void BuildAll()
     {
+        PlayerSettings.bundleVersion = $"{Version}, built {DateTime.Now.ToString(CultureInfo.InvariantCulture)}";
+        Debug.Log($"Building {PlayerSettings.bundleVersion}");
         Build(BuildTarget.StandaloneWindows64, "Builds/Imaginarium windows/Imaginarium.exe");
         Build(BuildTarget.StandaloneOSX, "Builds/Imaginarium OSX.app");
         //Build(BuildTarget.StandaloneLinux64, "Builds/Linux");

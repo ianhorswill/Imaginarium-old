@@ -58,10 +58,13 @@ public class UIDriver : MonoBehaviour, IRepl
         var loadErrors = Driver.LoadErrors;
         if (loadErrors != null)
         {
-            OutputField.text = loadErrors;
+            OutputField.text = $"{loadErrors}\n{BuildVersionMessage}";
             Driver.ClearLoadErrors();
         }
     }
+
+    private static string BuildVersionMessage =>
+        $"This is <i>Imaginarium</i> version {Application.version}"; 
 
     /// <summary>
     /// Called when this UI mode is disabled.
@@ -230,6 +233,8 @@ public class UIDriver : MonoBehaviour, IRepl
 
             LogFile.Log(ex.Message);
             LogFile.Log(ex.StackTrace);
+
+            Driver.AppendResponseLine(BuildVersionMessage);
         }
 
         Output = Driver.CommandResponse;
