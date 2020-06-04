@@ -82,8 +82,8 @@ public class TokenTrie<TReferent> : TokenTrieBase
         {
             if (node.Concept != null)
                 throw new GrammaticalError(
-                    $"You tried to define a term term, \"{tokens.Untokenize()}\", but it starts with the phrase for an existing term, \"{node.Concept.StandardName.Untokenize()}\".  Imaginarium doesn't allow this because it can create situations of ambiguity and Imaginarium doesn't handle ambiguity well",
-                    $"You tried to define a term term, \"<b><i>{tokens.Untokenize()}</i></b>\", but it starts with the phrase for an existing term, \"<b><i>{node.Concept.StandardName.Untokenize()}</i></b>\".  Imaginarium doesn't allow this because it can create situations of ambiguity and Imaginarium doesn't handle ambiguity well");
+                    $"You tried to define a term, \"{tokens.Untokenize()}\", but it starts with the phrase for an existing term, \"{node.Concept.StandardName.Untokenize()}\".  Imaginarium doesn't allow this because it can create situations of ambiguity and Imaginarium doesn't handle ambiguity well",
+                    $"You tried to define a term, \"<b><i>{tokens.Untokenize()}</i></b>\", but it starts with the phrase for an existing term, \"<b><i>{node.Concept.StandardName.Untokenize()}</i></b>\".  Imaginarium doesn't allow this because it can create situations of ambiguity and Imaginarium doesn't handle ambiguity well");
 
             var t = IsCaseSensitive?tok:tok.ToLower();
             if (node.Dict.TryGetValue(t, out Node match))
@@ -100,8 +100,8 @@ public class TokenTrie<TReferent> : TokenTrieBase
 
         if (node.Dict != null && node.Dict.Count > 0)
             throw new GrammaticalError(
-                $"You tried to define a term term, \"{tokens.Untokenize()}\", but you already have a another term that starts with those words.  Imaginarium doesn't allow this because it can create situations of ambiguity and Imaginarium doesn't handle ambiguity well",
-                $"You tried to define a term term, \"<b><i>{tokens.Untokenize()}</i></b>\", but you already have a another term that starts with those words.  Imaginarium doesn't allow this because it can create situations of ambiguity and Imaginarium doesn't handle ambiguity well");
+                $"You tried to define a term, \"{tokens.Untokenize()}\", but you already have a another term that starts with those words.  Imaginarium doesn't allow this because it can create situations of ambiguity and Imaginarium doesn't handle ambiguity well",
+                $"You tried to define a term, \"<b><i>{tokens.Untokenize()}</i></b>\", but you already have a another term that starts with those words.  Imaginarium doesn't allow this because it can create situations of ambiguity and Imaginarium doesn't handle ambiguity well");
 
         node.Concept = c;
         node.IsPlural = isPlural;

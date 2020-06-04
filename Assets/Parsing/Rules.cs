@@ -528,6 +528,29 @@ public partial class Syntax
             .Check(SubjectVerbAgree, ObjectUnmodified)
             .Documentation("States that Subjects have part called Text that is a Object."),
 
+        new Syntax(() => new object[] { "every", "kind", "of", "!", Subject, "should", "exist"})
+            .Action(() =>
+            {
+                void Walk(CommonNoun kind)
+                {
+                    if (kind.Subkinds.Count == 0)
+                    {
+                        var name = kind.PluralForm.Untokenize();
+                        var modifiers = Subject.Modifiers.SelectMany(lit =>
+                                lit.IsPositive ? lit.Concept.StandardName : lit.Concept.StandardName.Prepend("not"))
+                            .Untokenize();
+                        Ontology.AddTest(kind, Subject.Modifiers, true,
+                            $"Test succeeded:{modifiers} {name} should exist",
+                            $"Test failed:{modifiers} {name} should exist");
+                    }
+                    else 
+                        foreach (var sub in kind.Subkinds)
+                            Walk(sub);
+                }
+                Walk(Subject.CommonNoun);
+            })
+            .Documentation("Adds a set of tests for the existence of the various subkinds of Subject."),
+        
         new Syntax(() => new object[] { Subject, "should", "!", ExistNotExist})
             .Action(() =>
             {
@@ -538,6 +561,29 @@ public partial class Syntax
                     $"Test failed: {input}");
             })
             .Documentation("Adds a new test to the list of tests to perform when the test command is used."),
+
+        new Syntax(() => new object[] { "every", "kind", "of", "!", Subject, "should", "exist"})
+            .Action(() =>
+            {
+                void Walk(CommonNoun kind)
+                {
+                    if (kind.Subkinds.Count == 0)
+                    {
+                        var name = kind.PluralForm.Untokenize();
+                        var modifiers = Subject.Modifiers.SelectMany(lit =>
+                                lit.IsPositive ? lit.Concept.StandardName : lit.Concept.StandardName.Prepend("not"))
+                            .Untokenize();
+                        Ontology.AddTest(kind, Subject.Modifiers, true,
+                            $"Test succeeded:{modifiers} {name} should exist",
+                            $"Test failed:{modifiers} {name}");
+                    }
+                    else 
+                        foreach (var sub in kind.Subkinds)
+                            Walk(sub);
+                }
+                Walk(Subject.CommonNoun);
+            })
+            .Documentation("Adds a set of tests for the existence of the various subkinds of Subject."),
         
         new Syntax(() => new object[] { SubjectNounList, "should", "!", ExistNotExist})
             .Action(() =>

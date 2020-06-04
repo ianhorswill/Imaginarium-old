@@ -54,6 +54,8 @@ public static class AutoGrader
                     Debug.Log("No generator found");
                     Driver.SetOutputWindow($"{studentName}: no .gen files found");
                 }
+
+                results.FlushAsync();
                 yield return null;
             }
         }
