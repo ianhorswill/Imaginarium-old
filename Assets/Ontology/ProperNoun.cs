@@ -33,9 +33,9 @@ public class ProperNoun : Noun
     public ProperNoun(string[] name) : base(name)
     {
         Name = name;
-        Individual = Individual.Permanent(new MonadicConceptLiteral[0], Name);
+        Individual = Ontology.PermanentIndividual(new MonadicConceptLiteral[0], Name);
         Driver.AppendResponseLine($"Learned the new proper name <b><i>{Name.Untokenize()}</i></b>.");
-        AllNouns[Name] = this;
+        Ontology.AllNouns[Name] = this;
     }
 
     protected override string DictionaryStylePartOfSpeech => "prop. n.";

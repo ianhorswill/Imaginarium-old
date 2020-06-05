@@ -33,15 +33,10 @@ using CatSAT.NonBoolean.SMT.MenuVariables;
 /// </summary>
 public class Property : Concept
 {
-    static Property()
-    {
-        Ontology.AllReferentTables.Add(AllProperties);
-    }
-
     public Property(string[] name, VariableType type) : base(name)
     {
         Name = name;
-        AllProperties[name] = this;
+        Ontology.AllProperties[name] = this;
         Type = type;
     }
 
@@ -76,13 +71,6 @@ public class Property : Concept
     public readonly VariableType Type;
 
     public readonly List<MenuRule> MenuRules = new List<MenuRule>();
-
-    private static readonly Dictionary<TokenString, Property> AllProperties = new Dictionary<TokenString, Property>();
-
-    /// <summary>
-    /// Return the property with the specified name, if any, otherwise null.
-    /// </summary>
-    public static Property Find(params string[] tokens) => AllProperties.LookupOrDefault(tokens);
 
     /// <summary>
     /// Token string used to refer to this property

@@ -35,7 +35,7 @@ public class AP : ReferringExpression<Adjective>
 
     public MonadicConceptLiteral MonadicConceptLiteral => new MonadicConceptLiteral(Adjective, !IsNegated);
 
-    protected override Adjective GetConcept() => Adjective.Find(Text) ?? new Adjective(Text);
+    protected override Adjective GetConcept() => Ontology.FindAdjective(Text) ?? new Adjective(Text);
 
     public override bool ValidBeginning(string firstToken) => firstToken != "a" && firstToken != "an";
 

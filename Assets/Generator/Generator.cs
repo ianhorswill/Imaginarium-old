@@ -115,11 +115,11 @@ public class Generator
 
         var ca = Concepts;
         if (Count == 1)
-            EphemeralIndividuals.Add(Individual.Ephemeral(ca.Append(Noun),
+            EphemeralIndividuals.Add(Ontology.EphemeralIndividual(ca.Append(Noun),
                 Noun.SingularForm.Prepend("the").ToArray()));
         else
             for (var i = 0; i < Count; i++)
-                EphemeralIndividuals.Add(Individual.Ephemeral(ca.Append(Noun),
+                EphemeralIndividuals.Add(Ontology.EphemeralIndividual(ca.Append(Noun),
                     Noun.SingularForm.Append(i.ToString()).ToArray()));
 
         foreach (var i in EphemeralIndividuals.ToArray())
@@ -127,7 +127,7 @@ public class Generator
 
         Individuals.Clear();
         Individuals.AddRange(EphemeralIndividuals);
-        Individuals.AddRange(Individual.AllPermanentIndividuals.Select(pair => pair.Value));
+        Individuals.AddRange(Ontology.AllPermanentIndividuals.Select(pair => pair.Value));
         ResetPredicateTables();
     }
 
@@ -136,7 +136,7 @@ public class Generator
     /// </summary>
     private void BuildVerbPropositionsAndClauses()
     {
-        var verbs = Verb.AllVerbs.ToArray();
+        var verbs = Ontology.AllVerbs.ToArray();
 
         foreach (var subj in Individuals)
         foreach (var obj in Individuals)
@@ -294,7 +294,7 @@ public class Generator
     {
         foreach (var part in k.Parts)
         {
-            var p = Individual.Ephemeral(part.MonadicConcepts, part.Name.Prepend("'s").ToArray(), i);
+            var p = Ontology.EphemeralIndividual(part.MonadicConcepts, part.Name.Prepend("'s").ToArray(), i);
             i.Parts[part] = p;
             EphemeralIndividuals.Add(p);
             AddParts(p);

@@ -23,7 +23,6 @@
 // --------------------------------------------------------------------------------------------------------------------
 #endregion
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -154,10 +153,6 @@ public class Verb : Concept
     /// </summary>
     public float Density = 0.5f;
 
-    public static readonly TokenTrie<Verb> Trie = new TokenTrie<Verb>();
-
-    public static IEnumerable<Verb> AllVerbs => Trie.Contents.Distinct();
-
     public override bool IsNamed(string[] tokens) => tokens.SameAs(SingularForm) || tokens.SameAs(PluralForm);
 
     // ReSharper disable InconsistentNaming
@@ -172,7 +167,7 @@ public class Verb : Concept
         set
         {
             _baseForm = value;
-            Trie.Store(value, this);
+            Ontology.VerbTrie.Store(value, this);
             EnsureGerundForm();
             EnsurePassiveParticiple();
             EnsurePluralForm();
@@ -188,7 +183,7 @@ public class Verb : Concept
         set
         {
             _gerundForm = value;
-            Trie.Store(value, this);
+            Ontology.VerbTrie.Store(value, this);
             EnsureBaseForm();
             EnsurePluralForm();
             EnsureSingularForm();
@@ -199,6 +194,7 @@ public class Verb : Concept
 
     // ReSharper disable InconsistentNaming
     private string[] _singular, _plural;
+
     // ReSharper restore InconsistentNaming
 
     /// <summary>
@@ -216,9 +212,9 @@ public class Verb : Concept
             if (_singular != null && ((TokenString) _singular).Equals((TokenString) value))
                 return;
             Ontology.EnsureUndefinedOrDefinedAsType(value, GetType());
-            if (_singular != null) Trie.Store(_singular, null);
+            if (_singular != null) Ontology.VerbTrie.Store(_singular, null);
             _singular = value;
-            Trie.Store(_singular, this);
+            Ontology.VerbTrie.Store(_singular, this);
             EnsurePluralForm();
             EnsureGerundForm();
         }
@@ -237,7 +233,7 @@ public class Verb : Concept
         {
             if (_gerundForm == null)
                 _gerundForm = form;
-            Trie.Store(form, this, true);
+            Ontology.VerbTrie.Store(form, this, true);
         }
     }
 
@@ -251,7 +247,7 @@ public class Verb : Concept
             return;
         EnsureBaseForm();
         PassiveParticiple = Inflection.PassiveParticiple(BaseForm);
-        Trie.Store(PassiveParticiple, this, true);
+        Ontology.VerbTrie.Store(PassiveParticiple, this, true);
     }
 
     private void EnsureBaseForm()
@@ -292,9 +288,9 @@ public class Verb : Concept
             if (_plural != null && ((TokenString) _plural).Equals((TokenString) value))
                 return;
             Ontology.EnsureUndefinedOrDefinedAsType(value, GetType());
-            if (_plural != null) Trie.Store(_plural, null);
+            if (_plural != null) Ontology.VerbTrie.Store(_plural, null);
             _plural = value;
-            Trie.Store(_plural, this, true);
+            Ontology.VerbTrie.Store(_plural, this, true);
             EnsureSingularForm();
         }
     }
@@ -312,15 +308,6 @@ public class Verb : Concept
             PluralForm = Inflection.ReplaceCopula(_baseForm, "are"); 
         else
             PluralForm = Inflection.PluralOfVerb(_singular);
-    }
-
-    public static Verb Find(params string[] tokens)
-    {
-        int index = 0;
-        var v = Trie.Lookup(tokens, ref index);
-        if (index != tokens.Length)
-            return null;
-        return v;
     }
 }
 

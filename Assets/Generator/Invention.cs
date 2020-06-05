@@ -377,7 +377,7 @@ public class Invention
     /// <param name="i">Individual to test</param>
     /// <param name="name">Name of concept to test</param>
     /// <returns>True if Individual is an instance of the named concept.</returns>
-    public bool IsA(Individual i, params string[] name) => IsA(i, (CommonNoun) Noun.Find(name));
+    public bool IsA(Individual i, params string[] name) => IsA(i, (CommonNoun) Ontology.FindNoun(name));
 
     /// <summary>
     /// True if concept applies to individual in the current Model.
@@ -396,13 +396,13 @@ public class Invention
 
     public bool Holds(Verb v, Individual i1, Individual i2) => Model[Generator.Holds(v, i1, i2)];
 
-    public bool Holds(string verb, Individual i1, Individual i2) => Holds(Verb.Find(verb), i1, i2);
+    public bool Holds(string verb, Individual i1, Individual i2) => Holds(Ontology.FindVerb(verb), i1, i2);
 
     public IEnumerable<Tuple<Verb, Individual, Individual>>  Relationships
     {
         get
         {
-            var verbs = Verb.AllVerbs.ToArray();
+            var verbs = Ontology.AllVerbs.ToArray();
             foreach (var i1 in Individuals)
             foreach (var i2 in Individuals)
             foreach (var v in verbs)

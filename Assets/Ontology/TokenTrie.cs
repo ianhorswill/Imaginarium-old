@@ -30,15 +30,7 @@ public abstract class TokenTrieBase
 {
     protected TokenTrieBase()
     {
-        AllTokenTries.Add(this);
-    }
-
-    public static readonly List<TokenTrieBase> AllTokenTries = new List<TokenTrieBase>();
-
-    public static void ClearAllTries()
-    {
-        foreach (var t in AllTokenTries)
-            t.Clear();
+        Ontology.AllTokenTries.Add(this);
     }
 
     public abstract void Clear();

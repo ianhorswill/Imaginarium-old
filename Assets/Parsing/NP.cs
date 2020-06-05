@@ -199,7 +199,7 @@ public class NP : ReferringExpression<Noun>
                 if (CurrentToken == "-")
                     SkipToken();
             }
-            nextConcept = MatchTrie(MonadicConcept.Trie);
+            nextConcept = MatchTrie(Ontology.MonadicConceptTrie);
             if (nextConcept != null)
             {
                 var next = new MonadicConceptLiteral(nextConcept, isPositive);
@@ -218,7 +218,7 @@ public class NP : ReferringExpression<Noun>
             if (!Number.HasValue)
                 // Only update if Number wasn't already set by a determiner.
                 // This is to get around nouns that are their own plurals.
-                Number = MonadicConcept.LastMatchPlural ? Syntax.Number.Plural : Syntax.Number.Singular;
+                Number = Ontology.LastMatchPlural ? Syntax.Number.Plural : Syntax.Number.Singular;
 
             return true;
         }
@@ -248,12 +248,12 @@ public class NP : ReferringExpression<Noun>
 
     private Noun GetProperNoun(string[] text)
     {
-        return Noun.Find(text) ?? new ProperNoun(text);
+        return Ontology.FindNoun(text) ?? new ProperNoun(text);
     }
 
     private Noun GetCommonNoun(string[] text)
     {
-        var noun = (CommonNoun)Noun.Find(text);
+        var noun = (CommonNoun)Ontology.FindNoun(text);
         if (noun != null)
         {
             var singular = noun.SingularForm.SameAs(text);

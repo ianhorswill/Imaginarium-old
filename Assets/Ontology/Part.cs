@@ -6,15 +6,10 @@ using System.Linq;
 /// </summary>
 public class Part : Concept
 {
-    static Part()
-    {
-        Ontology.AllReferentTables.Add(AllParts);
-    }
-
     public Part(string[] name, CommonNoun kind, IEnumerable<MonadicConceptLiteral> modifiers) : base(name)
     {
         Name = name;
-        AllParts[name] = this;
+        Ontology.AllParts[name] = this;
         Kind = kind;
         Modifiers = modifiers.ToArray();
     }
@@ -33,13 +28,6 @@ public class Part : Concept
     /// All Monadic concepts (Kind and Modifiers) attached to this Part.
     /// </summary>
     public IEnumerable<MonadicConceptLiteral> MonadicConcepts => Modifiers.Append(new MonadicConceptLiteral(Kind));
-
-    private static readonly Dictionary<TokenString, Part> AllParts = new Dictionary<TokenString, Part>();
-
-    /// <summary>
-    /// Return the property with the specified name, if any, otherwise null.
-    /// </summary>
-    public static Part Find(params string[] tokens) => AllParts.LookupOrDefault(tokens);
 
     /// <summary>
     /// Token string used to refer to this property

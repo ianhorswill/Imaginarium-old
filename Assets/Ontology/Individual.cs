@@ -34,37 +34,6 @@ using CatSAT;
 public class Individual : Referent, IComparable
 {
     /// <summary>
-    /// Makes an Individual that is not part of the ontology itself.
-    /// This individual is local to a particular Invention.
-    /// </summary>
-    /// <param name="concepts">CommonNouns and Adjectives that must apply to the individual</param>
-    /// <param name="name">Default name to give to the individual if no name property can be found.</param>
-    /// <param name="container">The object of which this is a part, if any</param>
-    /// <returns></returns>
-    public static Individual Ephemeral(IEnumerable<MonadicConceptLiteral> concepts, string[] name, Individual container = null)
-    {
-        return new Individual(concepts, name, container);
-    }
-
-    /// <summary>
-    /// Makes an Individual that is part of the ontology itself.  It will appear in all Inventions.
-    /// </summary>
-    /// <param name="concepts">CommonNouns and Adjectives that must be true of this Individual</param>
-    /// <param name="name">Default name for the individual if not name property can be found.</param>
-    /// <returns></returns>
-    public static Individual Permanent(IEnumerable<MonadicConceptLiteral> concepts, string[] name)
-    {
-        var individual = new Individual(concepts, name);
-        AllPermanentIndividuals[name] = individual;
-        return individual;
-    }
-
-    static Individual()
-    {
-        Ontology.AllReferentTables.Add(AllPermanentIndividuals);
-    }
-
-    /// <summary>
     /// Returns the Property of this Individual named "name", if any
     /// </summary>
     /// <returns>The name Property, else null.</returns>
@@ -96,8 +65,8 @@ public class Individual : Referent, IComparable
     /// The Properties of this individual.
     /// </summary>
     public readonly Dictionary<Property, Variable> Properties = new Dictionary<Property, Variable>();
-    
-    private Individual(IEnumerable<MonadicConceptLiteral> concepts, string[] name, Individual container = null) : base(name)
+
+    internal Individual(IEnumerable<MonadicConceptLiteral> concepts, string[] name, Individual container = null) : base(name)
     {
         Name = name;
         Container = container;
@@ -117,9 +86,6 @@ public class Individual : Referent, IComparable
         }
         Modifiers.AddRange(enumerated.Where(l => !l.IsPositive || !(l.Concept is CommonNoun)));
     }
-
-    public static Dictionary<TokenString, Individual> AllPermanentIndividuals = new Dictionary<TokenString, Individual>();
-    public static Individual Find(params string[] tokens) => AllPermanentIndividuals.LookupOrDefault(tokens);
 
     /// <summary>
     /// Name of the object within the ontology, for permanent individuals.

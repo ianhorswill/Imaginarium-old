@@ -31,12 +31,7 @@ using System.Linq;
 /// </summary>
 public class Adjective : MonadicConcept
 {
-    static Adjective()
-    {
-        Ontology.AllReferentTables.Add(AllAdjectives);
-    }
-
-    public override string Description
+   public override string Description
     {
         get
         {
@@ -50,8 +45,8 @@ public class Adjective : MonadicConcept
     public Adjective(string[] name) : base(name)
     {
         Name = name;
-        AllAdjectives[name] = this;
-        Store(name, this);
+        Ontology.AllAdjectives[name] = this;
+        Ontology.Store(name, this);
         Driver.AppendResponseLine($"Learned the adjective <b><i>{name.Untokenize()}</i></b>.");
     }
 
@@ -66,13 +61,6 @@ public class Adjective : MonadicConcept
             return true;
         return noun.Superkinds.Any(RelevantTo);
     }
-
-    private static readonly Dictionary<TokenString, Adjective> AllAdjectives = new Dictionary<TokenString, Adjective>();
-
-    /// <summary>
-    /// Returns the adjective with the specified name, or null if none
-    /// </summary>
-    public static Adjective Find(params string[] tokens) => AllAdjectives.LookupOrDefault(tokens);
 
     /// <summary>
     /// Token(s) that identify the adjective

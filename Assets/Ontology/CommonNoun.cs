@@ -41,12 +41,6 @@ public class CommonNoun : Noun
 
     protected override string DictionaryStylePartOfSpeech => "n.";
 
-    /// <summary>
-    /// List of all common nouns (i.e. kinds/types) in the ontology.
-    /// </summary>
-    public static IEnumerable<CommonNoun> AllCommonNouns => AllNouns.Select(pair => pair.Value)
-        .Where(n => n is CommonNoun).Cast<CommonNoun>().Distinct();
-
     /// <inheritdoc />
     public override bool IsNamed(string[] tokens)
     {
@@ -76,12 +70,12 @@ public class CommonNoun : Noun
                 Ontology.EnsureUndefinedOrDefinedAsType(value, GetType());
             if (_singular != null)
             {
-                AllNouns.Remove(_singular);
-                Store(_singular, null);
+                Ontology.AllNouns.Remove(_singular);
+                Ontology.Store(_singular, null);
             }
             _singular = value;
-            AllNouns[_singular] = this;
-            Store(_singular, this);
+            Ontology.AllNouns[_singular] = this;
+            Ontology.Store(_singular, this);
             EnsurePluralForm();
         }
     }
@@ -114,12 +108,12 @@ public class CommonNoun : Noun
                 Ontology.EnsureUndefinedOrDefinedAsType(value, GetType());
             if (_plural != null)
             {
-                AllNouns.Remove(_plural);
-                Store(_plural, null);
+                Ontology.AllNouns.Remove(_plural);
+                Ontology.Store(_plural, null);
             }
             _plural = value;
-            AllNouns[_plural] = this;
-            Store(_plural, this, true);
+            Ontology.AllNouns[_plural] = this;
+            Ontology.Store(_plural, this, true);
             EnsureSingularForm();
         }
     }
@@ -142,16 +136,6 @@ public class CommonNoun : Noun
     /// Template used to generate a a description of the object
     /// </summary>
     public string[] DescriptionTemplate { get; set; }
-
-    /// <summary>
-    /// Returns the common noun identified by the specified sequence of tokens, or null, if there is no such noun.
-    /// </summary>
-    /// <param name="name">Tokens identifying the noun</param>
-    /// <returns>Identified noun, or null if none found.</returns>
-    public new static CommonNoun Find(params string[] name)
-    {
-        return (CommonNoun)Noun.Find(name);
-    }
 
     /// <summary>
     /// The common nouns identifying the subtypes of this noun
@@ -288,7 +272,7 @@ public class CommonNoun : Noun
     /// </summary>
     public class ConditionalModifier
     {
-        private static readonly MonadicConceptLiteral[] EmptyCondition = new MonadicConceptLiteral[0];
+        private  readonly MonadicConceptLiteral[] EmptyCondition = new MonadicConceptLiteral[0];
 
         /// <summary>
         /// Additional conditions on top of the CommonNoun in which this is stored, that must be true for the implication to hold
