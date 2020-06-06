@@ -33,7 +33,7 @@ using CatSAT.NonBoolean.SMT.MenuVariables;
 /// </summary>
 public class Property : Concept
 {
-    public Property(string[] name, VariableType type) : base(name)
+    public Property(Ontology ontology, string[] name, VariableType type) : base(ontology, name)
     {
         Name = name;
         Ontology.AllProperties[name] = this;

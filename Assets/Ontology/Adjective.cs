@@ -42,7 +42,7 @@ public class Adjective : MonadicConcept
 
     protected override string DictionaryStylePartOfSpeech => "adj.";
 
-    public Adjective(string[] name) : base(name)
+    public Adjective(Ontology ontology, string[] name) : base(ontology, name)
     {
         Name = name;
         Ontology.AllAdjectives[name] = this;

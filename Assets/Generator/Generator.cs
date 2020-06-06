@@ -41,6 +41,8 @@ public class Generator
     /// </summary>
     public static Generator Current;
 
+    public readonly Ontology Ontology;
+
     #region Instance variables
     /// <summary>
     /// The object(s) being constructed by this generator
@@ -68,8 +70,9 @@ public class Generator
     /// </summary>
     /// <param name="noun">Base common noun for the object</param>
     /// <param name="concepts">Other monadic concepts that must be true of the object</param>
-    public Generator(CommonNoun noun, params MonadicConceptLiteral[] concepts) : this(noun, (IEnumerable<MonadicConceptLiteral>)concepts)
-    {  }
+    public Generator(CommonNoun noun, params MonadicConceptLiteral[] concepts) : this(noun,
+        (IEnumerable<MonadicConceptLiteral>) concepts)
+    { }
 
     /// <summary>
     /// Creates a generator for objects of the specified types
@@ -79,6 +82,7 @@ public class Generator
     /// <param name="count">Number of objects of the specified type to include</param>
     public Generator(CommonNoun noun, IEnumerable<MonadicConceptLiteral> concepts, int count = 1)
     {
+        Ontology = noun.Ontology;
         Count = count;
         Noun = noun;
         Concepts = concepts.ToArray();
@@ -322,7 +326,7 @@ public class Generator
         Solution solution = null;
         for (var retry = 0; solution == null && retry < retries; retry++)
             solution = Problem.Solve(false);
-        return solution == null? null:new Invention(this, solution);
+        return solution == null? null:new Invention(Ontology, this, solution);
     }
 
     /// <summary>

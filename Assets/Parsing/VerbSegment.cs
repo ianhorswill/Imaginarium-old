@@ -104,7 +104,7 @@ public class VerbSegment : ReferringExpression<Verb>
     private bool ScanExistingVerb()
     {
         var old = State;
-        CachedConcept = MatchTrie(Ontology.VerbTrie);
+        CachedConcept = MatchTrie(Driver.Ontology.VerbTrie);
         if (CachedConcept == null)
         {
             ResetTo(old);
@@ -112,7 +112,7 @@ public class VerbSegment : ReferringExpression<Verb>
         }
 
         SetText(old);
-        Syntax.VerbNumber = Ontology.VerbTrie.LastMatchPlural ? Syntax.Number.Plural : Syntax.Number.Singular;
+        Syntax.VerbNumber = Driver.Ontology.VerbTrie.LastMatchPlural ? Syntax.Number.Plural : Syntax.Number.Singular;
         return true;
     }
     #endregion
@@ -121,7 +121,7 @@ public class VerbSegment : ReferringExpression<Verb>
     {
         var text = Text;
 
-        var verb = new Verb();
+        var verb = new Verb(Driver.Ontology);
 
         switch (Conjugation)
         {

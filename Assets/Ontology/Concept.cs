@@ -30,7 +30,7 @@ using System;
 /// </summary>
 public abstract class Concept : Referent
 {
-    protected Concept(string[] name) : base(name)
+    protected Concept(Ontology ontology, string[] name) : base(ontology, name)
     { }
 
     public static string EnglishTypeName(Type t)

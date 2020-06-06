@@ -37,6 +37,8 @@ using UnityEngine;
 /// </summary>
 public class Invention
 {
+    public readonly Ontology Ontology;
+
     /// <summary>
     /// The output from the "imagine" command that created this invention.
     /// </summary>
@@ -48,8 +50,9 @@ public class Invention
     /// </summary>
     public Solution Model;
 
-    public Invention(Generator generator, Solution model)
+    public Invention(Ontology ontology, Generator generator, Solution model)
     {
+        Ontology = ontology;
         Generator = generator;
         Model = model;
     }

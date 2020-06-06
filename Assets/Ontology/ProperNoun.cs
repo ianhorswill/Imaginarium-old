@@ -30,7 +30,7 @@ public class ProperNoun : Noun
     public string[] Name;
     public readonly Individual Individual;
 
-    public ProperNoun(string[] name) : base(name)
+    public ProperNoun(Ontology ontology, string[] name) : base(ontology, name)
     {
         Name = name;
         Individual = Ontology.PermanentIndividual(new MonadicConceptLiteral[0], Name);

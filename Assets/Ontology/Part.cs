@@ -6,7 +6,7 @@ using System.Linq;
 /// </summary>
 public class Part : Concept
 {
-    public Part(string[] name, CommonNoun kind, IEnumerable<MonadicConceptLiteral> modifiers) : base(name)
+    public Part(Ontology ontology, string[] name, CommonNoun kind, IEnumerable<MonadicConceptLiteral> modifiers) : base(ontology, name)
     {
         Name = name;
         Ontology.AllParts[name] = this;

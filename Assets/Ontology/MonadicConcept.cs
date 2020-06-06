@@ -30,7 +30,7 @@ using System.Collections.Generic;
 /// </summary>
 public abstract class MonadicConcept : Concept
 {
-    protected MonadicConcept(string[] name) : base(name) 
+    protected MonadicConcept(Ontology ontology, string[] name) : base(ontology, name) 
     { }
 
     /// <summary>

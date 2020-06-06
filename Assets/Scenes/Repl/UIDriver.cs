@@ -26,7 +26,7 @@ public class UIDriver : MonoBehaviour, IRepl
     public IEnumerator Start()
     {
         Driver.Repl = this;
-        Ontology.OnErase += ClearButtons;
+        Driver.Ontology.OnErase += ClearButtons;
 
         ConfigurationFiles.UnityPath = Application.dataPath;
 
@@ -79,7 +79,7 @@ public class UIDriver : MonoBehaviour, IRepl
     /// </summary>
     public void OnDestroy()
     {
-        Ontology.OnErase -= ClearButtons;
+        Driver.Ontology.OnErase -= ClearButtons;
     }
 
     /// <summary>

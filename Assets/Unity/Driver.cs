@@ -83,6 +83,7 @@ public static class Driver
     #endregion
 
     public static IRepl Repl;
+    public static readonly Ontology Ontology = new Ontology("Default");
 
     public static Coroutine StartCoroutine(IEnumerator c) => Repl.StartCoroutine(c);
     public static void SetOutputWindow(string contents) => Repl.SetOutputWindow(contents);

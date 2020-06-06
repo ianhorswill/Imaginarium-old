@@ -34,7 +34,7 @@ using System.Linq;
 [DebuggerDisplay("{" + nameof(Text) + "}")]
 public class CommonNoun : Noun
 {
-    public CommonNoun() : base(null)
+    public CommonNoun(Ontology ontology) : base(ontology, null)
     { }
 
     public override string Description => $"<b>{ToString()}</b> <i>{DictionaryStylePartOfSpeech}</i> plural: <i>{PluralForm.Untokenize()}</i>";

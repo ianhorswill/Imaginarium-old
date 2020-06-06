@@ -32,6 +32,6 @@ using System.Diagnostics;
 [DebuggerDisplay("{" + nameof(Text) + "}")]
 public abstract class Noun : MonadicConcept
 {
-    protected Noun(string[] name) : base(name) 
+    protected Noun(Ontology ontology, string[] name) : base(ontology, name) 
     { }
 }

@@ -66,7 +66,7 @@ public class Individual : Referent, IComparable
     /// </summary>
     public readonly Dictionary<Property, Variable> Properties = new Dictionary<Property, Variable>();
 
-    internal Individual(IEnumerable<MonadicConceptLiteral> concepts, string[] name, Individual container = null) : base(name)
+    internal Individual(Ontology ontology, IEnumerable<MonadicConceptLiteral> concepts, string[] name, Individual container = null) : base(ontology, name)
     {
         Name = name;
         Container = container;

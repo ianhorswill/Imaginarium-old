@@ -85,8 +85,8 @@ public class OntologyVisualizer : MonoBehaviour, IGraphGenerator
             }
         }
 
-        var nouns = Ontology.AllNouns.Select(pair => pair.Value).Cast<object>().ToArray();
-        var verbs = Ontology.AllVerbs.ToArray();
+        var nouns = Driver.Ontology.AllNouns.Select(pair => pair.Value).Cast<object>().ToArray();
+        var verbs = Driver.Ontology.AllVerbs.ToArray();
         var vocabulary = nouns.Concat(verbs);
         //var ephemera = Generator.Current?.EphemeralIndividuals;
 

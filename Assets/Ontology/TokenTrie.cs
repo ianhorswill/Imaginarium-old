@@ -28,9 +28,9 @@ using System.Linq;
 
 public abstract class TokenTrieBase
 {
-    protected TokenTrieBase()
+    protected TokenTrieBase(Ontology ontology)
     {
-        Ontology.AllTokenTries.Add(this);
+        ontology.AllTokenTries.Add(this);
     }
 
     public abstract void Clear();
@@ -49,6 +49,9 @@ public abstract class TokenTrieBase
 public class TokenTrie<TReferent> : TokenTrieBase
     where TReferent : Referent
 {
+    public TokenTrie(Ontology ontology) : base(ontology)
+    { }
+
     private readonly Node root = new Node();
 
     public bool IsEmpty => root.Dict.Count == 0;

@@ -485,7 +485,7 @@ public partial class Syntax
         new Syntax(() => new object[] { OptionalAll, Subject, Has, Object, "between", "!", LowerBound, "and", UpperBound })
             .Action(() =>
                 {
-                    Subject.CommonNoun.Properties.Add(new Property(Object.Text, new FloatDomain(Object.Text.Untokenize(), lowerBound, upperBound)));
+                    Subject.CommonNoun.Properties.Add(new Property(Driver.Ontology, Object.Text, new FloatDomain(Object.Text.Untokenize(), lowerBound, upperBound)));
                 })
             .Check(SubjectVerbAgree, SubjectUnmodified, ObjectUnmodified)
             .Documentation("Says Subjects have a property, Object, that is a number in the specified range.  For example, 'cats have an age between 1 and 20'"),
@@ -504,7 +504,7 @@ public partial class Syntax
                 var prop = Subject.CommonNoun.Properties.FirstOrDefault(p => p.IsNamed(propertyName));
                 if (prop == null)
                 {
-                    prop = new Property(propertyName, null);
+                    prop = new Property(Driver.Ontology, propertyName, null);
                     Subject.CommonNoun.Properties.Add(prop);
                 }
 
@@ -521,7 +521,7 @@ public partial class Syntax
                 var part = Subject.CommonNoun.Parts.FirstOrDefault(p => p.IsNamed(partName));
                 if (part == null)
                 {
-                    part = new Part(partName, Object.CommonNoun, Object.Modifiers);
+                    part = new Part(Driver.Ontology, partName, Object.CommonNoun, Object.Modifiers);
                     Subject.CommonNoun.Parts.Add(part);
                 }
             })
@@ -539,7 +539,7 @@ public partial class Syntax
                         var modifiers = Subject.Modifiers.SelectMany(lit =>
                                 lit.IsPositive ? lit.Concept.StandardName : lit.Concept.StandardName.Prepend("not"))
                             .Untokenize();
-                        Ontology.AddTest(kind, Subject.Modifiers, true,
+                        Driver.Ontology.AddTest(kind, Subject.Modifiers, true,
                             $"Test succeeded:{modifiers} {name} should exist",
                             $"Test failed:{modifiers} {name} should exist");
                     }
@@ -556,7 +556,7 @@ public partial class Syntax
             {
                 var shouldExist = ExistNotExist.Match[0] == "exist";
                 var input = Input.Untokenize();
-                Ontology.AddTest(Subject.CommonNoun, Subject.Modifiers, shouldExist,
+                Driver.Ontology.AddTest(Subject.CommonNoun, Subject.Modifiers, shouldExist,
                     $"Test succeeded: {input}",
                     $"Test failed: {input}");
             })
@@ -573,7 +573,7 @@ public partial class Syntax
                         var modifiers = Subject.Modifiers.SelectMany(lit =>
                                 lit.IsPositive ? lit.Concept.StandardName : lit.Concept.StandardName.Prepend("not"))
                             .Untokenize();
-                        Ontology.AddTest(kind, Subject.Modifiers, true,
+                        Driver.Ontology.AddTest(kind, Subject.Modifiers, true,
                             $"Test succeeded:{modifiers} {name} should exist",
                             $"Test failed:{modifiers} {name}");
                     }
@@ -592,7 +592,7 @@ public partial class Syntax
                 var input = Input.Untokenize();
                 foreach (var noun in SubjectNounList.Concepts)
                 {
-                    Ontology.AddTest(noun as CommonNoun, new MonadicConceptLiteral[0], shouldExist,
+                    Driver.Ontology.AddTest(noun as CommonNoun, new MonadicConceptLiteral[0], shouldExist,
                         $"Test succeeded: {input}",
                         $"Test failed: {input}");
                 }
@@ -604,7 +604,7 @@ public partial class Syntax
             {
                 var total = 0;
                 var failed = 0;
-                foreach (var (test, success, example) in Ontology.TestResults())
+                foreach (var (test, success, example) in Driver.Ontology.TestResults())
                 {
                     total++;
                     if (!success) failed++;

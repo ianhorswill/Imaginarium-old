@@ -73,7 +73,7 @@ public static class AutoGrader
         try
         {
             Parser.DefinitionsDirectory = generator;
-            Ontology.ClearTests();
+            Driver.Ontology.ClearTests();
             var testLoadErrors = Parser.LoadDefinitions(Combine(assignmentPath, "tests.gen"), false);
 
             count = testLoadErrors.Count;
@@ -85,7 +85,7 @@ public static class AutoGrader
             results.WriteLine($"{studentName},0,\"{e.Message.Replace("\"","\"\"")}\"");
         }
 
-        foreach (var (test, success, example) in Ontology.TestResults())
+        foreach (var (test, success, example) in Driver.Ontology.TestResults())
         {
             if (success)
                 passed++;

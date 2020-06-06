@@ -33,7 +33,7 @@ using UnityEngine;
 /// </summary>
 public class Verb : Concept
 {
-    public Verb() : base(null)
+    public Verb(Ontology ontology) : base(ontology, null)
     { }
 
     public override string Description

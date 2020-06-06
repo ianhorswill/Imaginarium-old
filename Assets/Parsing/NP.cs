@@ -199,7 +199,7 @@ public class NP : ReferringExpression<Noun>
                 if (CurrentToken == "-")
                     SkipToken();
             }
-            nextConcept = MatchTrie(Ontology.MonadicConceptTrie);
+            nextConcept = MatchTrie(Driver.Ontology.MonadicConceptTrie);
             if (nextConcept != null)
             {
                 var next = new MonadicConceptLiteral(nextConcept, isPositive);
@@ -218,7 +218,7 @@ public class NP : ReferringExpression<Noun>
             if (!Number.HasValue)
                 // Only update if Number wasn't already set by a determiner.
                 // This is to get around nouns that are their own plurals.
-                Number = Ontology.LastMatchPlural ? Syntax.Number.Plural : Syntax.Number.Singular;
+                Number = Driver.Ontology.LastMatchPlural ? Syntax.Number.Plural : Syntax.Number.Singular;
 
             return true;
         }
@@ -248,12 +248,12 @@ public class NP : ReferringExpression<Noun>
 
     private Noun GetProperNoun(string[] text)
     {
-        return Ontology.FindNoun(text) ?? new ProperNoun(text);
+        return Driver.Ontology.FindNoun(text) ?? new ProperNoun(Driver.Ontology, text);
     }
 
     private Noun GetCommonNoun(string[] text)
     {
-        var noun = (CommonNoun)Ontology.FindNoun(text);
+        var noun = (CommonNoun)Driver.Ontology.FindNoun(text);
         if (noun != null)
         {
             var singular = noun.SingularForm.SameAs(text);
@@ -266,7 +266,7 @@ public class NP : ReferringExpression<Noun>
             return noun;
         }
 
-        noun = new CommonNoun();
+        noun = new CommonNoun(Driver.Ontology);
 
         if (!Number.HasValue)
             // Don't know syntactically if it's supposed to be singular or plural, so guess.

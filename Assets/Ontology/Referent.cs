@@ -23,7 +23,6 @@
 // --------------------------------------------------------------------------------------------------------------------
 #endregion
 
-using System;
 using System.Diagnostics;
 
 /// <summary>
@@ -32,8 +31,11 @@ using System.Diagnostics;
 [DebuggerDisplay("{" + nameof(Text) + "}")]
 public abstract class Referent
 {
-    protected Referent(string[] name)
+    public readonly Ontology Ontology;
+
+    protected Referent(Ontology ontology, string[] name)
     {
+        Ontology = ontology;
         Ontology.EnsureUndefinedOrDefinedAsType(name, GetType());
     }
 
