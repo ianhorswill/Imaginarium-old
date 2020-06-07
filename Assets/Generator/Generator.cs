@@ -355,7 +355,7 @@ public class Generator
                         i.Properties[p] = v;
                         foreach (var r in p.MenuRules)
                         {
-                            AddImplication(i, r.Conditions.Append(k), ((MenuVariable<string>)v).In(r.Menu));
+                            AddRule(i, r.Conditions.Append(k), ((MenuVariable<string>)v).In(r.Menu));
                             //AddClause(r.Conditions.Select(c => Not(MembershipProposition(i, c))).Append(Not(isK)).Append(((MenuVariable<string>)v).In(r.Menu)));
                         }
                     }
@@ -614,6 +614,33 @@ public class Generator
     void AddClause(IEnumerable<Literal> literals)
     {
         Problem.AtLeast(1, literals);
+    }
+
+    /// <summary>
+    /// Add a CatSAT rule with completion semantics to Problem stating that consequent(i) follow from antecedent(i)
+    /// </summary>
+    /// <param name="i">Individual for which this implication holds</param>
+    /// <param name="antecedents">A set of conditions on i</param>
+    /// <param name="consequent">A concept that must be true of i when the antecedents are true.</param>
+    private void AddRule(Individual i, IEnumerable<MonadicConceptLiteral> antecedents, Proposition consequent)
+    {
+        Problem.Assert(consequent <= Conjunction(antecedents.Select(a => Satisfies(i, a))));
+    }
+
+    /// <summary>
+    /// Convert a set of literals into a CatSAT Expression object.
+    /// </summary>
+    private static Expression Conjunction(IEnumerable<Literal> literals)
+    {
+        Expression result = null;
+        foreach (var p in literals)
+        {
+            if (result == null)
+                result = p;
+            else result = result & p;
+        }
+
+        return result;
     }
     #endregion
 }
