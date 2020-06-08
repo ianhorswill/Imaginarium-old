@@ -164,9 +164,12 @@ public class Invention
 
             var pName = property.Text;
             var prop = pair.Value;
-            var value = FormatPropertyValue(prop, Model[prop]);
-            RemoveEndingSpace(b);
-            b.Append($", {pName}: {value}");
+            if (Model.DefinesVariable(prop))
+            {
+                var value = FormatPropertyValue(prop, Model[prop]);
+                RemoveEndingSpace(b);
+                b.Append($", {pName}: {value}");
+            }
         }
     }
 
@@ -280,7 +283,7 @@ public class Invention
 
     private CommonNoun FindKindOrSuperKind(Individual i, Func<CommonNoun, bool> templateTest)
     {
-        foreach (var kind in i.Kinds)
+        foreach (var kind in MostSpecificNouns(i))
         {
             var k = FindKindOrSuperKind(kind, templateTest);
             if (k != null)
@@ -315,8 +318,12 @@ public class Invention
                 suppressedProperties?.Add(nameProperty);
                 var prop = i.Properties[nameProperty];
                 if (Model.DefinesVariable(prop))
-                    return Model[prop].ToString();
-                return "<undefined name>";
+                {
+                    var name = Model[prop];
+                    if (name is float)
+                        name = Convert.ToInt32(name);
+                    return name.ToString();
+                }
             }
 
             Debug.AssertFormat(i.Kinds.Count > 0, "NameString({0}): individual has no kinds?", i);

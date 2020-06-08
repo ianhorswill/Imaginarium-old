@@ -28,7 +28,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using CatSAT.NonBoolean.SMT.MenuVariables;
-using UnityEngine.Analytics;
 using static CatSAT.Language;
 
 /// <summary>
@@ -408,6 +407,22 @@ public class Generator
                         IsA(i, lit.Concept).InitialProbability = lit.IsPositive ? 0 : 1;
                 var clause = set.Alternatives.Select(a => Satisfies(i, a)).Append(Not(IsA(i, k)));
                 Problem.Quantify(set.MinCount, set.MaxCount, clause);
+            }
+
+            var isK = IsA(i, k);
+            foreach (var p in k.Properties)
+            {
+                if (!i.Properties.ContainsKey(p))
+                    // Create SMT variable
+                {
+                    var v = p.Type == null ? new MenuVariable<string>(p.Text, null, Problem, isK) : p.Type.Instantiate(p.Text, Problem, isK);
+                    i.Properties[p] = v;
+                    foreach (var r in p.MenuRules)
+                    {
+                        AddRule(i, r.Conditions.Append(k), ((MenuVariable<string>)v).In(r.Menu));
+                        //AddClause(r.Conditions.Select(c => Not(MembershipProposition(i, c))).Append(Not(isK)).Append(((MenuVariable<string>)v).In(r.Menu)));
+                    }
+                }
             }
 
             kindsFormalized.Add(new Tuple<Individual, CommonNoun>(i, k));
