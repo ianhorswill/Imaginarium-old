@@ -46,12 +46,23 @@ public static class Inflection
             IrregularSingulars[plural] = singular;
         }
 
-        irregularVerbs = new Spreadsheet(ConfigurationFiles.PathTo(
+        IrregularVerbs = new Spreadsheet(ConfigurationFiles.PathTo(
                 "Inflections", "Irregular verbs", ".csv"),
                 "Base form");
     }
 
-    private static readonly Spreadsheet irregularVerbs;
+    private static readonly Spreadsheet IrregularVerbs;
+
+    private static readonly HashSet<string> Prepositions = new HashSet<string>() 
+    {
+        "on", "in", "at", "since", "for", "ago", "before", "to", "past", "til", "until", "by",
+        "next", "beside", "over", "under", "above", "below", "across", "through", "into", "onto",
+        "towards", "toward", "from", "of",  "about"
+    };
+
+    public static bool IsPreposition(string word) => Prepositions.Contains(word);
+
+
     public static string[] PluralOfNoun(string[] singular)
     {
         var plural = new string[singular.Length];
@@ -94,7 +105,7 @@ public static class Inflection
 
     public static bool NounAppearsPlural(string plural)
     {
-        if (IrregularSingulars.TryGetValue(plural, out string singular))
+        if (IrregularSingulars.ContainsKey(plural))
             return true;
         foreach (var i in Inflections)
             if (i.MatchPluralForSingular(plural))
@@ -121,7 +132,7 @@ public static class Inflection
     }
 
     public static bool IsGerund(string[] verbal) =>
-        ContainsCopula(verbal) || (verbal.Length == 1 && verbal[0].EndsWith("ing"));
+        ContainsCopula(verbal) || verbal[0].EndsWith("ing");
 
     public static IEnumerable<string[]> GerundsOfVerb(string[] plural)
     {
@@ -129,20 +140,30 @@ public static class Inflection
             yield return ReplaceCopula(plural, "being");
         else if (plural.Length == 1)
         {
-            var s = plural[0];
-            if (EndsWithVowel(s))
-                yield return new[] { WithoutFinalCharacter(s) + "ing" };
-            else
-                yield return new[] {s + "ing"};
+            foreach (var gerund in RegularGerundsOfWord(plural[0]))
+                yield return new [] { gerund };
+        }
+        else if (plural.Length == 2 && IsPreposition(plural[1]))
+        {
+            foreach (var gerund in RegularGerundsOfWord(plural[0]))
+                yield return new [] { gerund, plural[1] };
+        }
+    }
 
-            if (EndingConsonant(s, out var terminalConsonant))
-            {
-                yield return new [] { s + terminalConsonant.ToString() + "ing" };
-            }
-            else
-            {
-                yield return new[] {s.Substring(0, s.Length - 1) + "ing"};
-            }
+    private static IEnumerable<string> RegularGerundsOfWord(string s)
+    {
+        if (EndsWithVowel(s))
+            yield return WithoutFinalCharacter(s) + "ing";
+        else
+            yield return s + "ing";
+
+        if (EndingConsonant(s, out var terminalConsonant))
+        {
+            yield return s + terminalConsonant.ToString() + "ing";
+        }
+        else
+        {
+            yield return s.Substring(0, s.Length - 1) + "ing";
         }
     }
 
@@ -154,25 +175,30 @@ public static class Inflection
         }
         if (gerund.Length == 1)
         {
-            var s = gerund[0];
             // Cut trailing -ing
-            if (s.EndsWith("ing"))
-                s = s.Substring(0, s.Length - 3);
-            var len = s.Length;
-            // Removed doubled consonant
-            if (len > 2 && s[len - 1] == s[len - 2])
-                s = s.Substring(0, len - 1);
-            return new [] { s };
-        }
+            return new [] { BaseFormOfRegularGerundWord(gerund[0]) };
+        } else if (gerund.Length == 2 && IsPreposition(gerund[1]))
+            return new [] { BaseFormOfRegularGerundWord(gerund[0]), gerund[1] };
 
         throw new SyntaxErrorException($"Can't determine the stem verb of gerund {gerund.Untokenize()}");
+    }
+
+    private static string BaseFormOfRegularGerundWord(string s)
+    {
+        if (s.EndsWith("ing"))
+            s = s.Substring(0, s.Length - 3);
+        var len = s.Length;
+        // Removed doubled consonant
+        if (len > 2 && s[len - 1] == s[len - 2])
+            s = s.Substring(0, len - 1);
+        return s;
     }
 
     private static readonly char[] Vowels = {'a', 'e', 'i', 'o', 'u'};
     private static bool IsVowel(char c) => Vowels.Contains(c);
     private static bool IsConsonant(char c) => !IsVowel(c);
     private static bool EndsWithVowel(string s) => IsVowel(FinalCharacter(s));
-    private static bool EndsWithConsonant(string s) => IsConsonant(FinalCharacter(s));
+    //private static bool EndsWithConsonant(string s) => IsConsonant(FinalCharacter(s));
 
     private static bool EndingConsonant(string s, out char c)
     {
@@ -232,28 +258,30 @@ public static class Inflection
 
     public static string[] PassiveParticiple(string[] baseForm)
     {
-        if (baseForm.Length == 1 && irregularVerbs.LookupOrNull(baseForm[0], "Passive participle") is string irregular)
+        if (baseForm.Length == 1 && IrregularVerbs.LookupOrNull(baseForm[0], "Passive participle") is string irregular)
         {
-            return new string[] {irregular};
+            return new[] {irregular};
         }
 
         var passive = (string[]) baseForm.Clone();
-        var end = passive.Length - 1;
-        var last = passive[end];
-        var len = last.Length;
+        var headPosition = passive.Length - 1;
+        if (IsPreposition(passive[headPosition]))
+            headPosition--;
+        var head = passive[headPosition];
+        var len = head.Length;
 
-        if (last.EndsWith("e"))
-            last = last + "d";
-        if (last.EndsWith("y") && len > 1 && IsConsonant(last[len - 2]))
-            last = last.Substring(0, len - 1) + "ied";
-        else if (last.EndsWith("c"))
-            last = last + "ked";
-        else if (IsConsonant(last[len - 1]) && last[len-1] != 'y' && len > 1 && IsVowel(last[len - 2]))
-            last = last + last[len - 1] + "ed";
+        if (head.EndsWith("e"))
+            head = head + "d";
+        else if (head.EndsWith("y") && len > 1 && IsConsonant(head[len - 2]))
+            head = head.Substring(0, len - 1) + "ied";
+        else if (head.EndsWith("c"))
+            head = head + "ked";
+        else if (IsConsonant(head[len - 1]) && head[len-1] != 'y' && len > 1 && IsVowel(head[len - 2]))
+            head = head + head[len - 1] + "ed";
         else
-            last = last + "ed";
+            head = head + "ed";
 
-        passive[end] = last;
+        passive[headPosition] = head;
 
         return passive;
     }

@@ -217,6 +217,8 @@ public class Verb : Concept
             Ontology.VerbTrie.Store(_singular, this);
             EnsurePluralForm();
             EnsureGerundForm();
+            EnsureBaseForm();
+            EnsurePassiveParticiple();
         }
     }
 
@@ -292,6 +294,9 @@ public class Verb : Concept
             _plural = value;
             Ontology.VerbTrie.Store(_plural, this, true);
             EnsureSingularForm();
+            EnsureBaseForm();
+            EnsureGerundForm();
+            EnsurePassiveParticiple();
         }
     }
 
