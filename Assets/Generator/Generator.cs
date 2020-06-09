@@ -297,7 +297,7 @@ public class Generator
     {
         foreach (var part in k.Parts)
         {
-            var p = Ontology.EphemeralIndividual(part.MonadicConcepts, part.Name.Prepend("'s").ToArray(), i);
+            var p = Ontology.EphemeralIndividual(part.MonadicConcepts, null, i, part);
             i.Parts[part] = p;
             EphemeralIndividuals.Add(p);
             AddParts(p);
@@ -575,6 +575,7 @@ public class Generator
     /// <param name="i">Individual for which this implication holds</param>
     /// <param name="antecedents">A set of conditions on i</param>
     /// <param name="consequent">A concept that must be true of i when the antecedents are true.</param>
+    // ReSharper disable once UnusedMember.Local
     private void AddImplication(Individual i, IEnumerable<MonadicConcept> antecedents, MonadicConcept consequent)
     {
         AddClause(antecedents.Select(a => Not(IsA(i, a))).Append(IsA(i, consequent)));
@@ -586,6 +587,7 @@ public class Generator
     /// <param name="i">Individual for which this implication holds</param>
     /// <param name="antecedents">A set of conditions on i</param>
     /// <param name="consequent">A proposition that must follow from the antecedent applying to i.</param>
+    // ReSharper disable once UnusedMember.Local
     private void AddImplication(Individual i, IEnumerable<MonadicConcept> antecedents, Literal consequent)
     {
         AddClause(antecedents.Select(a => Not(IsA(i, a))).Append(consequent));
@@ -608,6 +610,7 @@ public class Generator
     /// <param name="i">Individual for which this implication holds</param>
     /// <param name="antecedents">A set of conditions on i</param>
     /// <param name="consequent">A proposition that must follow from the antecedent applying to i.</param>
+    // ReSharper disable once UnusedMember.Local
     void AddImplication(Individual i, IEnumerable<MonadicConceptLiteral> antecedents, Literal consequent)
     {
         AddClause(antecedents.Select(a => Not(Satisfies(i, a))).Append(consequent));

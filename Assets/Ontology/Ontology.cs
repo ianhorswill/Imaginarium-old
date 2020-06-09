@@ -175,10 +175,11 @@ public class Ontology
     /// <param name="concepts">CommonNouns and Adjectives that must apply to the individual</param>
     /// <param name="name">Default name to give to the individual if no name property can be found.</param>
     /// <param name="container">The object of which this is a part, if any</param>
+    /// <param name="containerPart">Part of container which this object represents</param>
     /// <returns></returns>
-    public Individual EphemeralIndividual(IEnumerable<MonadicConceptLiteral> concepts, string[] name, Individual container = null)
+    public Individual EphemeralIndividual(IEnumerable<MonadicConceptLiteral> concepts, string[] name, Individual container = null, Part containerPart = null)
     {
-        return new Individual(this, concepts, name, container);
+        return new Individual(this, concepts, name, container, containerPart);
     }
 
     /// <summary>

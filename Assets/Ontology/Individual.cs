@@ -66,10 +66,11 @@ public class Individual : Referent, IComparable
     /// </summary>
     public readonly Dictionary<Property, Variable> Properties = new Dictionary<Property, Variable>();
 
-    internal Individual(Ontology ontology, IEnumerable<MonadicConceptLiteral> concepts, string[] name, Individual container = null) : base(ontology, name)
+    internal Individual(Ontology ontology, IEnumerable<MonadicConceptLiteral> concepts, string[] name, Individual container = null, Part containerPart = null) : base(ontology, name)
     {
         Name = name;
         Container = container;
+        ContainerPart = containerPart;
         var enumerated = concepts as MonadicConceptLiteral[] ?? concepts.ToArray();
         Kinds.AddRange(enumerated.Where(l => l.IsPositive && l.Concept is CommonNoun).Select(l => (CommonNoun)l.Concept).Distinct());
         // Remove redundant kinds
@@ -98,6 +99,8 @@ public class Individual : Referent, IComparable
     /// The Individual of which this is a part
     /// </summary>
     public readonly Individual Container;
+
+    public readonly Part ContainerPart;
 
     /// <inheritdoc />
     public override string[] StandardName => Name;

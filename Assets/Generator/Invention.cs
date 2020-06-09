@@ -60,7 +60,7 @@ public class Invention
     #region Description generation
 
     private static readonly string[] DefaultDescriptionTemplate =
-        { "[", "NameString", "]", "is", "a", "[", "Modifiers", "]", "[", "Noun", "]", "[", "AllProperties", "]" };
+        { "[", "ContainerAndPart", "]", "[", "NameString", "]", "is", "a", "[", "Modifiers", "]", "[", "Noun", "]", "[", "AllProperties", "]" };
 
     public static bool EndsWithSpace(StringBuilder b)
     {
@@ -92,13 +92,10 @@ public class Invention
             descriptionKind = i.Kinds[0];
 
         var b = new StringBuilder();
-        var firstOne = true;
 
         for (var n = 0; n < template.Length; n++)
         {
-            if (firstOne)
-                firstOne = false;
-            else
+            if (!EndsWithSpace(b))
                 b.Append(' ');
 
             var token = template[n];
@@ -132,6 +129,16 @@ public class Invention
     {
         switch (propertyName[0])
         {
+            case "ContainerAndPart":
+                if (i.Container != null)
+                {
+                    b.Append(NameString(i.Container));
+                    b.Append("'s ");
+                    b.Append(i.ContainerPart.Name.Untokenize());
+                    b.Append(" ");
+                }
+                break;
+
             case "NameString":
                 b.Append(NameString(i, suppressedProperties));
                 break;
@@ -308,32 +315,25 @@ public class Invention
 
     public string NameString(Individual i, List<Property> suppressedProperties = null)
     {
-        var containerPrefix = i.Container != null ? NameString(i.Container) : "";
-
-        string NameWithoutPrefix()
+        var nameProperty1 = i.NameProperty();
+        if (nameProperty1 != null)
         {
-            var nameProperty = i.NameProperty();
-            if (nameProperty != null)
+            suppressedProperties?.Add(nameProperty1);
+            var prop1 = i.Properties[nameProperty1];
+            if (Model.DefinesVariable(prop1))
             {
-                suppressedProperties?.Add(nameProperty);
-                var prop = i.Properties[nameProperty];
-                if (Model.DefinesVariable(prop))
-                {
-                    var name = Model[prop];
-                    if (name is float)
-                        name = Convert.ToInt32(name);
-                    return name.ToString();
-                }
+                var name1 = Model[prop1];
+                if (name1 is float)
+                    name1 = Convert.ToInt32(name1);
+                return name1.ToString();
             }
-
-            Debug.AssertFormat(i.Kinds.Count > 0, "NameString({0}): individual has no kinds?", i);
-            var k = FindKindOrSuperKind(i, kind => kind.NameTemplate != null);
-            return k != null
-                       ? FormatNameFromTemplate(i, suppressedProperties, k)
-                       : i.Text;
         }
 
-        return containerPrefix + NameWithoutPrefix();
+        Debug.AssertFormat(i.Kinds.Count > 0, "NameString({0}): individual has no kinds?", i);
+        var k1 = FindKindOrSuperKind(i, kind => kind.NameTemplate != null);
+        return k1 != null
+            ? FormatNameFromTemplate(i, suppressedProperties, k1)
+            : i.Text;
     }
 
     private string FormatNameFromTemplate(Individual i, List<Property> suppressedProperties, CommonNoun kind)

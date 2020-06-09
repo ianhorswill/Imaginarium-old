@@ -97,6 +97,8 @@ public static class Tokenizer
     /// </summary>
     public static string Untokenize(IEnumerable<string> tokens)
     {
+        if (tokens == null)
+            return "";
         var b = new StringBuilder();
         var firstOne = true;
         var lastToken = "";
