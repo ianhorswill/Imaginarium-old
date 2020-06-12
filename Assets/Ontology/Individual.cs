@@ -37,10 +37,10 @@ public class Individual : Referent, IComparable
     /// Returns the Property of this Individual named "name", if any
     /// </summary>
     /// <returns>The name Property, else null.</returns>
-    public Property NameProperty()
+    public Property NameProperty(Solution model)
     {
         foreach (var pair in Properties)
-            if (pair.Key.IsNamed(NameTokenString))
+            if (pair.Key.IsNamed(NameTokenString) && model.DefinesVariable(pair.Value))
                 return pair.Key;
         return null;
     }

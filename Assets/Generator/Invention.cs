@@ -315,7 +315,7 @@ public class Invention
 
     public string NameString(Individual i, List<Property> suppressedProperties = null)
     {
-        var nameProperty1 = i.NameProperty();
+        var nameProperty1 = i.NameProperty(Model);
         if (nameProperty1 != null)
         {
             suppressedProperties?.Add(nameProperty1);
