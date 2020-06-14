@@ -32,8 +32,24 @@ using System.Text;
 /// <summary>
 /// Implements methods for scanning input tokens and backtracking.
 /// </summary>
-public static class Parser
+public  static partial class Parser
 {
+    static Parser()
+    {
+        StandardSentencePatterns();
+    }
+    
+    public static bool SingularDeterminer(string word) => word == "a" || word == "an";
+
+    /// <summary>
+    /// Grammatical number feature
+    /// </summary>
+    public enum Number
+    {
+        Singular,
+        Plural
+    }
+
     /// <summary>
     /// Files from the current project (generator) currently being loaded
     /// </summary>
@@ -50,6 +66,15 @@ public static class Parser
     /// The update time of the most recently loaded file.
     /// </summary>
     public static DateTime MostRecentFileUpdateTime;
+
+    /// <summary>
+    /// Rules for the different sentential forms understood by the system.
+    /// Each consists of a pattern to recognize the form and store its components in static fields such
+    /// as Subject, Object, and VerbNumber, and an Action to perform updates to the ontology based on
+    /// the data stored in those static fields.  The Check option is used to insure features are properly
+    /// set.
+    /// </summary>
+    public static readonly List<SentencePattern> Rules = new List<SentencePattern>();
     
     /// <summary>
     /// Parse and execute a new command from the user, and log it if it's an ontology alteration
@@ -64,7 +89,7 @@ public static class Parser
     /// <summary>
     /// Rule in which grammatical error was detected.
     /// </summary>
-    public static Syntax RuleTriggeringException;
+    public static SentencePattern RuleTriggeringException;
 
     public static string InputTriggeringException;
 
@@ -82,7 +107,7 @@ public static class Parser
         Input.AddRange(Tokenizer.Tokenize(sentence));
 
         RuleTriggeringException = null;
-        var rule = Syntax.AllRules.FirstOrDefault(r =>
+        var rule = Rules.FirstOrDefault(r =>
         {
             RuleTriggeringException = r;
             return r.Try();
@@ -182,12 +207,12 @@ public static class Parser
     {
         if (Match("is"))
         {
-            Syntax.VerbNumber = Syntax.Number.Singular;
+            VerbNumber = Number.Singular;
             return true;
         }
         if (Match("are"))
         {
-            Syntax.VerbNumber = Syntax.Number.Plural;
+            VerbNumber = Number.Plural;
             return true;
         }
 
@@ -210,12 +235,12 @@ public static class Parser
     {
         if (Match("has"))
         {
-            Syntax.VerbNumber = Syntax.Number.Singular;
+            VerbNumber = Number.Singular;
             return true;
         }
         if (Match("have"))
         {
-            Syntax.VerbNumber = Syntax.Number.Plural;
+            VerbNumber = Number.Plural;
             return true;
         }
 
@@ -238,7 +263,7 @@ public static class Parser
     public static int? IntFromWord(string s)
     {
         var value = Array.IndexOf(NumberWords, s);
-        if (value >= 0 || int.TryParse(s, out value))
+        if (value >= 0 || Int32.TryParse(s, out value))
             return value;
 
         return null;
@@ -252,7 +277,7 @@ public static class Parser
     public static bool MatchNumber(out float number)
     {
         var token = CurrentToken;
-        if (float.TryParse(token, out number))
+        if (Single.TryParse(token, out number))
         {
             SkipToken();
             return true;
@@ -431,7 +456,7 @@ public static class Parser
         /// Used when the subject of a sentences is a list of NPs
         /// </summary>
         public ReferringExpressionList<NP, Noun> SubjectNounList = new ReferringExpressionList<NP, Noun>()
-            {SanityCheck = Syntax.ForceBaseForm, Name = "Subjects"};
+            {SanityCheck = SentencePattern.ForceBaseForm, Name = "Subjects"};
 
         /// <summary>
         /// Used when the predicate of a sentences is a list of APs
@@ -472,7 +497,7 @@ public static class Parser
         /// </summary>
         public float UpperBound;
         
-        public Syntax.Number? VerbNumber;
+        public Number? VerbNumber;
     }
 
     #endregion

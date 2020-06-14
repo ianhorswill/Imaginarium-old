@@ -13,7 +13,7 @@ public static class AutoGrader
         var dir = Combine(ConfigurationFiles.GradingDirectory, assignmentName);
 
         // Get the grades spreadsheet from Canvas and find the column header for the grades for this assignment
-        var canvasGrades = new Spreadsheet(Path.Combine(dir,"canvas grades.csv"), "ID");
+        var canvasGrades = new Spreadsheet(Combine(dir,"canvas grades.csv"), "ID");
         var assignmentColumn = 0;
         foreach (var cName in canvasGrades.Header)
             if (cName.StartsWith(assignmentName + " ("))

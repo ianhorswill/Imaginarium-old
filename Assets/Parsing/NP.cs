@@ -139,9 +139,9 @@ public class NP : ReferringExpression<Noun>
 
         BeginsWithDeterminer = true;
         if (Match("a") || Match("an"))
-            Number = Syntax.Number.Singular;
+            Number = Parser.Number.Singular;
         else if (Match("all"))
-            Number = Syntax.Number.Plural;
+            Number = Parser.Number.Plural;
         else if (Match("one"))
             ExplicitCount = 1;
         else if (Match("two"))
@@ -218,7 +218,7 @@ public class NP : ReferringExpression<Noun>
             if (!Number.HasValue)
                 // Only update if Number wasn't already set by a determiner.
                 // This is to get around nouns that are their own plurals.
-                Number = Driver.Ontology.LastMatchPlural ? Syntax.Number.Plural : Syntax.Number.Singular;
+                Number = Driver.Ontology.LastMatchPlural ? Parser.Number.Plural : Parser.Number.Singular;
 
             return true;
         }
@@ -240,7 +240,7 @@ public class NP : ReferringExpression<Noun>
     {
         var text = Text;
 
-        if (Number == Syntax.Number.Plural || BeginsWithDeterminer || ForceCommonNoun)
+        if (Number == Parser.Number.Plural || BeginsWithDeterminer || ForceCommonNoun)
             return GetCommonNoun(text);
 
         return GetProperNoun(text);
@@ -257,10 +257,10 @@ public class NP : ReferringExpression<Noun>
         if (noun != null)
         {
             var singular = noun.SingularForm.SameAs(text);
-            if (singular && Number == Syntax.Number.Plural && !noun.SingularForm.SameAs(noun.PluralForm))
+            if (singular && Number == Parser.Number.Plural && !noun.SingularForm.SameAs(noun.PluralForm))
                 throw new GrammaticalError($"The singular noun '{Text.Untokenize()}' was used without 'a' or 'an' before it", 
                     $"The singular noun '<i>{Text.Untokenize()}</i>' was used without 'a' or 'an' before it");
-            if (!singular && Number == Syntax.Number.Singular)
+            if (!singular && Number == Parser.Number.Singular)
                 throw new GrammaticalError($"The plural noun '{Text.Untokenize()}' was used with 'a' or 'an'",
                     $"The plural noun '<i>{Text.Untokenize()}</i>' was used with 'a' or 'an' before it");
             return noun;
@@ -271,9 +271,9 @@ public class NP : ReferringExpression<Noun>
         if (!Number.HasValue)
             // Don't know syntactically if it's supposed to be singular or plural, so guess.
             Number = Inflection.NounAppearsPlural(text)
-                ? Syntax.Number.Plural
-                : Syntax.Number.Singular;
-        if (Number == Syntax.Number.Singular)
+                ? Parser.Number.Plural
+                : Parser.Number.Singular;
+        if (Number == Parser.Number.Singular)
             noun.SingularForm = text;
         else
             // Note: this guarantees there is a singular form.
@@ -289,7 +289,7 @@ public class NP : ReferringExpression<Noun>
     /// <summary>
     /// The grammatical Number of this NP (singular, plural, or null if unmarked or not yet known)
     /// </summary>
-    public Syntax.Number? Number { get; set; }
+    public Number? Number { get; set; }
 
     /// <summary>
     /// The explicitly specified count of the NP, if any.
@@ -302,7 +302,7 @@ public class NP : ReferringExpression<Noun>
         {
             _explicitCount = value;
             if (value != null)
-                Number = _explicitCount == 1 ? Syntax.Number.Singular : Syntax.Number.Plural;
+                Number = _explicitCount == 1 ? Parser.Number.Singular : Parser.Number.Plural;
         }
     }
     // ReSharper disable once InconsistentNaming

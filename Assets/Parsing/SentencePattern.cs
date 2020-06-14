@@ -34,7 +34,7 @@ using System.Text;
 /// Rules for parsing the top-level syntax of sentences.
 /// </summary>
 [DebuggerDisplay("{" + nameof(HelpDescription) + "}")]
-public partial class Syntax
+public class SentencePattern
 {
     /// <summary>
     /// Used in SubjectNounList to ensure all NPs are in base form (singular but no determiner)
@@ -48,128 +48,11 @@ public partial class Syntax
         return true;
     }
 
-    #region Feature checks for syntax rules
-    private static bool SubjectVerbAgree()
-    {
-        if (Subject.Number == null)
-        {
-            Subject.Number = VerbNumber;
-            return true;
-        }
-
-        if (VerbNumber == null)
-            VerbNumber = Subject.Number;
-        return VerbNumber == null || VerbNumber == Subject.Number;
-    }
-
-    private static bool VerbBaseForm()
-    {
-        if (Verb.Text[0] != "be" && VerbNumber == Number.Singular)
-            return false;
-        VerbNumber = Number.Plural;
-        Verb.Conjugation = VerbConjugation.BaseForm;
-        return true;
-    }
-
-    private static bool VerbGerundForm() => VerbGerundForm(Verb);
-    private static bool Verb2GerundForm() => VerbGerundForm(Verb2);
-
-    private static bool VerbGerundForm(VerbSegment s)
-    {
-        s.Conjugation = VerbConjugation.Gerund;
-        return Inflection.IsGerund(s.Text);
-    }
-
-    private static bool SubjectDefaultPlural()
-    {
-        if (Subject.Number == null)
-            Subject.Number = Number.Plural;
-        return true;
-    }
-
-    private static bool SubjectPlural() => Subject.Number == Number.Plural;
-
-    //private static bool ObjectNonSingular() => Object.Number == null || Object.Number == Number.Plural;
-
-    /// <summary>
-    /// Object is not marked plural.  If number is ambiguous, force it to singular.
-    /// </summary>
-    /// <returns></returns>
-    private static bool ObjectSingular()
-    {
-        if (Object.Number == Number.Plural)
-            throw new GrammaticalError($"The noun '{Object.Text}' should be in singular form in this context",
-                $"The noun '<i>{Object.Text}<i>' should be in singular form in this context");
-
-        Object.Number = Number.Singular;
-        return true;
-    }
-
-    /// <summary>
-    /// Object is syntactically singular, i.e. it starts with "a", "an", etc.
-    /// </summary>
-    private static bool ObjectExplicitlySingular() => Object.Number == Number.Singular && Object.BeginsWithDeterminer;
-
-    /// <summary>
-    /// Subject is syntactically singular, i.e. it starts with "a", "an", etc.
-    /// </summary>
-    private static bool SubjectExplicitlySingular() => Subject.Number == Number.Singular && Subject.BeginsWithDeterminer;
-
-    private static bool ObjectQuantifierAgree()
-    {
-        Object.Number = Quantifier.IsPlural ? Number.Plural : Number.Singular;
-        return true;
-    }
-
-    /// <summary>
-    /// Used for sentential forms that can't accept adjectives in their subject.
-    /// </summary>
-    /// <returns></returns>
-    private static bool SubjectUnmodified()
-    {
-        if (Subject.Modifiers.Count > 0)
-            throw new GrammaticalError($"The noun '{Subject.Text.Untokenize()}' cannot take adjectives in this context",
-                $"The noun '{Subject.Text.Untokenize()}' cannot take adjectives as the subject of this sentence pattern");
-        return true;
-    }
-
-    /// <summary>
-    /// Used for sentential forms that can't accept adjectives in their object.
-    /// </summary>
-    /// <returns></returns>
-    private static bool ObjectUnmodified()
-    {
-        if (Object.Modifiers.Count > 0)
-            throw new GrammaticalError($"The noun '{Object.Text.Untokenize()}' cannot take adjectives", 
-                $"The noun '<i>{Object.Text.Untokenize()}</i>' cannot take any adjectives or other modifiers as the object of this sentence pattern.");
-        return true;
-    }
-
-    private static bool ObjectCommonNoun()
-    {
-        Object.ForceCommonNoun = true;
-        return true;
-    }
-
-    
-    private static bool SubjectProperNoun()
-    {
-        return Subject.Noun is ProperNoun;
-    }
-    private static bool SubjectCommonNoun()
-    {
-        Subject.ForceCommonNoun = true;
-        return true;
-    }
-
-    public static bool ListConjunction(string currentToken) => currentToken == "and" || currentToken == "or";
-    #endregion
-
     #region Constructors
     // ReSharper disable once CoVariantArrayConversion
-    public Syntax(params string[] tokens) : this(() => tokens) { }
+    public SentencePattern(params string[] tokens) : this(() => tokens) { }
 
-    public Syntax(Func<object[]> makeConstituents)
+    public SentencePattern(Func<object[]> makeConstituents)
     {
         this.makeConstituents = makeConstituents;
     }
@@ -179,7 +62,7 @@ public partial class Syntax
     /// This is here only so that the syntax constructor can take the constituents as a params arg,
     /// which makes the code a little more readable.
     /// </summary>
-    public Syntax Action(Action a)
+    public SentencePattern Action(Action a)
     {
         action = a;
         return this;
@@ -190,7 +73,7 @@ public partial class Syntax
     /// This is here only so that the syntax constructor can take the constituents as a params arg,
     /// which makes the code a little more readable.
     /// </summary>
-    public Syntax Check(params Func<bool>[] checks)
+    public SentencePattern Check(params Func<bool>[] checks)
     {
         validityTests = checks;
         return this;
@@ -231,8 +114,8 @@ public partial class Syntax
     /// </summary>
     /// <param name="tokens">Words to check against rule keywords</param>
     /// <returns>Rules with keywords in common</returns>
-    public static IEnumerable<Syntax> RulesMatchingKeywords(IEnumerable<string> tokens) =>
-        AllRules.Where(r => r.HasCommonKeywords(tokens));
+    public static IEnumerable<SentencePattern> RulesMatchingKeywords(IEnumerable<string> tokens) =>
+        Rules.Where(r => r.HasCommonKeywords(tokens));
 
     /// <summary>
     /// Try to make a syntax rule and run its action if successful.
@@ -267,7 +150,7 @@ public partial class Syntax
             }
             else if (LogMatch)
             {
-                Driver.AppendResponseLine("Remaining input blocked match: "+Parser.CurrentToken);
+                Driver.AppendResponseLine("Remaining input blocked match: "+CurrentToken);
             }
 
         fail:
@@ -305,7 +188,7 @@ public partial class Syntax
             {
                 var conName = ConstituentToString(c);
                 Driver.AppendResponseLine($"Constituent {conName}");
-                Driver.AppendResponseLine($"Remaining input: {Parser.RemainingInput}");
+                Driver.AppendResponseLine($"Remaining input: {RemainingInput}");
             }
             if (BreakOnMatch)
                 Debugger.Break();
@@ -466,19 +349,19 @@ public partial class Syntax
     /// </summary>
     public bool LogMatch => _logMatch || LogAllParsing;
 
-    public Syntax DebugMatch()
+    public SentencePattern DebugMatch()
     {
         BreakOnMatch = true;
         return this;
     }
 
-    public Syntax Log()
+    public SentencePattern Log()
     {
         _logMatch = true;
         return this;
     }
 
-    public Syntax Command()
+    public SentencePattern Command()
     {
         IsCommand = true;
         return this;
@@ -492,7 +375,7 @@ public partial class Syntax
     /// <summary>
     /// Adds the specified documentation string to the Syntax form.
     /// </summary>
-    public Syntax Documentation(string doc)
+    public SentencePattern Documentation(string doc)
     {
         DocString = doc;
         return this;
@@ -576,16 +459,5 @@ public partial class Syntax
             default:
                 return $"<i>{c}</i>";
         }
-    }
-
-    public static bool SingularDeterminer(string word) => word == "a" || word == "an";
-
-    /// <summary>
-    /// Grammatical number feature
-    /// </summary>
-    public enum Number
-    {
-        Singular,
-        Plural
     }
 }

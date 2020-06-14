@@ -217,7 +217,7 @@ public class UIDriver : MonoBehaviour, IRepl
             if (ex is GrammaticalError && Parser.RuleTriggeringException == null)
             {
                 var firstOne = true;
-                foreach (var r in Syntax.RulesMatchingKeywords(Parser.Input))
+                foreach (var r in SentencePattern.RulesMatchingKeywords(Parser.Input))
                 {
                     if (firstOne)
                     {

@@ -48,7 +48,7 @@ public class Segment
             return false;
         var beginning = State;
         while (!EndOfInput)
-            if (!AllowListConjunctions && Syntax.ListConjunction(CurrentToken))
+            if (!AllowListConjunctions && ListConjunction(CurrentToken))
                 return false;
             else if (token == CurrentToken)
             {
@@ -90,7 +90,7 @@ public class Segment
                     goto giveUp;
                 return true;
             }
-            else if (Syntax.ListConjunction(CurrentToken))
+            else if (ListConjunction(CurrentToken))
             {
                 ResetTo(beginning);
                 return false;
@@ -123,7 +123,7 @@ public class Segment
             // Have to check to make sure there's no embedded conjunction
             while (!EndOfInput)
             {
-                if (Syntax.ListConjunction(CurrentToken))
+                if (ListConjunction(CurrentToken))
                     return false;
                 SkipToken();
             }

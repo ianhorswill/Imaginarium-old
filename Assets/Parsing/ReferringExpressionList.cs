@@ -89,7 +89,7 @@ public class ReferringExpressionList<TE, TR> : Segment
     /// <returns>True if the token marks the end of a list item</returns>
     Func<string, bool> ListItemTerminator(Func<string, bool> overallTerminator)
     {
-        return token => overallTerminator(token) || token == "," || Syntax.ListConjunction(token);
+        return token => overallTerminator(token) || token == "," || ListConjunction(token);
     }
 
     public override bool ScanTo(string token) => ScanTo(t => t == token);

@@ -61,7 +61,7 @@ public class Verb : Concept
             {
                 if (ObjectLowerBound == ObjectUpperBound)
                     b.Append($"Subjects {PluralForm.Untokenize()} {ObjectLowerBound} objects");
-                else if (ObjectUpperBound == Verb.Unbounded)
+                else if (ObjectUpperBound == Unbounded)
                     b.Append($"Subjects {PluralForm.Untokenize()} at least {ObjectLowerBound} objects");
                 else if (ObjectLowerBound == 0)
                     b.Append($"Subjects {PluralForm.Untokenize()} at most {ObjectUpperBound} objects");

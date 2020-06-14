@@ -90,7 +90,7 @@ public class QuantifyingDeterminer : ClosedClassSegment
         Quantifier = CurrentToken;
         if (!Match(NonNumberQuantifierWord))
         {
-            ExplicitCount = Parser.IntFromWord(Quantifier);
+            ExplicitCount = IntFromWord(Quantifier);
             if (ExplicitCount == null)
                 return false;
             SkipToken();

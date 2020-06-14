@@ -112,7 +112,7 @@ public class VerbSegment : ReferringExpression<Verb>
         }
 
         SetText(old);
-        Syntax.VerbNumber = Driver.Ontology.VerbTrie.LastMatchPlural ? Syntax.Number.Plural : Syntax.Number.Singular;
+        VerbNumber = Driver.Ontology.VerbTrie.LastMatchPlural ? Number.Plural : Number.Singular;
         return true;
     }
     #endregion
@@ -134,7 +134,7 @@ public class VerbSegment : ReferringExpression<Verb>
                 break;
 
             case VerbConjugation.ThirdPerson:
-                if (Syntax.VerbNumber == Syntax.Number.Singular)
+                if (VerbNumber == Number.Singular)
                     verb.SingularForm = text;
                 else
                     // Note: this guarantees there is a singular form.

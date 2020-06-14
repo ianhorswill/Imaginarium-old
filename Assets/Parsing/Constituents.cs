@@ -23,14 +23,13 @@
 // --------------------------------------------------------------------------------------------------------------------
 #endregion
 
-using static Parser;
 using System;
 using System.Collections.Generic;
 
 /// <summary>
 /// Rules for parsing the top-level syntax of sentences.
 /// </summary>
-public partial class Syntax
+public static partial  class Parser
 {
     #region Constituent information
 
@@ -103,12 +102,12 @@ public partial class Syntax
     /// <summary>
     /// Recognizes conjugations of the verb to be.
     /// </summary>
-    private static readonly Func<bool> Is = MatchCopula;
+    public static readonly Func<bool> Is = MatchCopula;
 
     /// <summary>
     /// Recognizes conjugations of the verb to have
     /// </summary>
-    private static readonly Func<bool> Has = MatchHave;
+    public static readonly Func<bool> Has = MatchHave;
 
     private static readonly SimpleClosedClassSegment OptionalAll = new SimpleClosedClassSegment(
         "all", "any", "every")
@@ -154,12 +153,130 @@ public partial class Syntax
     /// <summary>
     /// Recognizes numbers and stores them in lowerBound
     /// </summary>
-    private static readonly Func<bool> LowerBound = () => MatchNumber(out Parser.Current.LowerBound);
+    public static readonly Func<bool> LowerBound = () => MatchNumber(out Current.LowerBound);
 
     /// <summary>
     /// Recognizes numbers and stores them in upperBound
     /// </summary>
-    private static readonly Func<bool> UpperBound = () => MatchNumber(out Parser.Current.UpperBound);
+    public static readonly Func<bool> UpperBound = () => MatchNumber(out Current.UpperBound);
+
+    
+    #region Feature checks for syntax rules
+    private static bool SubjectVerbAgree()
+    {
+        if (Subject.Number == null)
+        {
+            Subject.Number = VerbNumber;
+            return true;
+        }
+
+        if (VerbNumber == null)
+            VerbNumber = Subject.Number;
+        return VerbNumber == null || VerbNumber == Subject.Number;
+    }
+
+    private static bool VerbBaseForm()
+    {
+        if (Verb.Text[0] != "be" && VerbNumber == Number.Singular)
+            return false;
+        VerbNumber = Number.Plural;
+        Verb.Conjugation = VerbConjugation.BaseForm;
+        return true;
+    }
+
+    private static bool VerbGerundForm() => VerbGerundForm(Verb);
+    private static bool Verb2GerundForm() => VerbGerundForm(Verb2);
+
+    private static bool VerbGerundForm(VerbSegment s)
+    {
+        s.Conjugation = VerbConjugation.Gerund;
+        return Inflection.IsGerund(s.Text);
+    }
+
+    private static bool SubjectDefaultPlural()
+    {
+        if (Subject.Number == null)
+            Subject.Number = Number.Plural;
+        return true;
+    }
+
+    private static bool SubjectPlural() => Subject.Number == Number.Plural;
+
+    //private static bool ObjectNonSingular() => Object.Number == null || Object.Number == Number.Plural;
+
+    /// <summary>
+    /// Object is not marked plural.  If number is ambiguous, force it to singular.
+    /// </summary>
+    /// <returns></returns>
+    private static bool ObjectSingular()
+    {
+        if (Object.Number == Number.Plural)
+            throw new GrammaticalError($"The noun '{Object.Text}' should be in singular form in this context",
+                $"The noun '<i>{Object.Text}<i>' should be in singular form in this context");
+
+        Object.Number = Number.Singular;
+        return true;
+    }
+
+    /// <summary>
+    /// Object is syntactically singular, i.e. it starts with "a", "an", etc.
+    /// </summary>
+    private static bool ObjectExplicitlySingular() => Object.Number == Number.Singular && Object.BeginsWithDeterminer;
+
+    /// <summary>
+    /// Subject is syntactically singular, i.e. it starts with "a", "an", etc.
+    /// </summary>
+    private static bool SubjectExplicitlySingular() => Subject.Number == Number.Singular && Subject.BeginsWithDeterminer;
+
+    private static bool ObjectQuantifierAgree()
+    {
+        Object.Number = Quantifier.IsPlural ? Number.Plural : Number.Singular;
+        return true;
+    }
+
+    /// <summary>
+    /// Used for sentential forms that can't accept adjectives in their subject.
+    /// </summary>
+    /// <returns></returns>
+    private static bool SubjectUnmodified()
+    {
+        if (Subject.Modifiers.Count > 0)
+            throw new GrammaticalError($"The noun '{Subject.Text.Untokenize()}' cannot take adjectives in this context",
+                $"The noun '{Subject.Text.Untokenize()}' cannot take adjectives as the subject of this sentence pattern");
+        return true;
+    }
+
+    /// <summary>
+    /// Used for sentential forms that can't accept adjectives in their object.
+    /// </summary>
+    /// <returns></returns>
+    private static bool ObjectUnmodified()
+    {
+        if (Object.Modifiers.Count > 0)
+            throw new GrammaticalError($"The noun '{Object.Text.Untokenize()}' cannot take adjectives", 
+                $"The noun '<i>{Object.Text.Untokenize()}</i>' cannot take any adjectives or other modifiers as the object of this sentence pattern.");
+        return true;
+    }
+
+    private static bool ObjectCommonNoun()
+    {
+        Object.ForceCommonNoun = true;
+        return true;
+    }
+
+    
+    private static bool SubjectProperNoun()
+    {
+        return Subject.Noun is ProperNoun;
+    }
+    private static bool SubjectCommonNoun()
+    {
+        Subject.ForceCommonNoun = true;
+        return true;
+    }
+
+    public static bool ListConjunction(string currentToken) => currentToken == "and" || currentToken == "or";
+    #endregion
 
     #endregion
 }
