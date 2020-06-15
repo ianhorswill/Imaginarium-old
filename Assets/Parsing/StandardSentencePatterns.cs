@@ -29,139 +29,57 @@ using System.Linq;
 using CatSAT;
 using CatSAT.NonBoolean.SMT.Float;
 using CatSAT.NonBoolean.SMT.MenuVariables;
-using UnityEngine;
 
 /// <summary>
 /// Rules for parsing the top-level syntax of sentences.
 /// </summary>
-public static partial class Parser
+public partial class Parser
 {
-    public static void StandardSentencePatterns()
+    public void StandardSentencePatterns(Ontology ontology)
     {
-        Rules.AddRange(new[]
+        SentencePatterns.AddRange(new[]
         {
-            new SentencePattern("debug")
-                .Action(() => SentencePattern.LogAllParsing = !SentencePattern.LogAllParsing)
-                .Documentation("Toggles debugging of input parsing")
-                .Command(),
-
-            new SentencePattern("help")
-                .Action(() =>
-                {
-                    foreach (var r in Rules)
-                        Driver.AppendResponseLine(r.HelpDescription);
-                })
-                .Documentation("Prints this list of commands")
-                .Command(),
-
-            new SentencePattern("quit")
-                .Action(Application.Quit)
-                .Documentation("Ends the application")
-                .Command(),
-
-            new SentencePattern("exit")
-                .Action(Application.Quit)
-                .Documentation("Ends the application")
-                .Command(),
-
-            new SentencePattern(() => new object[] {"pressing", "!", "\"", ButtonName, "\"", "means", "\"", Text, "\""})
-                .Action(() => { Driver.Repl.AddButton(ButtonName.Text.Untokenize(), Text.Text.Untokenize()); })
-                .Documentation(
-                    "Instructs the system to add a new button to the button bar with the specified name.  When it is pressed, it will execute the specified text."),
-
-            new SentencePattern(() => new object[] {"imagine", "!", Object})
-                .Action(() =>
-                {
-                    var countRequest = Object.ExplicitCount;
-                    var count = countRequest ?? (Object.Number == Number.Plural ? 9 : 1);
-                    try
-                    {
-                        Generator.Current = new Generator(Object.CommonNoun, Object.Modifiers, count);
-                    }
-                    catch (ContradictionException e)
-                    {
-                        Driver.AppendResponseLine($"<color=red><b>Contradiction found.</b></color>");
-                        Driver.AppendResponseLine($"Internal error message: {e.Message}");
-                    }
-                })
-                .Command()
-                .Documentation(
-                    "Generates one or more Objects.  For example, 'imagine a cat' or 'imagine 10 long-haired cats'."),
-
-            new SentencePattern("undo")
-                .Action(() => History.Undo())
-                .Command()
-                .Documentation("Undoes the last change to the ontology."),
-
-            new SentencePattern("start", "over")
-                .Action(() =>
-                {
-                    History.Clear();
-                    Driver.AppendResponseLine("Knowledge-base erased.  I don't know anything.");
-                })
-                .Command()
-                .Documentation("Tells the system to forget everything you've told it about the world."),
-
-            new SentencePattern(() => new object[] {"save", ListName})
-                .Action(() => { History.Save(DefinitionFilePath(ListName.Text.Untokenize())); })
-                .Command()
-                .Documentation("Saves assertions to a file."),
-
-            //new Syntax(() => new object[] { "edit", ListName })
-            //    .Action(() =>
-            //    {
-            //        var definitionFilePath = Parser.DefinitionFilePath(ListName.Text.Untokenize());
-
-            //        Ontology.EraseConcepts();
-            //        Parser.LoadDefinitions(definitionFilePath);
-            //        History.Edit(definitionFilePath);
-            //    })
-            //    .Command()
-            //    .Documentation("Add new assertions to a file.  Use save command to save changes."),
-
-            new SentencePattern(() => new object[]
-                    {OptionalAll, Object, "can", "be", Verb, "by", "up", "!", "to", UpperBound, Subject})
+            new SentencePattern(this, OptionalAll, Object, "can", "be", Verb, "by", "up", "!", "to", UpperBound,
+                    Subject)
                 .Action(() =>
                 {
                     var verb = ConfigureVerb(Verb, Subject, Object);
 
-                    verb.SubjectUpperBound = (int) upperBound;
+                    verb.SubjectUpperBound = (int) ParsedUpperBound;
                 })
                 .Check(VerbBaseForm, ObjectQuantifierAgree, SubjectCommonNoun, ObjectCommonNoun)
                 .Documentation("Specifies how many Subject a given Object can be Verb'ed by."),
 
-            new SentencePattern(() => new object[] {OptionalAll, Subject, "can", Verb, "up", "!", "to", UpperBound, Object})
+            new SentencePattern(this, OptionalAll, Subject, "can", Verb, "up", "!", "to", UpperBound, Object)
                 .Action(() =>
                 {
                     var verb = ConfigureVerb(Verb, Subject, Object);
 
-                    verb.ObjectUpperBound = (int) upperBound;
+                    verb.ObjectUpperBound = (int) ParsedUpperBound;
                 })
                 .Check(VerbBaseForm, ObjectQuantifierAgree, SubjectCommonNoun, ObjectCommonNoun)
                 .Documentation("Specifies how many Objects a given Subject can Verb."),
 
-            new SentencePattern(() => new object[]
-                    {OptionalAll, Object, "must", "be", Verb, "by", "at", "!", "least", LowerBound, Subject})
+            new SentencePattern(this, OptionalAll, Object, "must", "be", Verb, "by", "at", "!", "least", LowerBound,
+                    Subject)
                 .Action(() =>
                 {
                     var verb = ConfigureVerb(Verb, Subject, Object);
-                    verb.SubjectLowerBound = (int) lowerBound;
+                    verb.SubjectLowerBound = (int) ParsedLowerBound;
                 })
                 .Check(VerbBaseForm, ObjectQuantifierAgree, SubjectCommonNoun, ObjectCommonNoun)
                 .Documentation("Specifies how many Subject a given Object can be Verb'ed by"),
 
-            new SentencePattern(() => new object[]
-                    {OptionalAll, Subject, "must", Verb, "at", "!", "least", LowerBound, Object})
+            new SentencePattern(this, OptionalAll, Subject, "must", Verb, "at", "!", "least", LowerBound, Object)
                 .Action(() =>
                 {
                     var verb = ConfigureVerb(Verb, Subject, Object);
-                    verb.ObjectLowerBound = (int) lowerBound;
+                    verb.ObjectLowerBound = (int) ParsedLowerBound;
                 })
                 .Check(VerbBaseForm, ObjectQuantifierAgree, SubjectCommonNoun, ObjectCommonNoun)
                 .Documentation("Specifies how many Objects a given Subject can Verb."),
 
-            new SentencePattern(
-                    () => new object[] {OptionalAll, Object, CanMust, "be", Verb, "by", Quantifier, "!", Subject})
+            new SentencePattern(this, OptionalAll, Object, CanMust, "be", Verb, "by", Quantifier, "!", Subject)
                 .Action(() =>
                 {
                     var verb = ConfigureVerb(Verb, Subject, Object);
@@ -170,13 +88,13 @@ public static partial class Parser
                         verb.SubjectUpperBound = Quantifier.ExplicitCount.Value;
                     // "Cats can love other cats" means anti-reflexive, whereas "cats can love many cats" doesn't.
                     verb.IsAntiReflexive |= Quantifier.IsOther;
-                    if (CanMust.Match[0] == "must")
+                    if (CanMust.MatchedText[0] == "must")
                         verb.SubjectLowerBound = Quantifier.ExplicitCount ?? 1;
                 })
                 .Check(VerbBaseForm, ObjectQuantifierAgree, SubjectCommonNoun, ObjectCommonNoun)
                 .Documentation("Specifies how many Subjects a given Object can be Verb'ed by."),
 
-            new SentencePattern(() => new object[] {OptionalAll, Subject, CanMust, Verb, Quantifier, "!", Object})
+            new SentencePattern(this, OptionalAll, Subject, CanMust, Verb, Quantifier, "!", Object)
                 .Action(() =>
                 {
                     var verb = ConfigureVerb(Verb, Subject, Object);
@@ -185,32 +103,32 @@ public static partial class Parser
                         verb.ObjectUpperBound = Quantifier.ExplicitCount.Value;
                     // "Cats can love other cats" means anti-reflexive, whereas "cats can love many cats" doesn't.
                     verb.IsAntiReflexive |= Quantifier.IsOther;
-                    if (CanMust.Match[0] == "must")
+                    if (CanMust.MatchedText[0] == "must")
                         verb.ObjectLowerBound = Quantifier.ExplicitCount ?? 1;
                 })
                 .Check(VerbBaseForm, ObjectQuantifierAgree, SubjectCommonNoun, ObjectCommonNoun)
                 .Documentation("Specifies how many Objects a given Subject can Verb."),
 
-            new SentencePattern(() => new object[] {Verb, "is", RareCommon})
+            new SentencePattern(this, Verb, "is", RareCommon)
                 .Action(() => Verb.Verb.Density = RareCommon.Value)
                 // ReSharper disable once StringLiteralTypo
                 .Documentation("States that Verb'ing is rare or common."),
 
-            new SentencePattern(() => new object[] {Verb, "and", Verb2, "are", "!", "mutually", "exclusive"})
+            new SentencePattern(this, Verb, "and", Verb2, "are", "!", "mutually", "exclusive")
                 .Action(() => { Verb.Verb.MutualExclusions.AddNew(Verb2.Verb); })
                 .Documentation("States that two objects cannot be related by both verbs at once."),
 
-            new SentencePattern(() => new object[] {Verb, "is", "mutually", "!", "exclusive", "with", Verb2})
+            new SentencePattern(this, Verb, "is", "mutually", "!", "exclusive", "with", Verb2)
                 .Action(() => { Verb.Verb.MutualExclusions.AddNew(Verb2.Verb); })
                 .Documentation("States that two objects cannot be related by both verbs at once."),
 
-            new SentencePattern(() => new object[] {Verb, "implies", "!", Verb2})
+            new SentencePattern(this, Verb, "implies", "!", Verb2)
                 .Action(() => { Verb.Verb.Generalizations.AddNew(Verb2.Verb); })
                 .Check(VerbGerundForm, Verb2GerundForm)
                 .Documentation(
                     "States that two objects being related by the first verb means they must also be related by the second."),
 
-            new SentencePattern(() => new object[] {Verb, "is", "a", "way", "!", "of", Verb2})
+            new SentencePattern(this, Verb, "is", "a", "way", "!", "of", Verb2)
                 .Action(() =>
                 {
                     var sub = Verb.Verb;
@@ -246,12 +164,12 @@ public static partial class Parser
                 .Documentation(
                     "Like 'is a kind of' but for verbs.  Verb1 implies Verb2, but Verb2 implies that one of the Verbs that is a way of Verb2ing is also true."),
 
-            new SentencePattern(() => new object[] {Subject, "are", RareCommon})
+            new SentencePattern(this, Subject, "are", RareCommon)
                 .Action(() => Subject.CommonNoun.InitialProbability = RareCommon.Value)
                 .Check(SubjectPlural, SubjectUnmodified)
                 .Documentation("States that the specified kind of object is rare/common."),
 
-            new SentencePattern(() => new object[] {OptionalAll, Subject, CanNot, Verb, Reflexive})
+            new SentencePattern(this, OptionalAll, Subject, CanNot, Verb, Reflexive)
                 .Action(() =>
                 {
                     var verb = ConfigureVerb(Verb, Subject, Subject);
@@ -260,7 +178,7 @@ public static partial class Parser
                 .Check(VerbBaseForm, SubjectCommonNoun)
                 .Documentation("States that the verb can't hold between an object and itself."),
 
-            new SentencePattern(() => new object[] {OptionalAll, Subject, CanNot, Verb, "each", "other"})
+            new SentencePattern(this, OptionalAll, Subject, CanNot, Verb, "each", "other")
                 .Action(() =>
                 {
                     var verb = ConfigureVerb(Verb, Subject, Subject);
@@ -269,7 +187,7 @@ public static partial class Parser
                 .Check(VerbBaseForm, SubjectCommonNoun)
                 .Documentation("States that if A Verbs B, then B can't verb A."),
 
-            new SentencePattern(() => new object[] {OptionalAll, Subject, Always, Verb, Reflexive})
+            new SentencePattern(this, OptionalAll, Subject, Always, Verb, Reflexive)
                 .Action(() =>
                 {
                     var verb = ConfigureVerb(Verb, Subject, Subject);
@@ -278,7 +196,7 @@ public static partial class Parser
                 .Check(VerbBaseForm, SubjectCommonNoun)
                 .Documentation("States that the verb always holds between objects and themselves."),
 
-            new SentencePattern(() => new object[] {OptionalAll, Subject, "can", Verb, EachOther})
+            new SentencePattern(this, OptionalAll, Subject, "can", Verb, EachOther)
                 .Action(() =>
                 {
                     var verb = ConfigureVerb(Verb, Subject, Subject);
@@ -287,7 +205,7 @@ public static partial class Parser
                 .Check(VerbBaseForm, SubjectCommonNoun)
                 .Documentation("States that the verb is symmetric: if a verbs b, then b verbs a."),
 
-            new SentencePattern(() => new object[] {Subject, Is, "a", "kind", "!", "of", Object})
+            new SentencePattern(this, Subject, Is, "a", "kind", "!", "of", Object)
                 .Action(() =>
                 {
                     Subject.CommonNoun.DeclareSuperclass(Object.CommonNoun);
@@ -298,7 +216,7 @@ public static partial class Parser
                 .Documentation(
                     "Declares that all Subjects are also Objects.  For example, 'cat is a kind of animal' says anything that is a cat is also an animal."),
 
-            new SentencePattern(() => new object[] {SubjectNounList, Is, "kinds", "!", "of", Object})
+            new SentencePattern(this, SubjectNounList, Is, "kinds", "!", "of", Object)
                 .Action(() =>
                 {
                     foreach (var noun in SubjectNounList.Concepts)
@@ -318,7 +236,7 @@ public static partial class Parser
                 .Documentation(
                     "Declares that all the different nouns in the subject list are also kinds of the object noun.  So 'dogs and cats are kinds of animal' states that all dogs and all cats are also animals."),
 
-            new SentencePattern(() => new object[] {"the", "plural", "!", "of", Subject, "is", Object})
+            new SentencePattern(this, "the", "plural", "!", "of", Subject, "is", Object)
                 .Action(() =>
                 {
                     Subject.Number = Number.Singular;
@@ -328,7 +246,7 @@ public static partial class Parser
                 .Check(SubjectUnmodified, ObjectUnmodified, SubjectCommonNoun, ObjectCommonNoun)
                 .Documentation("Lets you correct the system's guess as to the plural of a noun."),
 
-            new SentencePattern(() => new object[] {"the", "singular", "!", "of", Subject, "is", Object})
+            new SentencePattern(this, "the", "singular", "!", "of", Subject, "is", Object)
                 .Action(() =>
                 {
                     Subject.Number = Number.Plural;
@@ -338,17 +256,17 @@ public static partial class Parser
                 .Check(SubjectUnmodified, ObjectUnmodified, SubjectCommonNoun, ObjectCommonNoun)
                 .Documentation("Lets you correct the system's guess as to the singular form of a noun."),
 
-            new SentencePattern(() => new object[] {Subject, Is, "identified", "!", "as", "\"", Text, "\""})
+            new SentencePattern(this, Subject, Is, "identified", "!", "as", "\"", Text, "\"")
                 .Action(() => Subject.CommonNoun.NameTemplate = Text.Text)
                 .Check(SubjectUnmodified, SubjectCommonNoun)
                 .Documentation("Tells the system how to print the name of an object."),
 
-            new SentencePattern(() => new object[] {Subject, Is, "described", "!", "as", "\"", Text, "\""})
+            new SentencePattern(this, Subject, Is, "described", "!", "as", "\"", Text, "\"")
                 .Action(() => Subject.CommonNoun.DescriptionTemplate = Text.Text)
                 .Check(SubjectUnmodified, SubjectCommonNoun)
                 .Documentation("Tells the system how to generate the description of an object."),
 
-            new SentencePattern(() => new object[] {OptionalAll, Subject, "can", "be", PredicateAP})
+            new SentencePattern(this, OptionalAll, Subject, "can", "be", PredicateAP)
                 .Action(() =>
                 {
                     if (!PredicateAP.Adjective.RelevantTo(Subject.CommonNoun))
@@ -357,11 +275,11 @@ public static partial class Parser
                 .Check(SubjectUnmodified)
                 .Documentation("Declares that Subjects can be Adjectives, but don't have to be."),
 
-            new SentencePattern(() => new object[] {"Do", "not", "mention", "!", "being", PredicateAP})
+            new SentencePattern(this, "Do", "not", "mention", "!", "being", PredicateAP)
                 .Action(() => { PredicateAP.Adjective.IsSilent = true; })
                 .Documentation("Declares that the specified adjective shouldn't be mentioned in descriptions."),
 
-            new SentencePattern(() => new object[] {Subject, "is", Object})
+            new SentencePattern(this, Subject, "is", Object)
                 .Action(() =>
                 {
                     var proper = (ProperNoun) Subject.Noun;
@@ -371,7 +289,7 @@ public static partial class Parser
                 .Documentation(
                     "States that proper noun Subject is of the type Object.  For example, 'Ben is a person'."),
 
-            new SentencePattern(() => new object[] {Subject, "is", OptionalAlways, Object})
+            new SentencePattern(this, Subject, "is", OptionalAlways, Object)
                 .Action(() =>
                 {
                     var subject = Subject.CommonNoun;
@@ -382,14 +300,7 @@ public static partial class Parser
                 .Documentation(
                     "States that a Subject is always also a Object.  Importnat: object *must* be singular, as in 'a noun', not just 'nouns'.  This is different from saying 'a kind of' which says that Objects must also be one of their subkinds.  This just says if you see a Subject, also make it be an Object."),
 
-            //new Syntax(() => new object[] { Subject, Is, Object })
-            //    .Action(() =>
-            //    {
-            //        var n = (CommonNoun) Subject.Noun;
-            //        n.ImpliedAdjectives.Add(new CommonNoun.ConditionalAdjective(Subject.Modifiers.ToArray(), Object.CommonNoun));
-            //    })
-            //    .Check(SubjectCommonNoun, ObjectCommonNoun, SubjectVerbAgree),
-            new SentencePattern(() => new object[] {OptionalAll, Subject, Is, OptionalAlways, PredicateAP})
+            new SentencePattern(this, OptionalAll, Subject, Is, OptionalAlways, PredicateAP)
                 .Action(() =>
                 {
                     switch (Subject.Noun)
@@ -415,51 +326,49 @@ public static partial class Parser
                 .Documentation(
                     "Declares that Subjects are always Adjective.  For example, 'cats are fuzzy' declares that all cats are also fuzzy."),
 
-            new SentencePattern(() => new object[] {OptionalAll, Subject, Is, "any", "!", LowerBound, "of", PredicateAPList})
+            new SentencePattern(this, OptionalAll, Subject, Is, "any", "!", LowerBound, "of", PredicateAPList)
                 .Action(() =>
                 {
                     var alternatives = PredicateAPList.Expressions.Select(ap => ap.MonadicConceptLiteral)
                         .Concat(Subject.Modifiers.Select(l => l.Inverse()))
                         .ToArray();
                     var alternativeSet =
-                        new CommonNoun.AlternativeSet(alternatives, (int) lowerBound, (int) lowerBound);
+                        new CommonNoun.AlternativeSet(alternatives, (int) ParsedLowerBound, (int) ParsedLowerBound);
                     Subject.CommonNoun.AlternativeSets.Add(alternativeSet);
                 })
                 .Check(SubjectVerbAgree)
                 .Documentation("Declares the specified number of Adjectives must be true of Subjects."),
 
-            new SentencePattern(() => new object[]
-                {
-                    OptionalAll, Subject, Is, "between", "!", LowerBound, "and", UpperBound, "of", PredicateAPList
-                })
+            new SentencePattern(this, OptionalAll, Subject, Is, "between", "!", LowerBound, "and", UpperBound, "of",
+                    PredicateAPList)
                 .Action(() =>
                 {
                     var alternatives = PredicateAPList.Expressions.Select(ap => ap.MonadicConceptLiteral)
                         .Concat(Subject.Modifiers.Select(l => l.Inverse()))
                         .ToArray();
                     var alternativeSet =
-                        new CommonNoun.AlternativeSet(alternatives, (int) lowerBound, (int) upperBound);
+                        new CommonNoun.AlternativeSet(alternatives, (int) ParsedLowerBound, (int) ParsedUpperBound);
                     Subject.CommonNoun.AlternativeSets.Add(alternativeSet);
                 })
                 .Check(SubjectVerbAgree)
                 .Documentation(
                     "Declares the number of Adjectives true of Subjects must be in the specified range."),
 
-            new SentencePattern(() => new object[]
-                    {OptionalAll, Subject, "can", "be", "up", "!", "to", LowerBound, "of", PredicateAPList})
+            new SentencePattern(this, OptionalAll, Subject, "can", "be", "up", "!", "to", LowerBound, "of",
+                    PredicateAPList)
                 .Action(() =>
                 {
                     var alternatives = PredicateAPList.Expressions.Select(ap => ap.MonadicConceptLiteral)
                         .Concat(Subject.Modifiers.Select(l => l.Inverse()))
                         .ToArray();
-                    var alternativeSet = new CommonNoun.AlternativeSet(alternatives, 0, (int) lowerBound);
+                    var alternativeSet = new CommonNoun.AlternativeSet(alternatives, 0, (int) ParsedLowerBound);
                     Subject.CommonNoun.AlternativeSets.Add(alternativeSet);
                 })
                 .Check(SubjectVerbAgree)
                 .Documentation(
                     "Declares the number of Adjectives true of Subjects can never be more than the specified number."),
 
-            new SentencePattern(() => new object[] {OptionalAll, Subject, Is, PredicateAPList})
+            new SentencePattern(this, OptionalAll, Subject, Is, PredicateAPList)
                 .Action(() =>
                 {
                     Subject.CommonNoun.AlternativeSets.Add(new CommonNoun.AlternativeSet(
@@ -472,7 +381,7 @@ public static partial class Parser
                 .Documentation(
                     "Declares that Subjects must be one of the Adjectives.  So 'cats are big or small' says cats are always either big or small, but not both or neither."),
 
-            new SentencePattern(() => new object[] {OptionalAll, Subject, "can", "be", PredicateAPList})
+            new SentencePattern(this, OptionalAll, Subject, "can", "be", PredicateAPList)
                 .Action(() =>
                 {
                     Subject.CommonNoun.AlternativeSets.Add(
@@ -486,18 +395,17 @@ public static partial class Parser
                 .Documentation(
                     "Declares that Subjects can be any one of the Adjectives, but don't have to be.  So 'cats can be big or small' says cats can be big, small, or neither, but not both."),
 
-            new SentencePattern(() => new object[]
-                    {OptionalAll, Subject, Has, Object, "between", "!", LowerBound, "and", UpperBound})
+            new SentencePattern(this, OptionalAll, Subject, Has, Object, "between", "!", LowerBound, "and", UpperBound)
                 .Action(() =>
                 {
-                    Subject.CommonNoun.Properties.Add(new Property(Driver.Ontology, Object.Text,
-                        new FloatDomain(Object.Text.Untokenize(), lowerBound, upperBound)));
+                    Subject.CommonNoun.Properties.Add(new Property(ontology, Object.Text,
+                        new FloatDomain(Object.Text.Untokenize(), ParsedLowerBound, ParsedUpperBound)));
                 })
                 .Check(SubjectVerbAgree, SubjectUnmodified, ObjectUnmodified)
                 .Documentation(
                     "Says Subjects have a property, Object, that is a number in the specified range.  For example, 'cats have an age between 1 and 20'"),
 
-            new SentencePattern(() => new object[] {OptionalAll, Subject, Has, Object, "from", "!", ListName})
+            new SentencePattern(this, OptionalAll, Subject, Has, Object, "from", "!", ListName)
                 .Action(() =>
                 {
                     var menuName = ListName.Text.Untokenize();
@@ -512,7 +420,7 @@ public static partial class Parser
                     var prop = Subject.CommonNoun.Properties.FirstOrDefault(p => p.IsNamed(propertyName));
                     if (prop == null)
                     {
-                        prop = new Property(Driver.Ontology, propertyName, null);
+                        prop = new Property(ontology, propertyName, null);
                         Subject.CommonNoun.Properties.Add(prop);
                     }
 
@@ -522,7 +430,7 @@ public static partial class Parser
                 .Documentation(
                     "States that Subjects have a property whose possible values are given in the specified file.  For example 'cats have a name from cat names', or 'French cats have a name from French cat names'"),
 
-            new SentencePattern(() => new object[] {OptionalAll, Subject, Has, Object, "called", "!", "its", Text})
+            new SentencePattern(this, OptionalAll, Subject, Has, Object, "called", "!", "its", Text)
                 .Action(() =>
                 {
 
@@ -530,14 +438,14 @@ public static partial class Parser
                     var part = Subject.CommonNoun.Parts.FirstOrDefault(p => p.IsNamed(partName));
                     if (part == null)
                     {
-                        part = new Part(Driver.Ontology, partName, Object.CommonNoun, Object.Modifiers);
+                        part = new Part(ontology, partName, Object.CommonNoun, Object.Modifiers);
                         Subject.CommonNoun.Parts.Add(part);
                     }
                 })
                 .Check(SubjectVerbAgree, ObjectUnmodified)
                 .Documentation("States that Subjects have part called Text that is a Object."),
 
-            new SentencePattern(() => new object[] {"every", "kind", "of", "!", Subject, "should", "exist"})
+            new SentencePattern(this, "every", "kind", "of", "!", Subject, "should", "exist")
                 .Action(() =>
                 {
                     void Walk(CommonNoun kind)
@@ -550,7 +458,7 @@ public static partial class Parser
                                         ? lit.Concept.StandardName
                                         : lit.Concept.StandardName.Prepend("not"))
                                 .Untokenize();
-                            Driver.Ontology.AddTest(kind, Subject.Modifiers, true,
+                            ontology.AddTest(kind, Subject.Modifiers, true,
                                 $"Test succeeded:{modifiers} {name} should exist",
                                 $"Test failed:{modifiers} {name} should exist");
                         }
@@ -563,18 +471,18 @@ public static partial class Parser
                 })
                 .Documentation("Adds a set of tests for the existence of the various subkinds of Subject."),
 
-            new SentencePattern(() => new object[] {Subject, "should", "!", ExistNotExist})
+            new SentencePattern(this, Subject, "should", "!", ExistNotExist)
                 .Action(() =>
                 {
-                    var shouldExist = ExistNotExist.Match[0] == "exist";
+                    var shouldExist = ExistNotExist.MatchedText[0] == "exist";
                     var input = Input.Untokenize();
-                    Driver.Ontology.AddTest(Subject.CommonNoun, Subject.Modifiers, shouldExist,
+                    ontology.AddTest(Subject.CommonNoun, Subject.Modifiers, shouldExist,
                         $"Test succeeded: {input}",
                         $"Test failed: {input}");
                 })
                 .Documentation("Adds a new test to the list of tests to perform when the test command is used."),
 
-            new SentencePattern(() => new object[] {"every", "kind", "of", "!", Subject, "should", "exist"})
+            new SentencePattern(this, "every", "kind", "of", "!", Subject, "should", "exist")
                 .Action(() =>
                 {
                     void Walk(CommonNoun kind)
@@ -587,7 +495,7 @@ public static partial class Parser
                                         ? lit.Concept.StandardName
                                         : lit.Concept.StandardName.Prepend("not"))
                                 .Untokenize();
-                            Driver.Ontology.AddTest(kind, Subject.Modifiers, true,
+                            ontology.AddTest(kind, Subject.Modifiers, true,
                                 $"Test succeeded:{modifiers} {name} should exist",
                                 $"Test failed:{modifiers} {name}");
                         }
@@ -600,85 +508,24 @@ public static partial class Parser
                 })
                 .Documentation("Adds a set of tests for the existence of the various subkinds of Subject."),
 
-            new SentencePattern(() => new object[] {SubjectNounList, "should", "!", ExistNotExist})
+            new SentencePattern(this, SubjectNounList, "should", "!", ExistNotExist)
                 .Action(() =>
                 {
-                    var shouldExist = ExistNotExist.Match[0] == "exist";
+                    var shouldExist = ExistNotExist.MatchedText[0] == "exist";
                     var input = Input.Untokenize();
                     foreach (var noun in SubjectNounList.Concepts)
                     {
-                        Driver.Ontology.AddTest(noun as CommonNoun, new MonadicConceptLiteral[0], shouldExist,
+                        ontology.AddTest(noun as CommonNoun, new MonadicConceptLiteral[0], shouldExist,
                             $"Test succeeded: {input}",
                             $"Test failed: {input}");
                     }
                 })
                 .Documentation("Adds a new test to the list of tests to perform when the test command is used."),
 
-            new SentencePattern("test")
-                .Action(() =>
-                {
-                    var total = 0;
-                    var failed = 0;
-                    foreach (var (test, success, example) in Driver.Ontology.TestResults())
-                    {
-                        total++;
-                        if (!success) failed++;
-                        Driver.AppendResponseLine(
-                            success
-                                ? $"<B><color=green>{test.SucceedMessage}</color></b>"
-                                : $"<b><color=red>{test.FailMessage}</color></b>"
-                        );
-                        if (example != null)
-                            Driver.AppendResponseLine($"Example: {example.Description(example.Individuals[0])}");
-                    }
-
-                    if (total > 0)
-                    {
-                        if (failed == 0)
-                            Driver.PrependResponseLine(
-                                $"<color=green><b>All {total} tests passed.</b></color>\n\n");
-                        else
-                            Driver.PrependResponseLine(
-                                $"<color=red><b>{failed} of {total} tests failed.</b></color>\n\n");
-                    }
-                    else
-                        Driver.AppendResponseLine("No tests have been defined.");
-                })
-                .Documentation("Run all tests currently defined")
-                .Command(),
-
-            new SentencePattern(() => new object[] {"grade", Text})
-                .Action(() => { Driver.StartCoroutine(AutoGrader.GradeAssignment(Text.Text.Untokenize())); })
-                .Documentation("Run all tests currently defined")
-                .Command(),
-
-            new SentencePattern(() => new object[] {"decompile"})
-                .Action(() =>
-                {
-                    var g = Generator.Current;
-                    Driver.AppendResponseLine(g != null
-                        ? g.Problem.Decompiled
-                        : "Please type an imagine command first");
-                })
-                .Documentation("Dump the clauses of the compiled SAT problem")
-                .Command(),
-
-            new SentencePattern(() => new object[] {"stats"})
-                .Action(() =>
-                {
-                    var g = Generator.Current;
-                    if (g == null)
-                        Driver.AppendResponseLine("Please type an imagine command first.");
-                    else
-                    {
-                        Driver.AppendResponseLine(g.Problem.Stats);
-                        Driver.AppendResponseLine(g.Problem.PerformanceStatistics);
-                    }
-                })
-                .Documentation("Dump the clauses of the compiled SAT problem")
-                .Command(),
-
-
+            new SentencePattern(this, "pressing", "!", "\"", ButtonName, "\"", "means", "\"", Text, "\"")
+                .Action(() => { Driver.Repl.AddButton(ButtonName.Text.Untokenize(), Text.Text.Untokenize()); })
+                .Documentation(
+                    "Instructs the system to add a new button to the button bar with the specified name.  When it is pressed, it will execute the specified text."),
         });
     }
 

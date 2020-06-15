@@ -52,8 +52,6 @@ public class Ontology
 
     public readonly string Name;
 
-    public event Action OnErase;
-
     public readonly List<TokenTrieBase> AllTokenTries = new List<TokenTrieBase>();
 
     /// <summary>
@@ -207,7 +205,6 @@ public class Ontology
         ClearAllTries();
         Parser.LoadedFiles.Clear();
         tests.Clear();
-        OnErase?.Invoke();
     }
 
     /// <summary>
@@ -220,31 +217,20 @@ public class Ontology
     }
 
     /// <summary>
-    /// Test if the project has been updated since the last load
-    /// </summary>
-    public bool ProjectUpdated()
-    {
-        foreach (var file in Directory.GetFiles(Parser.DefinitionsDirectory))
-            if (Path.GetExtension(file) == ConfigurationFiles.SourceExtension &&
-                File.GetLastWriteTimeUtc(file) > Parser.MostRecentFileUpdateTime)
-                return true;
-        return false;
-    }
-
-    /// <summary>
     /// Load all the source files in the current project
     /// </summary>
     private void Load()
     {
         Driver.ClearLoadErrors();
 
-        foreach (var file in Directory.GetFiles(Parser.DefinitionsDirectory))
+        foreach (var file in Directory.GetFiles(DefinitionsDirectory))
             if (!Path.GetFileName(file).StartsWith(".")
                 && Path.GetExtension(file) == ConfigurationFiles.SourceExtension)
             {
                 try
                 {
-                    Parser.LoadDefinitions(file);
+                    var p = new Parser(this);
+                    p.LoadDefinitions(file);
                 }
                 catch (Exception e)
                 {
@@ -253,6 +239,23 @@ public class Ontology
                 }
             }
     }
+
+
+    /// <summary>
+    /// Directory holding definitions files and item lists.
+    /// </summary>
+    public string DefinitionsDirectory
+    {
+        get => _definitionsDirectory;
+        set
+        {
+            _definitionsDirectory = value;
+            // Throw away our state when we change projects
+            EraseConcepts();
+        }
+    }
+
+    private static string _definitionsDirectory;
 
     public void EnsureUndefinedOrDefinedAsType(string[] name, Type newType)
     {

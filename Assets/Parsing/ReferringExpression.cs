@@ -53,4 +53,7 @@ public abstract class ReferringExpression<TR> : Segment
     /// Called only from the get method of Concept.
     /// </summary>
     protected abstract TR GetConcept();
+
+    protected ReferringExpression(Parser parser) : base(parser)
+    { }
 }

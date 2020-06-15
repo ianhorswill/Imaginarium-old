@@ -199,7 +199,7 @@ public class NP : ReferringExpression<Noun>
                 if (CurrentToken == "-")
                     SkipToken();
             }
-            nextConcept = MatchTrie(Driver.Ontology.MonadicConceptTrie);
+            nextConcept = Parser.MatchTrie(Ontology.MonadicConceptTrie);
             if (nextConcept != null)
             {
                 var next = new MonadicConceptLiteral(nextConcept, isPositive);
@@ -218,7 +218,7 @@ public class NP : ReferringExpression<Noun>
             if (!Number.HasValue)
                 // Only update if Number wasn't already set by a determiner.
                 // This is to get around nouns that are their own plurals.
-                Number = Driver.Ontology.LastMatchPlural ? Parser.Number.Plural : Parser.Number.Singular;
+                Number = Ontology.LastMatchPlural ? Parser.Number.Plural : Parser.Number.Singular;
 
             return true;
         }
@@ -248,12 +248,12 @@ public class NP : ReferringExpression<Noun>
 
     private Noun GetProperNoun(string[] text)
     {
-        return Driver.Ontology.FindNoun(text) ?? new ProperNoun(Driver.Ontology, text);
+        return Ontology.FindNoun(text) ?? new ProperNoun(Ontology, text);
     }
 
     private Noun GetCommonNoun(string[] text)
     {
-        var noun = (CommonNoun)Driver.Ontology.FindNoun(text);
+        var noun = (CommonNoun)Ontology.FindNoun(text);
         if (noun != null)
         {
             var singular = noun.SingularForm.SameAs(text);
@@ -266,7 +266,7 @@ public class NP : ReferringExpression<Noun>
             return noun;
         }
 
-        noun = new CommonNoun(Driver.Ontology);
+        noun = new CommonNoun(Ontology);
 
         if (!Number.HasValue)
             // Don't know syntactically if it's supposed to be singular or plural, so guess.
@@ -281,7 +281,7 @@ public class NP : ReferringExpression<Noun>
 
         Driver.AppendResponseLine($"Learned the new common noun <b><i>{noun.SingularForm.Untokenize()}</i></b>.");
 
-        MaybeLoadDefinitions(noun);
+        Parser.MaybeLoadDefinitions(noun);
 
         return noun;
     }
@@ -319,5 +319,9 @@ public class NP : ReferringExpression<Noun>
         ExplicitCount = null;
         BeginsWithDeterminer = false;
         ForceCommonNoun = false;
+    }
+
+    public NP(Parser parser) : base(parser)
+    {
     }
 }

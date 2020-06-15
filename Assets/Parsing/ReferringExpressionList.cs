@@ -34,7 +34,7 @@ using static Parser;
 /// <typeparam name="TE">Type of the constituent ReferringExpressions</typeparam>
 /// <typeparam name="TR">Type of the Referents of the constituent expressions</typeparam>
 public class ReferringExpressionList<TE, TR> : Segment
-    where TE: ReferringExpression<TR>, new()
+    where TE: ReferringExpression<TR>
     where TR : Referent
 {
     /// <summary>
@@ -105,7 +105,7 @@ public class ReferringExpressionList<TE, TR> : Segment
         var done = false;
         while (!EndOfInput && !endPredicate(CurrentToken))
         {
-            var item = new TE();
+            var item = referringExpressionFactory();
             if (!item.ScanTo(ListItemTerminator(endPredicate)))
                 return false;
             if (!SanityCheck(item))
@@ -158,7 +158,7 @@ public class ReferringExpressionList<TE, TR> : Segment
         var done = false;
         while (!EndOfInput)
         {
-            var item = new TE();
+            var item = referringExpressionFactory();
             var scanTo = lastOne?item.ScanToEnd(false):item.ScanTo(ListItemTerminator(t => false));
             if (!scanTo)
                 return false;
@@ -190,4 +190,11 @@ public class ReferringExpressionList<TE, TR> : Segment
             return false;
         return true;
     }
+
+    public ReferringExpressionList(Parser parser, Func<TE> factory) : base(parser)
+    {
+        referringExpressionFactory = factory;
+    }
+
+    private readonly Func<TE> referringExpressionFactory;
 }

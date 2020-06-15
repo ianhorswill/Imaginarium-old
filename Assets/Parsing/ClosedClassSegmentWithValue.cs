@@ -26,7 +26,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using static Parser;
 
 public class ClosedClassSegmentWithValue<T> : ClosedClassSegment
 {
@@ -34,7 +33,7 @@ public class ClosedClassSegmentWithValue<T> : ClosedClassSegment
 
     public readonly KeyValuePair<string[], T>[] PossibleMatches;
 
-    public ClosedClassSegmentWithValue(params KeyValuePair<object, T>[] possibleMatches)
+    public ClosedClassSegmentWithValue(Parser parser, params KeyValuePair<object, T>[] possibleMatches) : base(parser)
     {
         PossibleMatches = possibleMatches.Select(m =>
         {
@@ -58,12 +57,12 @@ public class ClosedClassSegmentWithValue<T> : ClosedClassSegment
         if (!IsPossibleStart(CurrentToken))
             return false;
         var old = State;
-        Match = null;
+        MatchedText = null;
         foreach (var candidate in PossibleMatches)
         {
             if (Match(candidate.Key))
             {
-                Match = candidate.Key;
+                MatchedText = candidate.Key;
                 Value = candidate.Value;
                 break;
             }
@@ -78,12 +77,12 @@ public class ClosedClassSegmentWithValue<T> : ClosedClassSegment
         if (EndOfInput || !IsPossibleStart(CurrentToken))
             return false;
         var old = State;
-        Match = null;
+        MatchedText = null;
         foreach (var candidate in PossibleMatches)
         {
             if (Match(candidate.Key))
             {
-                Match = candidate.Key;
+                MatchedText = candidate.Key;
                 Value = candidate.Value;
                 break;
             }
@@ -98,12 +97,12 @@ public class ClosedClassSegmentWithValue<T> : ClosedClassSegment
         if (!IsPossibleStart(CurrentToken))
             return false;
         var old = State;
-        Match = null;
+        MatchedText = null;
         foreach (var candidate in PossibleMatches)
         {
             if (Match(candidate.Key))
             {
-                Match = candidate.Key;
+                MatchedText = candidate.Key;
                 Value = candidate.Value;
                 break;
             }

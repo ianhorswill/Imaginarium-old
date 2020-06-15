@@ -70,7 +70,7 @@ public class FileSelector : MonoBehaviour
     {
         PlayerPrefs.SetString("DefinitionsDirectory", dir);
         PlayerPrefs.Save();
-        Parser.DefinitionsDirectory = dir;
+        Driver.Ontology.DefinitionsDirectory = dir;
         LeaveScene();
     }
 

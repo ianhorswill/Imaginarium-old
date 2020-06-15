@@ -19,15 +19,18 @@ public class UIDriver : MonoBehaviour, IRepl
     public Transform ButtonBarContent;
     public GameObject ButtonPrefab;
 
+    public Parser Parser;
+    public History History;
+
     /// <summary>
     /// Called at startup.
     /// Initialize UI system.
     /// </summary>
     public IEnumerator Start()
     {
+        Parser = new Parser(Driver.Ontology, parser => ReplCommands.Commands(parser, this));
         Driver.Repl = this;
-        Driver.Ontology.OnErase += ClearButtons;
-
+        History = new History(this);
         ConfigurationFiles.UnityPath = Application.dataPath;
 
         var generator = PlayerPrefs.GetString("DefinitionsDirectory", null);
@@ -39,7 +42,8 @@ public class UIDriver : MonoBehaviour, IRepl
             OutputField.text = $"<size=120>Using <b>{Path.GetFileName(generator)}</b> generator.</size>\nPress <b>F1 for help</b>, ESC for menu.";
             try
             {
-                Parser.DefinitionsDirectory = generator;
+                Driver.Ontology.DefinitionsDirectory = generator;
+                Driver.Ontology.Reload();
             }
             catch (Exception e)
             {
@@ -72,14 +76,6 @@ public class UIDriver : MonoBehaviour, IRepl
     public void OnDisable()
     {
         StopAllCoroutines();
-    }
-
-    /// <summary>
-    /// Called when the level is unloaded
-    /// </summary>
-    public void OnDestroy()
-    {
-        Driver.Ontology.OnErase -= ClearButtons;
     }
 
     /// <summary>
@@ -198,7 +194,7 @@ public class UIDriver : MonoBehaviour, IRepl
         try
         {
             if (Input != "")
-                Parser.UserCommand(Input);
+                UserCommand(Input);
             MaybeRegenerateInvention();
 
             Input = "";
@@ -217,7 +213,7 @@ public class UIDriver : MonoBehaviour, IRepl
             if (ex is GrammaticalError && Parser.RuleTriggeringException == null)
             {
                 var firstOne = true;
-                foreach (var r in SentencePattern.RulesMatchingKeywords(Parser.Input))
+                foreach (var r in Parser.RulesMatchingKeywords(Parser.Input))
                 {
                     if (firstOne)
                     {
@@ -238,6 +234,17 @@ public class UIDriver : MonoBehaviour, IRepl
         }
 
         Output = Driver.CommandResponse;
+    }
+
+        
+    /// <summary>
+    /// Parse and execute a new command from the user, and log it if it's an ontology alteration
+    /// </summary>
+    /// <param name="command"></param>
+    public void UserCommand(string command)
+    {
+        if (Parser.ParseAndExecute(command))
+            History.Log(command);
     }
 
     private void MaybeRegenerateInvention()
@@ -394,7 +401,7 @@ public class UIDriver : MonoBehaviour, IRepl
         });
     }
 
-    private void ClearButtons()
+    public void ClearButtons()
     {
         ButtonBarContent.DestroyAllChildren();
     }

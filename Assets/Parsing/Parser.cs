@@ -32,12 +32,22 @@ using System.Text;
 /// <summary>
 /// Implements methods for scanning input tokens and backtracking.
 /// </summary>
-public  static partial class Parser
+public partial class Parser
 {
-    static Parser()
+    public Parser(Ontology o, params Func<Parser, IEnumerable<SentencePattern>>[] commandSets)
     {
-        StandardSentencePatterns();
+        Ontology = o;
+        InitializeConstituents();
+        Is = MatchCopula;
+        Has = MatchHave;
+        UpperBound = () => MatchNumber(out ParsedUpperBound);
+        LowerBound = () => MatchNumber(out ParsedLowerBound);
+        StandardSentencePatterns(o);
+        foreach (var set in commandSets)
+            SentencePatterns.AddRange(set(this));
     }
+
+    public readonly Ontology Ontology;
     
     public static bool SingularDeterminer(string word) => word == "a" || word == "an";
 
@@ -62,10 +72,6 @@ public  static partial class Parser
     /// Line of the file we're currently loading
     /// </summary>
     public static int CurrentSourceLine;
-    /// <summary>
-    /// The update time of the most recently loaded file.
-    /// </summary>
-    public static DateTime MostRecentFileUpdateTime;
 
     /// <summary>
     /// Rules for the different sentential forms understood by the system.
@@ -74,17 +80,15 @@ public  static partial class Parser
     /// the data stored in those static fields.  The Check option is used to insure features are properly
     /// set.
     /// </summary>
-    public static readonly List<SentencePattern> Rules = new List<SentencePattern>();
-    
+    public readonly List<SentencePattern> SentencePatterns = new List<SentencePattern>();
+
     /// <summary>
-    /// Parse and execute a new command from the user, and log it if it's an ontology alteration
+    /// Return all rules whose keywords overlap the specified set of tokens
     /// </summary>
-    /// <param name="command"></param>
-    public static void UserCommand(string command)
-    {
-        if (ParseAndExecute(command))
-            History.Log(command);
-    }
+    /// <param name="tokens">Words to check against rule keywords</param>
+    /// <returns>Rules with keywords in common</returns>
+    public IEnumerable<SentencePattern> RulesMatchingKeywords(IEnumerable<string> tokens) =>
+        SentencePatterns.Where(r => r.HasCommonKeywords(tokens));
 
     /// <summary>
     /// Rule in which grammatical error was detected.
@@ -98,7 +102,7 @@ public  static partial class Parser
     /// </summary>
     /// <param name="sentence">User input (either an ontology statement or a command)</param>
     /// <returns>True if command altered the ontology.</returns>
-    public static bool ParseAndExecute(string sentence)
+    public bool ParseAndExecute(string sentence)
     {
         sentence = sentence.TrimEnd(' ', '.');
         InputTriggeringException = sentence;
@@ -107,7 +111,7 @@ public  static partial class Parser
         Input.AddRange(Tokenizer.Tokenize(sentence));
 
         RuleTriggeringException = null;
-        var rule = Rules.FirstOrDefault(r =>
+        var rule = SentencePatterns.FirstOrDefault(r =>
         {
             RuleTriggeringException = r;
             return r.Try();
@@ -126,7 +130,7 @@ public  static partial class Parser
     /// <summary>
     /// Parse and execute a series of statements
     /// </summary>
-    public static void ParseAndExecute(params string[] statements)
+    public void ParseAndExecute(params string[] statements)
     {
         foreach (var sentence in statements)
             ParseAndExecute(sentence);
@@ -135,9 +139,9 @@ public  static partial class Parser
     /// <summary>
     /// Re-initializes all information associated with parsing.
     /// </summary>
-    public static void ResetParser()
+    public void ResetParser()
     {
-        Current.ResetConstituentInformation();
+        ResetConstituentInformation();
 
         // Initialize state
         currentTokenIndex = 0;
@@ -149,7 +153,7 @@ public  static partial class Parser
     /// </summary>
     /// <param name="token">Token to match to next token in input</param>
     /// <returns>Success</returns>
-    public static bool Match(string token)
+    public bool Match(string token)
     {
         if (EndOfInput)
             return false;
@@ -170,7 +174,7 @@ public  static partial class Parser
     /// </summary>
     /// <param name="tokens">Tokens to match</param>
     /// <returns>True on success</returns>
-    public static bool Match(params string[] tokens)
+    public bool Match(params string[] tokens)
     {
         var s = State;
         foreach (var t in tokens)
@@ -188,7 +192,7 @@ public  static partial class Parser
     /// </summary>
     /// <param name="tokenPredicate">Predicate to apply to next token</param>
     /// <returns>Success</returns>
-    public static bool Match(Func<string, bool> tokenPredicate)
+    public bool Match(Func<string, bool> tokenPredicate)
     {
         if (tokenPredicate(CurrentToken))
         {
@@ -203,7 +207,7 @@ public  static partial class Parser
     /// Attempt to match token to a conjugation of "be"
     /// </summary>
     /// <returns>True on success</returns>
-    public static bool MatchCopula()
+    public bool MatchCopula()
     {
         if (Match("is"))
         {
@@ -231,7 +235,7 @@ public  static partial class Parser
     /// Attempt to match token to a conjugation of "have"
     /// </summary>
     /// <returns>True on success</returns>
-    public static bool MatchHave()
+    public bool MatchHave()
     {
         if (Match("has"))
         {
@@ -274,7 +278,7 @@ public  static partial class Parser
     /// </summary>
     /// <param name="number">Variable or field to write result back to</param>
     /// <returns>True on success</returns>
-    public static bool MatchNumber(out float number)
+    public bool MatchNumber(out float number)
     {
         var token = CurrentToken;
         if (Single.TryParse(token, out number))
@@ -296,11 +300,11 @@ public  static partial class Parser
     /// Attempts to match tokens to the name of a known monadic concept (CommonNoun or Adjective)
     /// </summary>
     /// <returns>The concept, if successful, or null</returns>
-    public static TReferent MatchTrie<TReferent>(TokenTrie<TReferent> trie)
+    public TReferent MatchTrie<TReferent>(TokenTrie<TReferent> trie)
         where TReferent : Referent
     {
         var old = State;
-        var concept = trie.Lookup(Input, ref Current.CurrentTokenIndex);
+        var concept = trie.Lookup(Input, ref CurrentTokenIndex);
         if (concept != null)
             return concept;
         ResetTo(old);
@@ -310,7 +314,7 @@ public  static partial class Parser
     /// <summary>
     /// Skip to the next token in the input
     /// </summary>
-    public static void SkipToken()
+    public void SkipToken()
     {
         if (EndOfInput)
             throw new InvalidOperationException("Attempt to skip past end of input");
@@ -320,7 +324,7 @@ public  static partial class Parser
     /// <summary>
     /// Skip over all remaining tokens, to the end of the input.
     /// </summary>
-    public static void SkipToEnd()
+    public void SkipToEnd()
     {
         currentTokenIndex = Input.Count;
     }
@@ -328,7 +332,7 @@ public  static partial class Parser
     /// <summary>
     /// "Unread" the last token
     /// </summary>
-    public static void Backup()
+    public void Backup()
     {
         currentTokenIndex--;
     }
@@ -338,36 +342,36 @@ public  static partial class Parser
     /// <summary>
     /// List of tokens to be parsed
     /// </summary>
-    public static List<string> Input => Current.TokenStream;
+    public List<string> Input => TokenStream;
 
     /// <summary>
     /// Index within input of the next token to be matched
     /// </summary>
     // ReSharper disable once InconsistentNaming
-    private static int currentTokenIndex
+    private int currentTokenIndex
     {
-        get => Current.CurrentTokenIndex;
-        set => Current.CurrentTokenIndex = value;
+        get => CurrentTokenIndex;
+        set => CurrentTokenIndex = value;
     }
 
     /// <summary>
     /// True if all tokens have already been read
     /// </summary>
-    public static bool EndOfInput => currentTokenIndex == Input.Count;
+    public bool EndOfInput => currentTokenIndex == Input.Count;
     /// <summary>
     /// Token currently being processed.
     /// Fails if EndOfInput.
     /// </summary>
-    public static string CurrentToken => Input[currentTokenIndex];
+    public string CurrentToken => Input[currentTokenIndex];
     #endregion
 
     #region State maintenance
     /// <summary>
     /// Current state of the parser.
     /// </summary>
-    public static ScannerState State => new ScannerState(currentTokenIndex);
+    public ScannerState State => new ScannerState(currentTokenIndex);
 
-    public static string RemainingInput
+    public string RemainingInput
     {
         get
         {
@@ -392,139 +396,25 @@ public  static partial class Parser
         }
     }
 
-    public static void ResetTo(ScannerState s)
+    public void ResetTo(ScannerState s)
     {
         currentTokenIndex = s.CurrentTokenIndex;
     }
 
-    public static Stack<ParserState> Parsers = new Stack<ParserState>();
 
-    public static ParserState Current = new ParserState();
-
-    public static void Push()
-    {
-        Parsers.Push(Current);
-        Current = new ParserState();
-    }
-
-    public static void Pop()
-    {
-        Current = Parsers.Pop();
-    }
-
-    public class ParserState
-    {
-        public ParserState()
-        {
-            ResetConstituentInformation();
-        }
-
-        /// <summary>
-        /// Reinitialize global variables that track the values of constituents.
-        /// Called each time a new syntax rule is tried.
-        /// </summary>
-        public void ResetConstituentInformation()
-        {
-            Subject.Reset();
-            Verb.Reset();
-            Verb2.Reset();
-            Object.Reset();
-            PredicateAP.Reset();
-            SubjectNounList.Reset();
-            PredicateAPList.Reset();
-            Quantifier.Reset();
-            VerbNumber = null;
-        }
 
         public readonly List<string> TokenStream = new List<string>();
         public int CurrentTokenIndex;
 
-        /// <summary>
-        /// Segment for the subject of a sentence
-        /// </summary>
-        public NP Subject = new NP() {Name = "Subject"};
+        #endregion
 
-        /// <summary>
-        /// Segment for the object of a sentence
-        /// </summary>
-        public NP Object = new NP() {Name = "Object"};
 
-        public VerbSegment Verb = new VerbSegment() {Name = "Verb"};
-        public VerbSegment Verb2 = new VerbSegment() {Name = "Verb2"};
-
-        /// <summary>
-        /// Used when the subject of a sentences is a list of NPs
-        /// </summary>
-        public ReferringExpressionList<NP, Noun> SubjectNounList = new ReferringExpressionList<NP, Noun>()
-            {SanityCheck = SentencePattern.ForceBaseForm, Name = "Subjects"};
-
-        /// <summary>
-        /// Used when the predicate of a sentences is a list of APs
-        /// </summary>
-        public ReferringExpressionList<AP, Adjective> PredicateAPList =
-            new ReferringExpressionList<AP, Adjective>()
-                {Name = "Adjectives"};
-
-        /// <summary>
-        /// Segment for the AP forming the predicate of a sentences
-        /// </summary>
-        public AP PredicateAP = new AP() {Name = "Adjective"};
-
-        /// <summary>
-        /// Segment for the file name of a list of values (e.g. for possible names of characters)
-        /// </summary>
-        public Segment ListName = new Segment() {Name = "ListName"};
-
-        /// <summary>
-        /// Segment for the name of a button being created
-        /// </summary>
-        public Segment ButtonName = new Segment() {Name = "ButtonName"};
-        
-        /// <summary>
-        /// Free-form text, e.g. from a quotation.
-        /// </summary>
-        public Segment Text = new Segment() {Name = "AnyText", AllowListConjunctions = true };
-
-        public QuantifyingDeterminer Quantifier = new QuantifyingDeterminer() {Name = "one/many/other"};
-
-        /// <summary>
-        /// The lower bound of a range appearing in the definition of a numeric property
-        /// </summary>
-        public float LowerBound;
-
-        /// <summary>
-        /// The upper bound of a range appearing in the definition of a numeric property
-        /// </summary>
-        public float UpperBound;
-        
-        public Number? VerbNumber;
-    }
-
-    #endregion
 
     #region Definition files
-
-    /// <summary>
-    /// Directory holding definitions files and item lists.
-    /// </summary>
-    public static string DefinitionsDirectory
-    {
-        get => _definitionsDirectory;
-        set
-        {
-            _definitionsDirectory = value;
-            MostRecentFileUpdateTime = DateTime.MinValue;
-            // Throw away our state when we change projects
-            History.Clear();
-        }
-    }
-
-    private static string _definitionsDirectory;
-
     /// <summary>
     /// Returns full path for library definitions for the specified noun.
     /// </summary>
-    public static string DefinitionFilePath(Referent referent)
+    public string DefinitionFilePath(Referent referent)
     {
         var fileName = referent.Text;
         return DefinitionFilePath(fileName);
@@ -539,15 +429,15 @@ public  static partial class Parser
     /// <summary>
     /// Returns the full path for the specified file in the definition library.
     /// </summary>
-    public static string DefinitionFilePath(string fileName) =>
-        Path.Combine(DefinitionsDirectory, fileName + ConfigurationFiles.SourceExtension);
+    public string DefinitionFilePath(string fileName) =>
+        Path.Combine(Ontology.DefinitionsDirectory, fileName + ConfigurationFiles.SourceExtension);
 
     /// <summary>
     /// Returns the full path for the specified list file in the definition library.
     /// </summary>
-    public static string ListFilePath(string fileName)
+    public string ListFilePath(string fileName)
     {
-        var definitionFilePath = Path.Combine(DefinitionsDirectory, fileName + ConfigurationFiles.ListExtension);
+        var definitionFilePath = Path.Combine(Ontology.DefinitionsDirectory, fileName + ConfigurationFiles.ListExtension);
         return definitionFilePath;
     }
 
@@ -555,22 +445,25 @@ public  static partial class Parser
     /// Load definitions for noun, if there is a definition file for it.
     /// Called when noun is first added to ontology.
     /// </summary>
-    public static void MaybeLoadDefinitions(Referent referent)
+    public void MaybeLoadDefinitions(Referent referent)
     {
-        if (DefinitionsDirectory != null && NameIsValidFilename(referent) && File.Exists(DefinitionFilePath(referent)))
-            LoadDefinitions(referent);
+        if (Ontology.DefinitionsDirectory != null && NameIsValidFilename(referent) && File.Exists(DefinitionFilePath(referent)))
+        {
+            var p = new Parser(referent.Ontology);
+            p.LoadDefinitions(referent);
+        }
     }
 
     /// <summary>
     /// Add all the statements from the definition file for noun to the ontology
     /// </summary>
-    public static void LoadDefinitions(Referent referent)
+    public void LoadDefinitions(Referent referent)
     {
         var path = DefinitionFilePath(referent);
         LoadDefinitions(path);
     }
 
-    public static List<Exception> LoadDefinitions(string path, bool throwOnErrors = true)
+    public List<Exception> LoadDefinitions(string path, bool throwOnErrors = true)
     {
         var downCased = path.ToLower();
         if (LoadedFiles.Contains(downCased))
@@ -582,12 +475,6 @@ public  static partial class Parser
         var oldLine = CurrentSourceLine;
         CurrentSourceFile = path;
         CurrentSourceLine = 0;
-
-        var update = File.GetLastWriteTimeUtc(path);
-        if (update > MostRecentFileUpdateTime)
-            MostRecentFileUpdateTime = update;
-
-        Push();
 
         var assertions = File.ReadAllLines(path);
         List<Exception> errors = throwOnErrors ? null : new List<Exception>();
@@ -615,7 +502,6 @@ public  static partial class Parser
             }
         }
 
-        Pop();
         LogFile.Log("Finished loading of " + path);
         CurrentSourceFile = oldPath;
         CurrentSourceLine = oldLine;

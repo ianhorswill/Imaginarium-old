@@ -72,13 +72,13 @@ public static class AutoGrader
         var errors = new StringBuilder();
         try
         {
-            Parser.DefinitionsDirectory = generator;
-            Driver.Ontology.ClearTests();
-            var testLoadErrors = Parser.LoadDefinitions(Combine(assignmentPath, "tests.gen"), false);
+            //Parser.DefinitionsDirectory = generator;
+            //Driver.Ontology.ClearTests();
+            //var testLoadErrors = Parser.LoadDefinitions(Combine(assignmentPath, "tests.gen"), false);
 
-            count = testLoadErrors.Count;
-            foreach (var e in testLoadErrors)
-                errors.Append($"{e.Message}; ");
+            //count = testLoadErrors.Count;
+            //foreach (var e in testLoadErrors)
+            //    errors.Append($"{e.Message}; ");
         }
         catch (Exception e)
         {

@@ -9,7 +9,7 @@ public abstract class ClosedClassSegment : Segment
     /// <summary>
     /// The token that was used as a determiner;
     /// </summary>
-    public string[] Match;
+    public string[] MatchedText;
     public string[] PossibleBeginnings;
 
     /// <summary>
@@ -18,5 +18,8 @@ public abstract class ClosedClassSegment : Segment
     public Func<string, bool> IsPossibleStart;
 
     public abstract IEnumerable<string> Keywords { get; }
+
+    protected ClosedClassSegment(Parser parser) : base(parser)
+    { }
 }
 

@@ -24,13 +24,34 @@
 #endregion
 
 using System;
-using static Parser;
+using System.Collections.Generic;
 
 /// <summary>
 /// Scans a contiguous sequence of input tokens
 /// </summary>
 public class Segment
 {
+    public Segment(Parser parser)
+    {
+        Parser = parser;
+    }
+    protected Parser Parser;
+    protected Ontology Ontology => Parser.Ontology;
+
+    protected bool EndOfInput => Parser.EndOfInput;
+    protected string CurrentToken => Parser.CurrentToken;
+    protected List<string> Input => Parser.Input;
+    protected Parser.ScannerState State => Parser.State;
+    protected void ResetTo(Parser.ScannerState s) => Parser.ResetTo(s);
+    protected void SkipToken() => Parser.SkipToken();
+    protected void Backup() => Parser.Backup();
+
+    protected void SkipToEnd() => Parser.SkipToEnd();
+
+    protected bool Match(string s) => Parser.Match(s);
+    protected bool Match(Func<string,bool> p) => Parser.Match(p);
+    protected bool Match(string[] tokens) => Parser.Match(tokens);
+
     public bool AllowListConjunctions;
 
     /// <summary>
@@ -48,7 +69,7 @@ public class Segment
             return false;
         var beginning = State;
         while (!EndOfInput)
-            if (!AllowListConjunctions && ListConjunction(CurrentToken))
+            if (!AllowListConjunctions && Parser.ListConjunction(CurrentToken))
                 return false;
             else if (token == CurrentToken)
             {
@@ -90,7 +111,7 @@ public class Segment
                     goto giveUp;
                 return true;
             }
-            else if (ListConjunction(CurrentToken))
+            else if (Parser.ListConjunction(CurrentToken))
             {
                 ResetTo(beginning);
                 return false;
@@ -123,7 +144,7 @@ public class Segment
             // Have to check to make sure there's no embedded conjunction
             while (!EndOfInput)
             {
-                if (ListConjunction(CurrentToken))
+                if (Parser.ListConjunction(CurrentToken))
                     return false;
                 SkipToken();
             }
@@ -152,12 +173,12 @@ public class Segment
     public virtual void ParseModifiers()
     { }
 
-    protected void SetText(ScannerState from)
+    protected void SetText(Parser.ScannerState from)
     {
         SetText(from, State);
     }
 
-    private void SetText(ScannerState from, ScannerState to)
+    private void SetText(Parser.ScannerState from, Parser.ScannerState to)
     {
         start = from.CurrentTokenIndex;
         end = to.CurrentTokenIndex;

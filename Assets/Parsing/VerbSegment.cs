@@ -104,7 +104,7 @@ public class VerbSegment : ReferringExpression<Verb>
     private bool ScanExistingVerb()
     {
         var old = State;
-        CachedConcept = MatchTrie(Driver.Ontology.VerbTrie);
+        CachedConcept = Parser.MatchTrie(Ontology.VerbTrie);
         if (CachedConcept == null)
         {
             ResetTo(old);
@@ -112,7 +112,7 @@ public class VerbSegment : ReferringExpression<Verb>
         }
 
         SetText(old);
-        VerbNumber = Driver.Ontology.VerbTrie.LastMatchPlural ? Number.Plural : Number.Singular;
+        Parser.VerbNumber = Ontology.VerbTrie.LastMatchPlural ? Number.Plural : Number.Singular;
         return true;
     }
     #endregion
@@ -121,7 +121,7 @@ public class VerbSegment : ReferringExpression<Verb>
     {
         var text = Text;
 
-        var verb = new Verb(Driver.Ontology);
+        var verb = new Verb(Ontology);
 
         switch (Conjugation)
         {
@@ -134,7 +134,7 @@ public class VerbSegment : ReferringExpression<Verb>
                 break;
 
             case VerbConjugation.ThirdPerson:
-                if (VerbNumber == Number.Singular)
+                if (Parser.VerbNumber == Number.Singular)
                     verb.SingularForm = text;
                 else
                     // Note: this guarantees there is a singular form.
@@ -144,8 +144,12 @@ public class VerbSegment : ReferringExpression<Verb>
 
         Driver.AppendResponseLine($"Learned new verb <b><i>{verb.StandardName.Untokenize()}</i></b>.");
 
-        MaybeLoadDefinitions(verb);
+        Parser.MaybeLoadDefinitions(verb);
 
         return verb;
+    }
+
+    public VerbSegment(Parser parser) : base(parser)
+    {
     }
 }

@@ -140,4 +140,8 @@ public class QuantifyingDeterminer : ClosedClassSegment
         IsOther = false;
         ExplicitCount = null;
     }
+
+    public QuantifyingDeterminer(Parser parser) : base(parser)
+    {
+    }
 }

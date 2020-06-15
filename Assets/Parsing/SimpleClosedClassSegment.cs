@@ -37,7 +37,7 @@ public class SimpleClosedClassSegment : ClosedClassSegment
     /// </summary>
     public bool Optional;
     
-    public SimpleClosedClassSegment(params object[] possibleMatches)
+    public SimpleClosedClassSegment(Parser parser, params object[] possibleMatches) : base(parser)
     {
         PossibleMatches = possibleMatches.Select(m =>
         {
@@ -61,19 +61,19 @@ public class SimpleClosedClassSegment : ClosedClassSegment
         if (!Optional && !IsPossibleStart(CurrentToken))
             return false;
         var old = State;
-        Match = null;
+        MatchedText = null;
         foreach (var candidate in PossibleMatches)
         {
             if (Match(candidate))
             {
-                Match = candidate;
+                MatchedText = candidate;
                 break;
             }
             ResetTo(old);
         }
 
         // Check against apostrophe is to keep from matching just the beginning of a contraction.
-        return Optional || (Match != null && !EndOfInput && CurrentToken != "'" && endPredicate(CurrentToken));
+        return Optional || (MatchedText != null && !EndOfInput && CurrentToken != "'" && endPredicate(CurrentToken));
     }
 
     public override bool ScanTo(string token)
@@ -81,12 +81,12 @@ public class SimpleClosedClassSegment : ClosedClassSegment
         if (!Optional && (EndOfInput || !IsPossibleStart(CurrentToken)))
             return false;
         var old = State;
-        Match = null;
+        MatchedText = null;
         foreach (var candidate in PossibleMatches)
         {
             if (Match(candidate))
             {
-                Match = candidate;
+                MatchedText = candidate;
                 break;
             }
             ResetTo(old);
@@ -100,12 +100,12 @@ public class SimpleClosedClassSegment : ClosedClassSegment
         if (!Optional && !IsPossibleStart(CurrentToken))
             return false;
         var old = State;
-        Match = null;
+        MatchedText = null;
         foreach (var candidate in PossibleMatches)
         {
             if (Match(candidate))
             {
-                Match = candidate;
+                MatchedText = candidate;
                 break;
             }
             ResetTo(old);
@@ -114,7 +114,7 @@ public class SimpleClosedClassSegment : ClosedClassSegment
         return EndOfInput;
     }
 
-    public override string[] Text => Match;
+    public override string[] Text => MatchedText;
 
     public override IEnumerable<string> Keywords
     {

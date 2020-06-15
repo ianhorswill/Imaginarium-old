@@ -36,6 +36,8 @@ using System.Text;
 [DebuggerDisplay("{" + nameof(HelpDescription) + "}")]
 public class SentencePattern
 {
+    public readonly Parser Parser;
+
     /// <summary>
     /// Used in SubjectNounList to ensure all NPs are in base form (singular but no determiner)
     /// </summary>
@@ -49,12 +51,10 @@ public class SentencePattern
     }
 
     #region Constructors
-    // ReSharper disable once CoVariantArrayConversion
-    public SentencePattern(params string[] tokens) : this(() => tokens) { }
-
-    public SentencePattern(Func<object[]> makeConstituents)
+    public SentencePattern(Parser p, params object[] constituents)
     {
-        this.makeConstituents = makeConstituents;
+        Parser = p;
+        this.constituents = constituents;
     }
 
     /// <summary>
@@ -87,7 +87,7 @@ public class SentencePattern
     {
         get
         {
-            foreach (var c in makeConstituents())
+            foreach (var c in constituents)
                 switch (c)
                 {
                     case string s:
@@ -110,24 +110,16 @@ public class SentencePattern
     public bool HasCommonKeywords(IEnumerable<string> tokens) => tokens.Any(t => Keywords.Contains(t));
 
     /// <summary>
-    /// Return all rules whose keywords overlap the specified set of tokens
-    /// </summary>
-    /// <param name="tokens">Words to check against rule keywords</param>
-    /// <returns>Rules with keywords in common</returns>
-    public static IEnumerable<SentencePattern> RulesMatchingKeywords(IEnumerable<string> tokens) =>
-        Rules.Where(r => r.HasCommonKeywords(tokens));
-
-    /// <summary>
     /// Try to make a syntax rule and run its action if successful.
     /// </summary>
     /// <returns>True on success</returns>
     public bool Try()
     {
-        ResetParser();
-        var old = State;
+        Parser.ResetParser();
+        var old = Parser.State;
 
         if (MatchConstituents())
-            if (EndOfInput)
+            if (Parser.EndOfInput)
             {
                 // Check validity tests and fail if one fails
                 if (validityTests != null)
@@ -150,11 +142,11 @@ public class SentencePattern
             }
             else if (LogMatch)
             {
-                Driver.AppendResponseLine("Remaining input blocked match: "+CurrentToken);
+                Driver.AppendResponseLine("Remaining input blocked match: "+Parser.CurrentToken);
             }
 
         fail:
-        ResetTo(old);
+        Parser.ResetTo(old);
         return false;
     }
 
@@ -164,10 +156,8 @@ public class SentencePattern
     /// <returns>True if successful</returns>
     private bool MatchConstituents()
     {
-        var constituents = makeConstituents();
-
         if (constituents[0] is string firstToken 
-            && string.Compare(CurrentToken, firstToken, StringComparison.InvariantCultureIgnoreCase) != 0)
+            && string.Compare(Parser.CurrentToken, firstToken, StringComparison.InvariantCultureIgnoreCase) != 0)
             // Fast path.  This also reduces spam in the logging output
             return false;
 
@@ -188,16 +178,16 @@ public class SentencePattern
             {
                 var conName = ConstituentToString(c);
                 Driver.AppendResponseLine($"Constituent {conName}");
-                Driver.AppendResponseLine($"Remaining input: {RemainingInput}");
+                Driver.AppendResponseLine($"Remaining input: {Parser.RemainingInput}");
             }
             if (BreakOnMatch)
                 Debugger.Break();
             if (c is string str)
             {
-                if (!Match(str))
+                if (!Parser.Match(str))
                 {
                     if (cut)
-                        ThrowFailedMatch($"I expected to see '{str}' but got '{CurrentToken}'");
+                        ThrowFailedMatch($"I expected to see '{str}' but got '{Parser.CurrentToken}'");
                     return false;
                 }
             }
@@ -228,7 +218,7 @@ public class SentencePattern
                             return false;
                         }
                     }
-                    else if (ReferenceEquals(next, Is))
+                    else if (ReferenceEquals(next, Parser.Is))
                     {
                         if (!seg.ScanTo(IsCopula))
                         {
@@ -237,7 +227,7 @@ public class SentencePattern
                             return false;
                         }
                     }
-                    else if (ReferenceEquals(next, Has))
+                    else if (ReferenceEquals(next, Parser.Has))
                     {
                         if (!seg.ScanTo(IsHave))
                         {
@@ -320,7 +310,7 @@ public class SentencePattern
     /// Matching routines for the constituents of the sentential form, in order.
     /// For example: Subject, Is, Object
     /// </summary>
-    private readonly Func<object[]> makeConstituents;
+    private readonly object[] constituents;
     /// <summary>
     /// Procedure to run if this sentential form matches the input.
     /// This procedure should update the ontology based on the data stored in the constituents
@@ -389,7 +379,7 @@ public class SentencePattern
             Buffer.Length = 0;
             var firstOne = true;
             Buffer.Append("<b>");
-            foreach (var c in makeConstituents())
+            foreach (var c in constituents)
             {
                 if (c.Equals("!"))
                     continue;
@@ -415,7 +405,7 @@ public class SentencePattern
             Buffer.Length = 0;
             var firstOne = true;
             Buffer.Append("<b>");
-            foreach (var c in makeConstituents())
+            foreach (var c in constituents)
             {
                 if (c.Equals("!"))
                     continue;
@@ -432,7 +422,7 @@ public class SentencePattern
         }
     }
 
-    private static string ConstituentName(object c)
+    private string ConstituentName(object c)
     {
         switch (c)
         {
@@ -446,13 +436,13 @@ public class SentencePattern
                 return $"<i><color=grey>{seg.Name}</color></i>";
 
             case Func<bool> f:
-                if (f == Is)
+                if (f == Parser.Is)
                     return "is/are";
-                if (f == Has)
+                if (f == Parser.Has)
                     return "have/has";
-                if (f == LowerBound)
+                if (f == Parser.LowerBound)
                     return "<i><color=grey>LowerBound</color></i>";
-                if (f == UpperBound)
+                if (f == Parser.UpperBound)
                     return "<i><color=grey>UpperBound</color></i>";
                 return $"<i>{f}</i>";
 

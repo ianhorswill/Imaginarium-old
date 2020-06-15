@@ -29,15 +29,22 @@ using File = System.IO.File;
 /// <summary>
 /// Maintains a log of declarations entered by the user.
 /// </summary>
-public static class History
+public class History
 {
-    private static readonly List<string> Declarations = new List<string>();
+    public readonly UIDriver UIDriver;
+
+    private readonly List<string> Declarations = new List<string>();
+
+    public History(UIDriver uiDriver)
+    {
+        UIDriver = uiDriver;
+    }
 
     /// <summary>
     /// Add a declaration to the log
     /// </summary>
     /// <param name="declaration"></param>
-    public static void Log(string declaration)
+    public void Log(string declaration)
     {
         Declarations.Add(declaration);
     }
@@ -46,7 +53,7 @@ public static class History
     /// Remove the last declaration from the log and rebuild the ontology.
     /// </summary>
     /// <returns>The declaration removed from the log</returns>
-    public static string Undo()
+    public string Undo()
     {
         string undone = null;
         if (Declarations.Count > 0)
@@ -67,14 +74,16 @@ public static class History
     /// <summary>
     /// Rerun the declarations that were not undone.
     /// </summary>
-    private static void Replay()
+    private void Replay()
     {
+        UIDriver.ClearButtons();
         Driver.Ontology.Reload();
+        var p = new Parser(Driver.Ontology);
         foreach (var decl in Declarations)
-            Parser.ParseAndExecute(decl);
+            p.ParseAndExecute(decl);
     }
 
-    public static void Save(string path)
+    public void Save(string path)
     {
         File.WriteAllLines(path, Declarations);
         LogFile.Log("Saving to "+path);
@@ -82,15 +91,7 @@ public static class History
             LogFile.Log("   "+ line);
     }
 
-    public static void Edit(string path)
-    {
-        //Ontology.EraseConcepts();
-        //Parser.LoadDefinitions(path);
-        Declarations.Clear();
-        Declarations.AddRange(File.ReadAllLines(path));
-    }
-
-    public static void Clear()
+    public void Clear()
     {
         Declarations.Clear();
         Replay();
