@@ -77,8 +77,8 @@ public class History
     private void Replay()
     {
         UIDriver.ClearButtons();
-        Driver.Ontology.Reload();
-        var p = new Parser(Driver.Ontology);
+        UIDriver.Ontology.Reload();
+        var p = new Parser(UIDriver.Ontology);
         foreach (var decl in Declarations)
             p.ParseAndExecute(decl);
     }

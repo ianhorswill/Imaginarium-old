@@ -37,7 +37,7 @@ using System.Linq;
 [DebuggerDisplay("{" + nameof(Name) + "}")]
 public class Ontology
 {
-    public Ontology(string name)
+    public Ontology(string name, string definitionsDirectory)
     {
         AllReferentTables.Add(AllAdjectives);
         AllReferentTables.Add(AllPermanentIndividuals);
@@ -48,6 +48,9 @@ public class Ontology
         VerbTrie = new TokenTrie<Verb>(this);
         MonadicConceptTrie = new TokenTrie<MonadicConcept>(this);
         Name = name;
+        DefinitionsDirectory = definitionsDirectory;
+        if (DefinitionsDirectory != null)
+            Load();
     }
 
     public readonly string Name;
@@ -216,10 +219,22 @@ public class Ontology
         Load();
     }
 
+    private Parser parser;
+
+    public Parser Parser
+    {
+        get
+        {
+            if (parser == null)
+                parser = new Parser(this);
+            return parser;
+        }
+    }
+
     /// <summary>
     /// Load all the source files in the current project
     /// </summary>
-    private void Load()
+    public void Load()
     {
         Driver.ClearLoadErrors();
 
@@ -229,8 +244,7 @@ public class Ontology
             {
                 try
                 {
-                    var p = new Parser(this);
-                    p.LoadDefinitions(file);
+                    Parser.LoadDefinitions(file);
                 }
                 catch (Exception e)
                 {

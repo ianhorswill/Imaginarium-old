@@ -38,6 +38,7 @@ public static class AutoGrader
             foreach (var submission in Directory.GetDirectories(dir))
             {
                 var submissionName = GetFileNameWithoutExtension(submission);
+                System.Diagnostics.Debug.Assert(submissionName != null, nameof(submissionName) + " != null");
                 var firstUnderscore = submissionName.IndexOf('_');
                 var secondUnderscore = submissionName.IndexOf('_', firstUnderscore+1);
                 var studentName = submissionName.Substring(0, firstUnderscore);
@@ -70,22 +71,22 @@ public static class AutoGrader
         var count = 0;
         var passed = 0;
         var errors = new StringBuilder();
+        var ontology = new Ontology(studentName, generator);
         try
         {
-            //Parser.DefinitionsDirectory = generator;
-            //Driver.Ontology.ClearTests();
-            //var testLoadErrors = Parser.LoadDefinitions(Combine(assignmentPath, "tests.gen"), false);
+            var testLoadErrors = ontology.Parser.LoadDefinitions(Combine(assignmentPath, "tests.gen"), false);
 
-            //count = testLoadErrors.Count;
-            //foreach (var e in testLoadErrors)
-            //    errors.Append($"{e.Message}; ");
+            count = testLoadErrors.Count;
+            foreach (var e in testLoadErrors)
+                errors.Append($"{e.Message}; ");
         }
         catch (Exception e)
         {
             results.WriteLine($"{studentName},0,\"{e.Message.Replace("\"","\"\"")}\"");
         }
 
-        foreach (var (test, success, example) in Driver.Ontology.TestResults())
+        // ReSharper disable once UnusedVariable
+        foreach (var (test, success, example) in ontology.TestResults())
         {
             if (success)
                 passed++;
@@ -116,7 +117,12 @@ public static class AutoGrader
         if (ContainsGenFile(submission))
             return submission;
         return Directory.GetDirectories(submission).FirstOrDefault(
-            d => !GetFileName(d).StartsWith("_") && !GetFileName(d).StartsWith(".") && ContainsGenFile(d));
+            d =>
+            {
+                var fileName = GetFileName(d);
+                System.Diagnostics.Debug.Assert(fileName != null, nameof(fileName) + " != null");
+                return !fileName.StartsWith("_") && !fileName.StartsWith(".") && ContainsGenFile(d);
+            });
     }
 
     private static bool ContainsGenFile(string submission)

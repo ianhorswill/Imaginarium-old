@@ -8,6 +8,8 @@ using GraphVisualization;
 
 public class UIDriver : MonoBehaviour, IRepl
 {
+    public static readonly Ontology Ontology = new Ontology("Default", null);
+
     public static Invention Invention;
     private List<string> inventionDescriptions;
     public InputField InputField;
@@ -28,22 +30,22 @@ public class UIDriver : MonoBehaviour, IRepl
     /// </summary>
     public IEnumerator Start()
     {
-        Parser = new Parser(Driver.Ontology, parser => ReplCommands.Commands(parser, this));
+        Parser = new Parser(Ontology, parser => ReplCommands.Commands(parser, this));
         Driver.Repl = this;
         History = new History(this);
         ConfigurationFiles.UnityPath = Application.dataPath;
 
         var generator = PlayerPrefs.GetString("DefinitionsDirectory", null);
 
-        if (string.IsNullOrEmpty(generator))
+        if (String.IsNullOrEmpty(generator))
             OutputField.text = "No generator selected.  Press <b>F1 for help</b>, ESC for menu.";
         else
         {
             OutputField.text = $"<size=120>Using <b>{Path.GetFileName(generator)}</b> generator.</size>\nPress <b>F1 for help</b>, ESC for menu.";
             try
             {
-                Driver.Ontology.DefinitionsDirectory = generator;
-                Driver.Ontology.Reload();
+                Ontology.DefinitionsDirectory = generator;
+                Ontology.Reload();
             }
             catch (Exception e)
             {
