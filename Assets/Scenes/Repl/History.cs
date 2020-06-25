@@ -1,7 +1,7 @@
 ﻿#region Copyright
 // --------------------------------------------------------------------------------------------------------------------
 // <copyright file="History.cs" company="Ian Horswill">
-// Copyright (C) 2019 Ian Horswill
+// Copyright (C) 2019, 2020 Ian Horswill
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of
 // this software and associated documentation files (the "Software"), to deal in the
@@ -24,6 +24,9 @@
 #endregion
 
 using System.Collections.Generic;
+using Imaginarium.Driver;
+using Imaginarium.Generator;
+using Imaginarium.Parsing;
 using File = System.IO.File;
 
 /// <summary>
@@ -33,7 +36,7 @@ public class History
 {
     public readonly UIDriver UIDriver;
 
-    private readonly List<string> Declarations = new List<string>();
+    private readonly List<string> declarations = new List<string>();
 
     public History(UIDriver uiDriver)
     {
@@ -46,7 +49,7 @@ public class History
     /// <param name="declaration"></param>
     public void Log(string declaration)
     {
-        Declarations.Add(declaration);
+        declarations.Add(declaration);
     }
 
     /// <summary>
@@ -56,11 +59,11 @@ public class History
     public string Undo()
     {
         string undone = null;
-        if (Declarations.Count > 0)
+        if (declarations.Count > 0)
         {
-            var end = Declarations.Count - 1;
-            undone = Declarations[end];
-            Declarations.RemoveAt(end);
+            var end = declarations.Count - 1;
+            undone = declarations[end];
+            declarations.RemoveAt(end);
             Driver.AppendResponseLine($"Undid {undone}");
         }
         else
@@ -79,21 +82,21 @@ public class History
         UIDriver.ClearButtons();
         UIDriver.Ontology.Reload();
         var p = new Parser(UIDriver.Ontology);
-        foreach (var decl in Declarations)
+        foreach (var decl in declarations)
             p.ParseAndExecute(decl);
     }
 
     public void Save(string path)
     {
-        File.WriteAllLines(path, Declarations);
+        File.WriteAllLines(path, declarations);
         LogFile.Log("Saving to "+path);
-        foreach (var line in Declarations)
+        foreach (var line in declarations)
             LogFile.Log("   "+ line);
     }
 
     public void Clear()
     {
-        Declarations.Clear();
+        declarations.Clear();
         Replay();
         Generator.Current = null;
     }

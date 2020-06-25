@@ -1,7 +1,7 @@
 ﻿#region Copyright
 // --------------------------------------------------------------------------------------------------------------------
 // <copyright file="ConfigurationFiles.cs" company="Ian Horswill">
-// Copyright (C) 2019 Ian Horswill
+// Copyright (C) 2019, 2020 Ian Horswill
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of
 // this software and associated documentation files (the "Software"), to deal in the
@@ -35,13 +35,13 @@ public static class ConfigurationFiles
     public static string ExamplesDirectory => Path.Combine(UnityPath, "Examples");
 
     public static string UserDataDirectory =>
-        #if UNITY_STANDALONE_OSX && !UNITY_EDITOR_WIN
+#if UNITY_STANDALONE_OSX && !UNITY_EDITOR_WIN
         // This turns out to be a documented Mono issue.
         // See https://xamarin.github.io/bugzilla-archives/41/41258/bug.html
         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)+"/Documents", "Imaginarium");
-        #else
+#else
         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Imaginarium");
-        #endif
+#endif
 
     public static string UserProjectsDirectory =>
         Path.Combine(UserDataDirectory, "Generators");
@@ -71,7 +71,7 @@ public static class ConfigurationFiles
     /// <summary>
     /// Path to the directory containing configuration files.
     /// </summary>
-    public static string ApplicationHome => UnityPath;
+    public static string ApplicationHome = UnityPath;
 
     public const string ListExtension = ".txt";
 
@@ -80,7 +80,7 @@ public static class ConfigurationFiles
     /// <summary>
     /// Path the the configuration directory with the specified name
     /// </summary>
-    public static string ConfigurationDirectory(string directoryName) => 
+    public static string ConfigurationDirectory(string directoryName) =>
         Path.Combine(ApplicationHome, directoryName);
 
     /// <summary>

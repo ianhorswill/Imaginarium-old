@@ -1,8 +1,10 @@
 ﻿using System;
 using System.IO;
+using Imaginarium.Driver;
 using UnityEditor;
 using UnityEditor.Callbacks;
 using UnityEngine;
+using Debug = System.Diagnostics.Debug;
 
 /// <summary>
 /// Copy the definition files, etc. into the builds
@@ -54,6 +56,7 @@ public class CopyFilesOnBuild
             foreach (var d in Directory.GetDirectories(from))
             {
                 var name = Path.GetFileName(d);
+                Debug.Assert(name != null, nameof(name) + " != null");
                 CopyTree(
                     Path.Combine(from, name),
                     Path.Combine(to, name)

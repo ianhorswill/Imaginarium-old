@@ -1,5 +1,33 @@
-﻿using System.Collections.Generic;
+﻿#region Copyright
+// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="ReplCommands.cs" company="Ian Horswill">
+// Copyright (C) 2019, 2020 Ian Horswill
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of
+// this software and associated documentation files (the "Software"), to deal in the
+// Software without restriction, including without limitation the rights to use, copy,
+// modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
+// and to permit persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+// PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+// OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+// SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+// </copyright>
+// --------------------------------------------------------------------------------------------------------------------
+#endregion
+
+using System.Collections.Generic;
 using CatSAT;
+using Imaginarium.Driver;
+using Imaginarium.Generator;
+using Imaginarium.Parsing;
 using UnityEngine;
 
 public static class ReplCommands
@@ -41,7 +69,7 @@ public static class ReplCommands
                 }
                 catch (ContradictionException e)
                 {
-                    Driver.AppendResponseLine($"<color=red><b>Contradiction found.</b></color>");
+                    Driver.AppendResponseLine("<color=red><b>Contradiction found.</b></color>");
                     Driver.AppendResponseLine($"Internal error message: {e.Message}");
                 }
             })
@@ -88,12 +116,10 @@ public static class ReplCommands
 
                 if (total > 0)
                 {
-                    if (failed == 0)
-                        Driver.PrependResponseLine(
-                            $"<color=green><b>All {total} tests passed.</b></color>\n\n");
-                    else
-                        Driver.PrependResponseLine(
-                            $"<color=red><b>{failed} of {total} tests failed.</b></color>\n\n");
+                    Driver.PrependResponseLine(
+                        failed == 0
+                            ? $"<color=green><b>All {total} tests passed.</b></color>\n\n"
+                            : $"<color=red><b>{failed} of {total} tests failed.</b></color>\n\n");
                 }
                 else
                     Driver.AppendResponseLine("No tests have been defined.");
@@ -102,7 +128,7 @@ public static class ReplCommands
             .Command();
 
         yield return new SentencePattern(p, "grade", p.Text)
-            .Action(() => { Driver.StartCoroutine(AutoGrader.GradeAssignment(p.Text.Text.Untokenize())); })
+            .Action(() => { Object.FindObjectOfType<UIDriver>().StartCoroutine(AutoGrader.GradeAssignment(p.Text.Text.Untokenize())); })
             .Documentation("Run all tests currently defined")
             .Command();
 
