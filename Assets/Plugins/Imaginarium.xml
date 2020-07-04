@@ -1,0 +1,2936 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Imaginarium</name>
+    </assembly>
+    <members>
+        <member name="T:Imaginarium.Driver.DataFiles">
+            <summary>
+            Provides methods for finding definitions and other configuration files.
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Driver.DataFiles.DataHome">
+            <summary>
+            Path to the directory containing configuration files.
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Driver.DataFiles.ListExtension">
+            <summary>
+            File name extension for lists of items
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Driver.DataFiles.SourceExtension">
+            <summary>
+            File name extension for generator source code
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Driver.DataFiles.ConfigurationDirectory(System.String)">
+            <summary>
+            Path the the configuration directory with the specified name
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Driver.DataFiles.PathTo(System.String,System.String,System.String)">
+            <summary>
+            Path to the specified configuration file
+            </summary>
+        </member>
+        <member name="T:Imaginarium.Driver.Driver">
+            <summary>
+            Abstracts console that can be written to.
+            This is filled in with something of type IRepl, the default being StubRepl, that does nothing.
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Driver.Driver.ClearCommandBuffer">
+            <summary>
+            Remove any pending output
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Driver.Driver.PrependResponseLine(System.String)">
+            <summary>
+            Insert string at the beginning of the output on the screen
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Driver.Driver.AppendResponseLine(System.String)">
+            <summary>
+            Add string to the end of the output on the screen
+            </summary>
+        </member>
+        <member name="P:Imaginarium.Driver.Driver.CommandResponse">
+            <summary>
+            The accumulated results of the all the calls to PrependRespondLine and AppendResponseLine
+            since last call to ClearCommandBuffer.
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Driver.Driver.LoadErrorBuffer">
+            <summary>
+            Separate buffer for diagnostics from file loading
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Driver.Driver.ClearLoadErrors">
+            <summary>
+            Clear the buffer for file loading diagnostics.
+            This is separate from the "CommandOutput" buffer.
+            </summary>
+        </member>
+        <member name="P:Imaginarium.Driver.Driver.LoadErrors">
+            <summary>
+            Return any load error diagnostics that have been generated since the last call to ClearLoadErrors.
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Driver.Driver.LogLoadError(System.String,System.Int32,System.String)">
+            <summary>
+            Add another line to the load errors buffer
+            </summary>
+            <param name="filename">File where the problem occured</param>
+            <param name="lineNumber">Line number where it occured</param>
+            <param name="message">Problem description</param>
+        </member>
+        <member name="F:Imaginarium.Driver.Driver.Repl">
+            <summary>
+            The IRepl object that does the actual output to the user
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Driver.Driver.SetOutputWindow(System.String)">
+            <summary>
+            Completely replace the current output with the specified string
+            </summary>
+            <param name="contents">New output</param>
+        </member>
+        <member name="T:Imaginarium.Driver.IRepl">
+            <summary>
+            Interface for Read/Eval/Print loop driving this library, if any.
+            If this is running headless, then StubRepl is used.
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Driver.IRepl.AddButton(System.String,System.String)">
+            <summary>
+            Add a button the user can press to the screen
+            </summary>
+            <param name="buttonName">Text for the button</param>
+            <param name="command">Imaginarium command to run when the button is pressed</param>
+        </member>
+        <member name="M:Imaginarium.Driver.IRepl.SetOutputWindow(System.String)">
+            <summary>
+            Completely replace the current output with the specified string
+            </summary>
+            <param name="contents">New output</param>
+        </member>
+        <member name="T:Imaginarium.Driver.LogFile">
+            <summary>
+            Log that can be used for generating bug reports.
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Driver.LogFile.Flush">
+            <summary>
+            Flush the log file in case there's a crash
+            </summary>
+        </member>
+        <member name="P:Imaginarium.Driver.LogFile.Enabled">
+            <summary>
+            True if we're currently logging.
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Driver.LogFile.Log(System.String)">
+            <summary>
+            Write a message to the log file
+            </summary>
+            <param name="message"></param>
+        </member>
+        <member name="M:Imaginarium.Driver.LogFile.Log(System.String,System.Object[])">
+            <summary>
+            Write a message to the log file
+            </summary>
+            <param name="format"></param>
+            <param name="args"></param>
+        </member>
+        <member name="M:Imaginarium.Driver.LogFile.Separate">
+            <summary>
+            Write a blank line to the log file
+            </summary>
+        </member>
+        <member name="T:Imaginarium.Driver.StubRepl">
+            <summary>
+            A stub implementation of IRepl that does nothing
+            Used when Imaginarium is being run non-interactively, e.g. in a game.
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Driver.StubRepl.AddButton(System.String,System.String)">
+            <summary>
+            Does nothing
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Driver.StubRepl.SetOutputWindow(System.String)">
+            <summary>
+            Throws an exception with the specified message, since there isn't a REPL to write to.
+            </summary>
+        </member>
+        <member name="T:Imaginarium.Generator.Generator">
+            <summary>
+            Generates a specified type of object based on the information in the ontology
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Generator.Generator.Current">
+            <summary>
+            The output from the "imagine" command that created this Generator
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Generator.Generator.Ontology">
+            <summary>
+            The Ontology containing the concepts used by this generator
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Generator.Generator.EphemeralIndividuals">
+            <summary>
+            The object(s) being constructed by this generator
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Generator.Generator.Individuals">
+            <summary>
+            All Individuals in the model being constructed (ephemeral and permanent)
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Generator.Generator.Problem">
+            <summary>
+            The CatSAT problem that will generate the values for the Creation's attributes
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Generator.Generator.Count">
+            <summary>
+            How many objects the user requested
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Generator.Generator.#ctor(Imaginarium.Ontology.CommonNoun,Imaginarium.Ontology.MonadicConceptLiteral[])">
+            <summary>
+            Creates a generator for objects of the specified types
+            </summary>
+            <param name="noun">Base common noun for the object</param>
+            <param name="concepts">Other monadic concepts that must be true of the object</param>
+        </member>
+        <member name="M:Imaginarium.Generator.Generator.#ctor(Imaginarium.Ontology.CommonNoun,System.Collections.Generic.IEnumerable{Imaginarium.Ontology.MonadicConceptLiteral},System.Int32)">
+            <summary>
+            Creates a generator for objects of the specified types
+            </summary>
+            <param name="noun">Base common noun for the object</param>
+            <param name="concepts">Other monadic concepts that must be true of the object</param>
+            <param name="count">Number of objects of the specified type to include</param>
+        </member>
+        <member name="F:Imaginarium.Generator.Generator.Noun">
+            <summary>
+            The kind of object(s) to be generated
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Generator.Generator.Concepts">
+            <summary>
+            Any other attributes they the generated object(s) should have, beyond Noun.
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Generator.Generator.Rebuild">
+            <summary>
+            Rebuild and re-solve the CatSAT problem
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Generator.Generator.DetermineIndividuals">
+            <summary>
+            Find all the individuals that need to exist in these inventions
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Generator.Generator.BuildVerbPropositionsAndClauses">
+            <summary>
+            Add all the propositions and clauses for the verbs
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Generator.Generator.Generate(System.Int32,System.Int32)">
+            <summary>
+            Make a new Model
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Generator.Generator.AddFormalization(Imaginarium.Ontology.Individual)">
+            <summary>
+            Add all clauses and variables relevant to the individual
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Generator.Generator.MaybeAssert(CatSAT.Proposition)">
+            <summary>
+            Assert p is true, unless we've already asserted it
+            </summary>
+            <param name="l">Proposition to assert</param>
+            <returns>True if it had not already been asserted</returns>
+        </member>
+        <member name="M:Imaginarium.Generator.Generator.MaybeAssert(CatSAT.Literal)">
+            <summary>
+            Assert p is true, unless we've already asserted it
+            </summary>
+            <param name="l">Proposition to assert</param>
+            <returns>True if it had not already been asserted</returns>
+        </member>
+        <member name="M:Imaginarium.Generator.Generator.IsA(Imaginarium.Ontology.Individual,Imaginarium.Ontology.MonadicConcept)">
+            <summary>
+            The proposition representing that concept k applies to individual i
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Generator.Generator.Satisfies(Imaginarium.Ontology.Individual,Imaginarium.Ontology.MonadicConceptLiteral)">
+            <summary>
+            The literal representing that concept k or its negation applies to individual i
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Generator.Generator.CanBeA(Imaginarium.Ontology.Individual,Imaginarium.Ontology.CommonNoun)">
+            <summary>
+            It is potentially possible for this individual to be of this kind.
+            That is, there are probably models in which it does.
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Generator.Generator.Holds(Imaginarium.Ontology.Verb,Imaginarium.Ontology.Individual,Imaginarium.Ontology.Individual)">
+            <summary>
+            Proposition representing that i1 verbs i2.
+            </summary>
+            <param name="verb">Verb</param>
+            <param name="i1">Subject (left) argument to the verb</param>
+            <param name="i2">Object (right) argument to the verb</param>
+            <returns>A CatSAT Proposition object representing that i1 verbs i2.</returns>
+        </member>
+        <member name="M:Imaginarium.Generator.Generator.PredicateOf(Imaginarium.Ontology.MonadicConcept)">
+            <summary>
+            The predicate used to represent concept in the CatSAT problem
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Generator.Generator.kindsFormalized">
+            <summary>
+            Which individual/kind pairs we've already generated clauses for
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Generator.Generator.asserted">
+            <summary>
+            Propositions already asserted in Problem
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Generator.Generator.predicates">
+            <summary>
+            Predicates created within Problem
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Generator.Generator.AddImplication(Imaginarium.Ontology.Individual,System.Collections.Generic.IEnumerable{Imaginarium.Ontology.MonadicConcept},Imaginarium.Ontology.MonadicConcept)">
+            <summary>
+            Add clause to Problem stating that consequent(i) follow from antecedent(i)
+            </summary>
+            <param name="i">Individual for which this implication holds</param>
+            <param name="antecedents">A set of conditions on i</param>
+            <param name="consequent">A concept that must be true of i when the antecedents are true.</param>
+        </member>
+        <member name="M:Imaginarium.Generator.Generator.AddImplication(Imaginarium.Ontology.Individual,System.Collections.Generic.IEnumerable{Imaginarium.Ontology.MonadicConcept},CatSAT.Literal)">
+            <summary>
+            Add clause to Problem stating that consequent(i) follow from antecedent(i)
+            </summary>
+            <param name="i">Individual for which this implication holds</param>
+            <param name="antecedents">A set of conditions on i</param>
+            <param name="consequent">A proposition that must follow from the antecedent applying to i.</param>
+        </member>
+        <member name="M:Imaginarium.Generator.Generator.AddImplication(Imaginarium.Ontology.Individual,System.Collections.Generic.IEnumerable{Imaginarium.Ontology.MonadicConceptLiteral},Imaginarium.Ontology.MonadicConceptLiteral)">
+            <summary>
+            Add clause to Problem stating that consequent(i) follow from antecedent(i)
+            </summary>
+            <param name="i">Individual for which this implication holds</param>
+            <param name="antecedents">A set of conditions on i</param>
+            <param name="consequent">A concept that must be true of i when the antecedents are true.</param>
+        </member>
+        <member name="M:Imaginarium.Generator.Generator.AddImplication(Imaginarium.Ontology.Individual,System.Collections.Generic.IEnumerable{Imaginarium.Ontology.MonadicConceptLiteral},CatSAT.Literal)">
+            <summary>
+            Add clause to Problem stating that consequent(i) follow from antecedent(i)
+            </summary>
+            <param name="i">Individual for which this implication holds</param>
+            <param name="antecedents">A set of conditions on i</param>
+            <param name="consequent">A proposition that must follow from the antecedent applying to i.</param>
+        </member>
+        <member name="M:Imaginarium.Generator.Generator.AddImplication(CatSAT.Literal,CatSAT.Literal[])">
+            <summary>
+            Assert that all antecedents being true implies consequent
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Generator.Generator.AddClause(System.Collections.Generic.IEnumerable{CatSAT.Literal})">
+            <summary>
+            Add a CNF clause to the problem.  This states that at least one the literals must be true.
+            </summary>
+            <param name="literals"></param>
+        </member>
+        <member name="M:Imaginarium.Generator.Generator.AddRule(Imaginarium.Ontology.Individual,System.Collections.Generic.IEnumerable{Imaginarium.Ontology.MonadicConceptLiteral},CatSAT.Proposition)">
+            <summary>
+            Add a CatSAT rule with completion semantics to Problem stating that consequent(i) follow from antecedent(i)
+            </summary>
+            <param name="i">Individual for which this implication holds</param>
+            <param name="antecedents">A set of conditions on i</param>
+            <param name="consequent">A concept that must be true of i when the antecedents are true.</param>
+        </member>
+        <member name="M:Imaginarium.Generator.Generator.Conjunction(System.Collections.Generic.IEnumerable{CatSAT.Literal})">
+            <summary>
+            Convert a set of literals into a CatSAT Expression object.
+            </summary>
+        </member>
+        <member name="T:Imaginarium.Generator.Invention">
+            <summary>
+            Represents the output of the generator.
+            This contains a model, which maps propositions to truth values
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Generator.Invention.Ontology">
+            <summary>
+            The ontology in terms of which this Invention is defined.
+            </summary>
+        </member>
+        <member name="P:Imaginarium.Generator.Invention.Individuals">
+            <summary>
+            The output from the "imagine" command that created this invention.
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Generator.Invention.Generator">
+            <summary>
+            The Generator that created this invention
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Generator.Invention.Model">
+            <summary>
+            The model of Problem most recently generated by CatSAT
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Generator.Invention.EndsWithSpace(System.Text.StringBuilder)">
+            <summary>
+            The StringBuilder currently has whitespace at the end
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Generator.Invention.RemoveEndingSpace(System.Text.StringBuilder)">
+            <summary>
+            Remove trailing whitespace from the StringBuilder
+            </summary>
+            <param name="b"></param>
+        </member>
+        <member name="M:Imaginarium.Generator.Invention.Description(Imaginarium.Ontology.Individual,System.String,System.String)">
+            <summary>
+            A textual description of the Individual's attributes within Model.
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Generator.Invention.PropertyValue(Imaginarium.Ontology.Individual,Imaginarium.Ontology.Property)">
+            <summary>
+            The value of the specified property of the specified individual in this Invention.
+            </summary>
+            <param name="i">Individual whose property is needed</param>
+            <param name="property">The Property object for the property requested.</param>
+            <returns>The value of i's property property</returns>
+        </member>
+        <member name="M:Imaginarium.Generator.Invention.AdjectivesDescribing(Imaginarium.Ontology.Individual)">
+            <summary>
+            All Adjectives that are true of the individual in Model.
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Generator.Invention.MostSpecificNouns(Imaginarium.Ontology.Individual)">
+            <summary>
+            Finds the minima of the sub-lattice of nouns satisfied by this individual.
+            Translation: every noun that's true of ind but that doesn't have a more specific noun that's
+            also true of it.  We suppress the more general nouns because they're implied by the truth of
+            the more specified ones.
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Generator.Invention.NameString(Imaginarium.Ontology.Individual,System.Collections.Generic.List{Imaginarium.Ontology.Property})">
+            <summary>
+            The name of the Individual within this Invention
+            </summary>
+            <param name="i">The individual</param>
+            <param name="referencedProperties">(Optional) list of properties that were used to make this name.</param>
+            <returns>Name as a single string</returns>
+        </member>
+        <member name="M:Imaginarium.Generator.Invention.IsA(Imaginarium.Ontology.Individual,System.String[])">
+            <summary>
+            True if the concept with the specified name applies to the individual in the current Model.
+            </summary>
+            <param name="i">Individual to test</param>
+            <param name="name">Name of concept to test</param>
+            <returns>True if Individual is an instance of the named concept.</returns>
+        </member>
+        <member name="M:Imaginarium.Generator.Invention.IsA(Imaginarium.Ontology.Individual,Imaginarium.Ontology.MonadicConcept)">
+            <summary>
+            True if concept applies to individual in the current Model.
+            </summary>
+            <param name="i">Individual to test</param>
+            <param name="c">Concept to test the truth of</param>
+            <returns>True if i is an instance of c in the current Model</returns>
+        </member>
+        <member name="M:Imaginarium.Generator.Invention.Holds(Imaginarium.Ontology.Verb,Imaginarium.Ontology.Individual,Imaginarium.Ontology.Individual)">
+            <summary>
+            True if i1 verbs i2 in this Invention (i.e. in this model)
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Generator.Invention.Holds(System.String,Imaginarium.Ontology.Individual,Imaginarium.Ontology.Individual)">
+            <summary>
+            True if i1 verbs i2 in this Invention (i.e. in this model)
+            </summary>
+        </member>
+        <member name="P:Imaginarium.Generator.Invention.Relationships">
+            <summary>
+            All the instances of all the relations in this Invention (i.e. in this model)
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Generator.Invention.TrueKinds(Imaginarium.Ontology.Individual)">
+            <summary>
+            All the kinds that apply to the individual in the current Model
+            </summary>
+            <param name="ind">Individual to look up the kinds of</param>
+            <returns>All kinds that apply to individual</returns>
+        </member>
+        <member name="T:Imaginarium.Ontology.Adjective">
+            <summary>
+            A monadic predicate that is surfaced in English as an adjective.
+            </summary>
+        </member>
+        <member name="P:Imaginarium.Ontology.Adjective.Description">
+            <inheritdoc />
+        </member>
+        <member name="P:Imaginarium.Ontology.Adjective.DictionaryStylePartOfSpeech">
+            <inheritdoc />
+        </member>
+        <member name="M:Imaginarium.Ontology.Adjective.RelevantTo(Imaginarium.Ontology.CommonNoun)">
+            <summary>
+            True if this is an adjective that can apply to an individual of the specified kind.
+            </summary>
+            <param name="noun">Noun representing a kind of object</param>
+            <returns>True if this adjective is allowed to apply to objects of the specified kind.</returns>
+        </member>
+        <member name="F:Imaginarium.Ontology.Adjective.Name">
+            <summary>
+            Token(s) that identify the adjective
+            </summary>
+        </member>
+        <member name="P:Imaginarium.Ontology.Adjective.StandardName">
+            <inheritdoc />
+        </member>
+        <member name="P:Imaginarium.Ontology.Adjective.IsSilent">
+            <summary>
+            Suppress this adjective during text generation.
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Ontology.Adjective.IsNamed(System.String[])">
+            <inheritdoc />
+        </member>
+        <member name="T:Imaginarium.Ontology.CommonNoun">
+            <summary>
+            A noun that represents a kind of thing
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Ontology.CommonNoun.MakeGenerator(System.Int32,Imaginarium.Ontology.MonadicConceptLiteral[])">
+            <summary>
+            Make a generator for this kind of object.
+            </summary>
+            <param name="count">Number of instances of the object to generate at a time</param>
+            <param name="modifiers">And modifiers that must apply to generated objects</param>
+            <returns></returns>
+        </member>
+        <member name="P:Imaginarium.Ontology.CommonNoun.Description">
+            <inheritdoc />
+        </member>
+        <member name="P:Imaginarium.Ontology.CommonNoun.DictionaryStylePartOfSpeech">
+            <inheritdoc />
+        </member>
+        <member name="M:Imaginarium.Ontology.CommonNoun.IsNamed(System.String[])">
+            <inheritdoc />
+        </member>
+        <member name="P:Imaginarium.Ontology.CommonNoun.SingularForm">
+            <summary>
+            Singular form of the noun
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Ontology.CommonNoun.EnsureSingularForm">
+            <summary>
+            Make sure the noun has a singular form.
+            </summary>
+        </member>
+        <member name="P:Imaginarium.Ontology.CommonNoun.PluralForm">
+            <summary>
+            Plural form of the noun, for common nouns
+            </summary>
+        </member>
+        <member name="P:Imaginarium.Ontology.CommonNoun.StandardName">
+            <inheritdoc />
+        </member>
+        <member name="P:Imaginarium.Ontology.CommonNoun.NameTemplate">
+            <summary>
+            Template used to generate a reference to the object
+            </summary>
+        </member>
+        <member name="P:Imaginarium.Ontology.CommonNoun.DescriptionTemplate">
+            <summary>
+            Template used to generate a a description of the object
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Ontology.CommonNoun.Subkinds">
+            <summary>
+            The common nouns identifying the subtypes of this noun
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Ontology.CommonNoun.Superkinds">
+            <summary>
+            The common nouns identifying the superkinds of this noun
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Ontology.CommonNoun.RelevantAdjectives">
+            <summary>
+            Adjectives might apply to this kind of noun.
+            Relevant adjectives of super- and subkinds might also apply but not be listed in this list.
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Ontology.CommonNoun.AlternativeSets">
+            <summary>
+            Sets of mutually exclusive concepts that apply to this kind of object
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Ontology.CommonNoun.ImpliedAdjectives">
+            <summary>
+            Adjectives that are always true of this kind of object.
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Ontology.CommonNoun.Parts">
+            <summary>
+            Components of this kind of object
+            Objects of this kind may also have parts attached to sub- and superkinds.
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Ontology.CommonNoun.PartNamed(System.String[])">
+            <summary>
+            Return the Part of this noun with the specified name, or null.
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Ontology.CommonNoun.Properties">
+            <summary>
+            Properties attached to this kind of object
+            Objects of this kind may also have properties attached to sub- and superkinds.
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Ontology.CommonNoun.PropertyNamed(System.String[])">
+            <summary>
+            Return the property of this noun with the specified name, or null.
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Ontology.CommonNoun.ForAllAncestorKinds(System.Action{Imaginarium.Ontology.CommonNoun},System.Boolean)">
+            <summary>
+            Run action over all the ancestor kinds of this kind
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Ontology.CommonNoun.ForAllDescendantKinds(System.Action{Imaginarium.Ontology.CommonNoun},System.Boolean)">
+            <summary>
+            Run action over all the descendant kinds of this kind
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Ontology.CommonNoun.IsImmediateSuperKindOf(Imaginarium.Ontology.CommonNoun)">
+            <summary>
+            True if this is an immediate superkind of the specified subkind.
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Ontology.CommonNoun.IsImmediateSubKindOf(Imaginarium.Ontology.CommonNoun)">
+            <summary>
+            True if this is an immediate subkind of the specified superkind.
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Ontology.CommonNoun.IsSuperKindOf(Imaginarium.Ontology.CommonNoun)">
+            <summary>
+            This is a superkind of the specified subkind
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Ontology.CommonNoun.IsSubKindOf(Imaginarium.Ontology.CommonNoun)">
+            <summary>
+            This is a subkind of the specified superkind
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Ontology.CommonNoun.LeastUpperBound(Imaginarium.Ontology.CommonNoun,Imaginarium.Ontology.CommonNoun)">
+            <summary>
+            Returns the LUB of the two kinds in the kind lattice
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Ontology.CommonNoun.LeastUpperBound(Imaginarium.Ontology.CommonNoun,Imaginarium.Ontology.CommonNoun,Imaginarium.Ontology.CommonNoun)">
+            <summary>
+            Returns the LUB of the three kinds in the kind lattice
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Ontology.CommonNoun.DeclareSuperclass(Imaginarium.Ontology.CommonNoun)">
+            <summary>
+            Ensure super is an immediate super-kind of this kind.
+            Does nothing if it is already a super-kind.
+            </summary>
+        </member>
+        <member name="T:Imaginarium.Ontology.CommonNoun.AlternativeSet">
+            <summary>
+            A set of mutually exclusive adjectives that can apply to a CommonNoun.
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Ontology.CommonNoun.AlternativeSet.Alternatives">
+            <summary>
+            At most one of these may be true of the noun
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Ontology.CommonNoun.AlternativeSet.MinCount">
+            <summary>
+            Minimum number of literals that can be true
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Ontology.CommonNoun.AlternativeSet.MaxCount">
+            <summary>
+            Maximum number of literals that can be true
+            </summary>
+        </member>
+        <member name="T:Imaginarium.Ontology.CommonNoun.ConditionalModifier">
+            <summary>
+            An adjective together with an optional list of modifiers that allow it to apply
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Ontology.CommonNoun.ConditionalModifier.Conditions">
+            <summary>
+            Additional conditions on top of the CommonNoun in which this is stored, that must be true for the implication to hold
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Ontology.CommonNoun.ConditionalModifier.Modifier">
+            <summary>
+            Adjective that follows from the noun and conditions.
+            </summary>
+        </member>
+        <member name="T:Imaginarium.Ontology.Concept">
+            <summary>
+            A linguistic object that represents a logical predicate
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Ontology.Concept.#ctor(Imaginarium.Ontology.Ontology,System.String[])">
+            <summary>
+            Makes Concept
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Ontology.Concept.EnglishTypeName(System.Type)">
+            <summary>
+            Converts a C# type object that is a subclass of Concept to the English term for it.
+            For example CommonNoun maps to "noun" and Adjective maps to "adjective"
+            </summary>
+        </member>
+        <member name="P:Imaginarium.Ontology.Concept.DictionaryStylePartOfSpeech">
+            <summary>
+            What part of speech (noun, verb, adjective, etc.) this concept corresponds to.
+            </summary>
+        </member>
+        <member name="P:Imaginarium.Ontology.Concept.Description">
+            <summary>
+            A description of the concept.  Used for tooltips in Concepts visualization
+            </summary>
+        </member>
+        <member name="T:Imaginarium.Ontology.Individual">
+            <summary>
+            Represents an object in the model (imagined scenario)
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Ontology.Individual.NameProperty(CatSAT.Solution)">
+            <summary>
+            Returns the Property of this Individual named "name", if any
+            </summary>
+            <returns>The name Property, else null.</returns>
+        </member>
+        <member name="F:Imaginarium.Ontology.Individual.Kinds">
+            <summary>
+            The kinds (CommonNouns) of this Individual
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Ontology.Individual.Modifiers">
+            <summary>
+            The Adjectives that might apply to this Individual
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Ontology.Individual.Parts">
+            <summary>
+            The Properties of this individual.
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Ontology.Individual.Properties">
+            <summary>
+            The Properties of this individual.
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Ontology.Individual.Name">
+            <summary>
+            Name of the object within the ontology, for permanent individuals.
+            Also used as a default name for ephemeral individuals, if they don't end up with any assigned
+            name property.
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Ontology.Individual.Container">
+            <summary>
+            The Individual of which this is a part, if any, or null
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Ontology.Individual.ContainerPart">
+            <summary>
+            If this is a part of another Individual (its Container), what Part this is of that Container
+            </summary>
+        </member>
+        <member name="P:Imaginarium.Ontology.Individual.StandardName">
+            <inheritdoc />
+        </member>
+        <member name="P:Imaginarium.Ontology.Individual.MostRecentDescription">
+            <summary>
+            Cached description string from the last time it was generated for this individual.
+            This will be invalid if switching between different Inventions that both contain this Individual.
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Ontology.Individual.IsNamed(System.String[])">
+            <inheritdoc />
+        </member>
+        <member name="M:Imaginarium.Ontology.Individual.CompareTo(System.Object)">
+            <inheritdoc />
+        </member>
+        <member name="M:Imaginarium.Ontology.Individual.op_LessThan(Imaginarium.Ontology.Individual,Imaginarium.Ontology.Individual)">
+            <summary>
+            Implements an arbitrary total order on Individuals
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Ontology.Individual.op_GreaterThan(Imaginarium.Ontology.Individual,Imaginarium.Ontology.Individual)">
+            <summary>
+            Implements an arbitrary total order on Individuals
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Ontology.Individual.op_LessThanOrEqual(Imaginarium.Ontology.Individual,Imaginarium.Ontology.Individual)">
+            <summary>
+            Implements an arbitrary total order on Individuals
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Ontology.Individual.op_GreaterThanOrEqual(Imaginarium.Ontology.Individual,Imaginarium.Ontology.Individual)">
+            <summary>
+            Implements an arbitrary total order on Individuals
+            </summary>
+        </member>
+        <member name="T:Imaginarium.Ontology.MonadicConcept">
+            <summary>
+            A concept that represents a unary predicate, e.g. a noun or adjective.
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Ontology.MonadicConcept.#ctor(Imaginarium.Ontology.Ontology,System.String[])">
+            <summary>
+            Makes a new Monadic concept
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Ontology.MonadicConcept.InitialProbability">
+            <summary>
+            The initial probability used for the proposition that an individual is of this type.
+            </summary>
+        </member>
+        <member name="T:Imaginarium.Ontology.MonadicConceptLiteral">
+            <summary>
+            Represents a monadic concept or its negation
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Ontology.MonadicConceptLiteral.Concept">
+            <summary>
+            Concept referred to by this literal
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Ontology.MonadicConceptLiteral.IsPositive">
+            <summary>
+            Polarity of the literal.
+            If true, then this means Concept, else !Concept.
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Ontology.MonadicConceptLiteral.op_Implicit(Imaginarium.Ontology.MonadicConcept)~Imaginarium.Ontology.MonadicConceptLiteral">
+            <summary>
+            Makes a literal sating this monadic concept is true
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Ontology.MonadicConceptLiteral.Inverse">
+            <summary>
+            Inverts a monadic concept literal
+            </summary>
+        </member>
+        <member name="T:Imaginarium.Ontology.NameCollisionException">
+            <summary>
+            Represents an error in which the same name is used for two different Concepts of different types (e.g. noun and verb)
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Ontology.NameCollisionException.Name">
+            <summary>
+            Name that was inconsistently defined
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Ontology.NameCollisionException.OldType">
+            <summary>
+            First type assigned to the name
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Ontology.NameCollisionException.NewType">
+            <summary>
+            New type the user tried to assign to it.
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Ontology.NameCollisionException.#ctor(System.String[],System.Type,System.Type)">
+            <summary>
+            Make a new NameCollisionException
+            </summary>
+        </member>
+        <member name="T:Imaginarium.Ontology.Noun">
+            <summary>
+            A monadic concept that can be realized in English as the head of an NP.
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Ontology.Noun.#ctor(Imaginarium.Ontology.Ontology,System.String[])">
+            <summary>
+            Makes a new noun
+            </summary>
+        </member>
+        <member name="T:Imaginarium.Ontology.Ontology">
+            <summary>
+            Operations for accessing the ontology as a whole
+            The ontology consists of all the Referent objects and the information within them (e.g. Property objects)
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Ontology.Ontology.#ctor(System.String,System.String)">
+            <summary>
+            Create a new Ontology and load the code in the specified directory
+            </summary>
+            <param name="name">Name for the ontology (for debugging purposes)</param>
+            <param name="definitionsDirectory">Path to the directory containing code to load</param>
+        </member>
+        <member name="F:Imaginarium.Ontology.Ontology.Name">
+            <summary>
+            Name of the ontology (for debugging purposes)
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Ontology.Ontology.AllTokenTries">
+            <summary>
+            All the TokenTries used in this ontology, e.g. for monadic concepts and verbs.
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Ontology.Ontology.AllReferentTables">
+            <summary>
+            List of all the tables of different kinds of referents.
+            Used so we know what to clear when reinitializing the ontology.
+            </summary>
+        </member>
+        <member name="P:Imaginarium.Ontology.Ontology.AllCommonNouns">
+            <summary>
+            List of all common nouns (i.e. kinds/types) in the ontology.
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Ontology.Ontology.AllPermanentIndividuals">
+            <summary>
+            All the permanent individuals in this ontology.
+            A permanent individual is made when one defines a proper name in the ontology.
+            It is then produced by all Generators for this ontology, regardless of what the
+            "imagine" command requires.
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Ontology.Ontology.MonadicConceptTrie">
+            <summary>
+            The trie used for monadic concepts (common nouns and adjectives).
+            </summary>
+        </member>
+        <member name="P:Imaginarium.Ontology.Ontology.LastMatchPlural">
+            <summary>
+            True if the last lookup of the monadic concept trie was for a plural noun.
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Ontology.Ontology.AllNouns">
+            <summary>
+            All nouns in this ontology (common or proper)
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Ontology.Ontology.AllParts">
+            <summary>
+            All Parts in this ontology, regardless of what common noun they're attached to
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Ontology.Ontology.AllProperties">
+            <summary>
+            All Properties in this ontology, regardless of what common noun they're attached to
+            </summary>
+        </member>
+        <member name="P:Imaginarium.Ontology.Ontology.AllVerbs">
+            <summary>
+            All verbs (binary relations) defined in this ontology.
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Ontology.Ontology.Concept(Imaginarium.Parsing.TokenString)">
+            <summary>
+            Return the concept with the specified name, or null if there isn't one.
+            </summary>
+        </member>
+        <member name="P:Imaginarium.Ontology.Ontology.Item(Imaginarium.Parsing.TokenString)">
+            <summary>
+            Return the concept with the specified name, or null if there isn't one
+            </summary>
+        </member>
+        <member name="P:Imaginarium.Ontology.Ontology.Item(System.String)">
+            <summary>
+            Return the concept with the specified name
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Ontology.Ontology.Adjective(System.String[])">
+            <summary>
+            Returns the adjective with the specified name, or null if none
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Ontology.Ontology.CommonNoun(System.String[])">
+            <summary>
+            Returns the common noun identified by the specified sequence of tokens, or null, if there is no such noun.
+            </summary>
+            <param name="name">Tokens identifying the noun</param>
+            <returns>Identified noun, or null if none found.</returns>
+        </member>
+        <member name="M:Imaginarium.Ontology.Ontology.CommonNoun(System.String)">
+            <summary>
+            Returns the common noun (kind) named by the specified string, or null if there is none.
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Ontology.Ontology.Individual(System.String[])">
+            <summary>
+            Return the (permanent) individual with the specified name
+            An individual is the referent of a proper noun.
+            </summary>
+            <param name="name">The name of the individual</param>
+        </member>
+        <member name="M:Imaginarium.Ontology.Ontology.Noun(System.String[])">
+            <summary>
+            Returns the noun named by the specified token string, or null if there is none.
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Ontology.Ontology.Noun(System.String)">
+            <summary>
+            Returns the noun named by the specified string, or null if there is none.
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Ontology.Ontology.Part(System.String[])">
+            <summary>
+            Return the property with the specified name, if any, otherwise null.
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Ontology.Ontology.Property(System.String[])">
+            <summary>
+            Return the property with the specified name, if any, otherwise null.
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Ontology.Ontology.Verb(System.String[])">
+            <summary>
+            Return the verb with the specified name
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Ontology.Ontology.Store(System.String[],Imaginarium.Ontology.MonadicConcept,System.Boolean)">
+            <summary>
+            Add this name and concept to the trie of all known names of all known monadic concepts.
+            </summary>
+            <param name="tokens">Name to add for the concept</param>
+            <param name="c">Concept to add</param>
+            <param name="isPlural">True when concept is a common noun and the name is its plural.</param>
+        </member>
+        <member name="M:Imaginarium.Ontology.Ontology.Lookup(System.Collections.Generic.IList{System.String},System.Int32@)">
+            <summary>
+            Search trie for a monadic concept named by some substring of tokens starting at the specified index.
+            Updates index as it searches
+            </summary>
+            <param name="tokens">Sequence of tokens to search</param>
+            <param name="index">Position within token sequence</param>
+            <returns>Concept, if found, otherwise null.</returns>
+        </member>
+        <member name="M:Imaginarium.Ontology.Ontology.EphemeralIndividual(System.Collections.Generic.IEnumerable{Imaginarium.Ontology.MonadicConceptLiteral},System.String[],Imaginarium.Ontology.Individual,Imaginarium.Ontology.Part)">
+            <summary>
+            Makes an Individual that is not part of the ontology itself.
+            This individual is local to a particular Invention.
+            </summary>
+            <param name="concepts">CommonNouns and Adjectives that must apply to the individual</param>
+            <param name="name">Default name to give to the individual if no name property can be found.</param>
+            <param name="container">The object of which this is a part, if any</param>
+            <param name="containerPart">Part of container which this object represents</param>
+            <returns></returns>
+        </member>
+        <member name="M:Imaginarium.Ontology.Ontology.PermanentIndividual(System.Collections.Generic.IEnumerable{Imaginarium.Ontology.MonadicConceptLiteral},System.String[])">
+            <summary>
+            Makes an Individual that is part of the ontology itself.  It will appear in all Inventions.
+            </summary>
+            <param name="concepts">CommonNouns and Adjectives that must be true of this Individual</param>
+            <param name="name">Default name for the individual if not name property can be found.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Imaginarium.Ontology.Ontology.EraseConcepts">
+            <summary>
+            Removes all concepts form the ontology.
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Ontology.Ontology.Reload">
+            <summary>
+            Reload the current project
+            </summary>
+        </member>
+        <member name="P:Imaginarium.Ontology.Ontology.Parser">
+            <summary>
+            The default Parser for use with this ontology.
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Ontology.Ontology.Load">
+            <summary>
+            Load all the source files in the current project
+            </summary>
+        </member>
+        <member name="P:Imaginarium.Ontology.Ontology.DefinitionsDirectory">
+            <summary>
+            Directory holding definitions files and item lists.
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Ontology.Ontology.EnsureUndefinedOrDefinedAsType(System.String[],System.Type)">
+            <summary>
+            Throw an exception if an object with a different type is already defined under this name.
+            </summary>
+            <param name="name">Name of the concept</param>
+            <param name="type">C# type we think the referent should have (e.g. typeof(Verb) for verb)</param>
+            <exception cref="T:Imaginarium.Ontology.NameCollisionException">If there is already a concept with that name but a different type.</exception>
+        </member>
+        <member name="M:Imaginarium.Ontology.Ontology.ClearTests">
+            <summary>
+            Remove any tests defined for this ontology.
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Ontology.Ontology.AddTest(Imaginarium.Ontology.CommonNoun,System.Collections.Generic.IEnumerable{Imaginarium.Ontology.MonadicConceptLiteral},System.Boolean,System.String,System.String)">
+            <summary>
+            Add a test to the ontology
+            </summary>
+            <param name="noun">Kind of object to test (a common noun)</param>
+            <param name="modifiers">other attributes it should have</param>
+            <param name="shouldExist">If true, the test succeeds when a noun with those modifiers exists.  If false, it succeeds when it doesn't exist.</param>
+            <param name="succeedMessage">Message to print when it succeeds</param>
+            <param name="failMessage">Message to print when it fails</param>
+        </member>
+        <member name="M:Imaginarium.Ontology.Ontology.TestResults">
+            <summary>
+            Run all the defined tests for this ontology and return their results
+            </summary>
+            <returns>A stream of results: test that was run, whether it succeeded, and the invention that's an example/counter-example</returns>
+        </member>
+        <member name="M:Imaginarium.Ontology.Ontology.Generator(Imaginarium.Ontology.CommonNoun,Imaginarium.Ontology.MonadicConceptLiteral[])">
+            <summary>
+            Make a generator to generate the specified noun and modifiers
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Ontology.Ontology.Generator(System.String,System.Int32)">
+            <summary>
+            Make a generator to generate the specified noun and modifiers
+            </summary>
+        </member>
+        <member name="T:Imaginarium.Ontology.Part">
+            <summary>
+            An Individual that is an intrinsic component of another individual
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Ontology.Part.Count">
+            <summary>
+            Number of instances of this part in a given instance of Kind.
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Ontology.Part.Kind">
+            <summary>
+            The CatSAT domain of this variable
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Ontology.Part.Modifiers">
+            <summary>
+            Modifiers attached to the Kind
+            </summary>
+        </member>
+        <member name="P:Imaginarium.Ontology.Part.MonadicConcepts">
+            <summary>
+            All Monadic concepts (Kind and Modifiers) attached to this Part.
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Ontology.Part.Name">
+            <summary>
+            Token string used to refer to this property
+            </summary>
+        </member>
+        <member name="P:Imaginarium.Ontology.Part.StandardName">
+            <inheritdoc />
+        </member>
+        <member name="M:Imaginarium.Ontology.Part.IsNamed(System.String[])">
+            <inheritdoc />
+        </member>
+        <member name="T:Imaginarium.Ontology.ProperNoun">
+            <summary>
+            A ProperNoun is a name given in English to a particular Individual in the Ontology.
+            It is a permanent individual, meaning it isn't local to a specific generator.  It's present
+            in all inventions.
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Ontology.ProperNoun.Name">
+            <summary>
+            Name of the concept
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Ontology.ProperNoun.Individual">
+            <summary>
+            The (permanent) individual from the Ontology this name represents
+            </summary>
+        </member>
+        <member name="P:Imaginarium.Ontology.ProperNoun.DictionaryStylePartOfSpeech">
+            <inheritdoc />
+        </member>
+        <member name="M:Imaginarium.Ontology.ProperNoun.IsNamed(System.String[])">
+            <inheritdoc />
+        </member>
+        <member name="P:Imaginarium.Ontology.ProperNoun.StandardName">
+            <inheritdoc />
+        </member>
+        <member name="P:Imaginarium.Ontology.ProperNoun.Kinds">
+            <summary>
+            The Kinds (CommonNouns) this individual is declared always to have.
+            </summary>
+        </member>
+        <member name="T:Imaginarium.Ontology.Property">
+            <summary>
+            Represents a property of an individual
+            </summary>
+        </member>
+        <member name="P:Imaginarium.Ontology.Property.Description">
+            <inheritdoc />
+        </member>
+        <member name="F:Imaginarium.Ontology.Property.Type">
+            <summary>
+            The CatSAT domain of this variable
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Ontology.Property.MenuRules">
+            <summary>
+            Rules for which menus to use when for this variable, it it's a MenuVariable.
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Ontology.Property.Name">
+            <summary>
+            Token string used to refer to this property
+            </summary>
+        </member>
+        <member name="P:Imaginarium.Ontology.Property.StandardName">
+            <inheritdoc />
+        </member>
+        <member name="M:Imaginarium.Ontology.Property.IsNamed(System.String[])">
+            <inheritdoc />
+        </member>
+        <member name="T:Imaginarium.Ontology.Property.MenuRule">
+            <summary>
+            A set of conditions under which a property should take its value from a specific menu of possible values.
+            In practice, menus are files of strings.
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Ontology.Property.MenuRule.Conditions">
+            <summary>
+            Conditions in which this rule applies
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Ontology.Property.MenuRule.Menu">
+            <summary>
+            Menu of allowable strings
+            </summary>
+        </member>
+        <member name="T:Imaginarium.Ontology.Referent">
+            <summary>
+            An object within an ontology (e.g. a Concept or Individual)
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Ontology.Referent.Ontology">
+            <summary>
+            The ontology to which this belongs
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Ontology.Referent.#ctor(Imaginarium.Ontology.Ontology,System.String[])">
+            <summary>
+            Make a new referent.
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Ontology.Referent.IsNamed(System.String[])">
+            <summary>
+            True if this object's name matches the specified token string.
+            </summary>
+            <param name="tokens"></param>
+            <returns></returns>
+        </member>
+        <member name="P:Imaginarium.Ontology.Referent.Text">
+            <summary>
+            String form of standard name of this object
+            </summary>
+        </member>
+        <member name="P:Imaginarium.Ontology.Referent.StandardName">
+            <summary>
+            Tokenized form of the standard name of this object
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Ontology.Referent.ToString">
+            <inheritdoc />
+        </member>
+        <member name="T:Imaginarium.Ontology.Test">
+            <summary>
+            A unit test for generators
+            Consists of an NP and whether it should exist or not.
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Ontology.Test.Noun">
+            <summary>
+            The kind that ought to exist or not exist
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Ontology.Test.Modifiers">
+            <summary>
+            Any additional attributes it should have
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Ontology.Test.ShouldExist">
+            <summary>
+             Whether this is a test that the Noun+Modifiers does exist, or a test that it doesn't.
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Ontology.Test.SucceedMessage">
+            <summary>
+            Message to print if the test succeeds
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Ontology.Test.FailMessage">
+            <summary>
+            Message to print if it fails
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Ontology.Test.Run">
+            <summary>
+            Run this test
+            </summary>
+            <returns>Whether it succeeded and the example/counter-example that was generated (or null, if nothing was generated)</returns>
+        </member>
+        <member name="T:Imaginarium.Ontology.TokenTrieBase">
+            <summary>
+            Abstract class of Tries of Tokens
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Ontology.TokenTrieBase.#ctor(Imaginarium.Ontology.Ontology)">
+            <summary>
+            Make a new TokenTrie
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Ontology.TokenTrieBase.Clear">
+            <summary>
+            Erase the data in the Trie
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Ontology.TokenTrieBase.Contains(Imaginarium.Parsing.TokenString)">
+            <summary>
+            True if the trie contains this string of tokens
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Ontology.TokenTrieBase.Find(Imaginarium.Parsing.TokenString)">
+            <summary>
+            Returns the Trie node for this token string, or null if it doesn't appear in the Trie.
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Ontology.TokenTrieBase.IsCaseSensitive">
+            <summary>
+            True if the trie should ignore case.
+            </summary>
+        </member>
+        <member name="T:Imaginarium.Ontology.TokenTrie`1">
+            <summary>
+            A trie mapping sequences of tokens to Referents
+            </summary>
+            <typeparam name="TReferent"></typeparam>
+        </member>
+        <member name="P:Imaginarium.Ontology.TokenTrie`1.Contents">
+            <summary>
+            Enumerate all nodes in the trie
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Ontology.TokenTrie`1.Store(System.String[],`0,System.Boolean)">
+            <summary>
+            Add this name and concept to the trie.
+            </summary>
+            <param name="tokens">Name to add for the concept</param>
+            <param name="c">Concept to add</param>
+            <param name="isPlural">True when concept is a common noun and the name is its plural.</param>
+        </member>
+        <member name="F:Imaginarium.Ontology.TokenTrie`1.LastMatchPlural">
+            <summary>
+            Returns information about the plurality of the last match, if relevant.
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Ontology.TokenTrie`1.Lookup(System.Collections.Generic.IList{System.String},System.Int32@)">
+            <summary>
+            Search trie for a monadic concept named by some substring of tokens starting at the specified index.
+            Updates index as it searches
+            </summary>
+            <param name="tokens">Sequence of tokens to search</param>
+            <param name="index">Position within token sequence</param>
+            <returns>Concept, if found, otherwise null.</returns>
+        </member>
+        <member name="M:Imaginarium.Ontology.TokenTrie`1.Find(Imaginarium.Parsing.TokenString)">
+            <inheritdoc />
+        </member>
+        <member name="M:Imaginarium.Ontology.TokenTrie`1.Clear">
+            <summary>
+            Remove all data from the monadic concept trie
+            Used when reinitializing the ontology.
+            </summary>
+        </member>
+        <member name="T:Imaginarium.Ontology.Verb">
+            <summary>
+            Represents a verb, i.e. a binary relation
+            </summary>
+        </member>
+        <member name="P:Imaginarium.Ontology.Verb.Description">
+            <inheritdoc />
+        </member>
+        <member name="P:Imaginarium.Ontology.Verb.DictionaryStylePartOfSpeech">
+            <inheritdoc />
+        </member>
+        <member name="F:Imaginarium.Ontology.Verb.Generalizations">
+            <summary>
+            Verbs that are implied by this verb
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Ontology.Verb.MutualExclusions">
+            <summary>
+            Verbs that are mutually exclusive with this one: A this B implies not A exclusion B
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Ontology.Verb.Subspecies">
+            <summary>
+            Verbs that are specializations of this verb
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Ontology.Verb.Superspecies">
+            <summary>
+            Verbs that are generalizations of this verb
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Ontology.Verb.Unbounded">
+            <summary>
+            The value for an upper bound that means there is no upper bound
+            This can be any large value but must not be short.MaxValue, or there will be overflow errors.
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Ontology.Verb.ObjectUpperBound">
+            <summary>
+            The maximum number of elements in the Object domain, a given member of the Subject domain can be related to.
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Ontology.Verb.ObjectLowerBound">
+            <summary>
+            The minimum number of elements in the Object domain, a given member of the Subject domain can be related to.
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Ontology.Verb.SubjectUpperBound">
+            <summary>
+            The maximum number of elements in the Subject domain, a given member of the Object domain can be related to.
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Ontology.Verb.SubjectLowerBound">
+            <summary>
+            The minimum number of elements in the Subject domain, a given member of the Object domain can be related to.
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Ontology.Verb.IsReflexive">
+            <summary>
+            A verb A for all A in it's domain
+            </summary>
+        </member>
+        <member name="P:Imaginarium.Ontology.Verb.AncestorIsReflexive">
+            <summary>
+            This verb and/or one of its superspecies is reflexive
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Ontology.Verb.IsAntiReflexive">
+            <summary>
+            A verb A for NO A in its domain
+            </summary>
+        </member>
+        <member name="P:Imaginarium.Ontology.Verb.AncestorIsAntiReflexive">
+            <summary>
+            This verb and/or one of its superspecies is anti-reflexive
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Ontology.Verb.IsSymmetric">
+            <summary>
+            X verb Y implies Y verb X
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Ontology.Verb.IsAntiSymmetric">
+            <summary>
+            X verb Y implies not Y verb X
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Ontology.Verb.Density">
+            <summary>
+            The initial probability of the relation.
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Ontology.Verb.IsNamed(System.String[])">
+            <inheritdoc />
+        </member>
+        <member name="P:Imaginarium.Ontology.Verb.BaseForm">
+            <summary>
+            The base form of the verb (e.g. eat, rather than eats, eating,
+            to eat, eaten by, etc.).
+            This is most commonly the same as the third person plural.
+            </summary>
+        </member>
+        <member name="P:Imaginarium.Ontology.Verb.PassiveParticiple">
+            <summary>
+            Passive participle of the verb (eat => eaten).
+            In English, this is the same as the past participle, but
+            since Imaginarium doesn't do tenses, we refer to it as the
+            passive participle.
+            </summary>
+        </member>
+        <member name="P:Imaginarium.Ontology.Verb.GerundForm">
+            <summary>
+            The gerund/present participle form (eat => eating)
+            </summary>
+        </member>
+        <member name="P:Imaginarium.Ontology.Verb.StandardName">
+            <inheritdoc />
+        </member>
+        <member name="P:Imaginarium.Ontology.Verb.SingularForm">
+            <summary>
+            Singular form of the verb
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Ontology.Verb.EnsureGerundForm">
+            <summary>
+            Add likely spellings of the gerund of this verb.
+            They are stored as if they are plural inflections.
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Ontology.Verb.EnsurePassiveParticiple">
+            <summary>
+            Add likely spellings of the gerund of this verb.
+            They are stored as if they are plural inflections.
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Ontology.Verb.EnsureSingularForm">
+            <summary>
+            Make sure the noun has a singular verb.
+            </summary>
+        </member>
+        <member name="P:Imaginarium.Ontology.Verb.PluralForm">
+            <summary>
+            Plural form of the verb
+            </summary>
+        </member>
+        <member name="P:Imaginarium.Ontology.Verb.SubjectKind">
+            <summary>
+            Type/kind/noun of the subject argument to the verb
+            </summary>
+        </member>
+        <member name="P:Imaginarium.Ontology.Verb.SubjectModifiers">
+            <summary>
+            Modifies that must also be true of subjects of the verb
+            </summary>
+        </member>
+        <member name="P:Imaginarium.Ontology.Verb.ObjectKind">
+            <summary>
+            Type/kind/noun of the object argument of the verb
+            </summary>
+        </member>
+        <member name="P:Imaginarium.Ontology.Verb.ObjectModifiers">
+            <summary>
+            Modifiers that must also be true of the objects of the verb.
+            </summary>
+        </member>
+        <member name="T:Imaginarium.Ontology.VerbConjugation">
+            <summary>
+            Possible conjugations of a verb
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Ontology.VerbConjugation.ThirdPerson">
+            <summary>
+            Third person
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Ontology.VerbConjugation.BaseForm">
+            <summary>
+            Base form
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Ontology.VerbConjugation.Gerund">
+            <summary>
+            Gerund form / present participle
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Ontology.VerbConjugation.PassiveParticiple">
+            <summary>
+            Passive participle / past participle
+            </summary>
+        </member>
+        <member name="T:Imaginarium.Parsing.AP">
+            <summary>
+            Represents a phrase denoting an adjective
+            </summary>
+        </member>
+        <member name="P:Imaginarium.Parsing.AP.Adjective">
+            <summary>
+            The Adjective object referred to by the parsed phrase
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Parsing.AP.IsNegated">
+            <summary>
+            True if the adjectival phrase is prefixed by "not"  or "non-"
+            </summary>
+        </member>
+        <member name="P:Imaginarium.Parsing.AP.MonadicConceptLiteral">
+            <summary>
+            The adjective referred to, but in the form of a MCL.
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Parsing.AP.GetConcept">
+            <inheritdoc />
+        </member>
+        <member name="M:Imaginarium.Parsing.AP.ValidBeginning(System.String)">
+            <inheritdoc />
+        </member>
+        <member name="M:Imaginarium.Parsing.AP.ParseModifiers">
+            <inheritdoc />
+        </member>
+        <member name="M:Imaginarium.Parsing.AP.Reset">
+            <inheritdoc />
+        </member>
+        <member name="M:Imaginarium.Parsing.AP.#ctor(Imaginarium.Parsing.Parser)">
+            <inheritdoc />
+        </member>
+        <member name="T:Imaginarium.Parsing.ClosedClassSegment">
+            <summary>
+            Base class for segments that can only be filled by fixed words and phrases
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Parsing.ClosedClassSegment.MatchedText">
+            <summary>
+            The token that was used as a determiner;
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Parsing.ClosedClassSegment.PossibleBeginnings">
+            <summary>
+            Tokens that can start a phrase this segment can match
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Parsing.ClosedClassSegment.IsPossibleStart">
+            <summary>
+            Tests if the token is one of the known quantifiers
+            </summary>
+        </member>
+        <member name="P:Imaginarium.Parsing.ClosedClassSegment.Keywords">
+            <summary>
+            Closed-class words that can be used in this segment
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Parsing.ClosedClassSegment.#ctor(Imaginarium.Parsing.Parser)">
+            <inheritdoc />
+        </member>
+        <member name="T:Imaginarium.Parsing.ClosedClassSegmentWithValue`1">
+            <summary>
+            A closed-class segment that can denote a value of type T
+            Note: in practice this is used for types that are not Concepts but rather
+            things like numbers.
+            </summary>
+            <typeparam name="T">Type of the denoted value</typeparam>
+        </member>
+        <member name="F:Imaginarium.Parsing.ClosedClassSegmentWithValue`1.Value">
+            <summary>
+            The value denoted by the matched phrase
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Parsing.ClosedClassSegmentWithValue`1.PossibleMatches">
+            <summary>
+            Allowable token strings that can be matched, along with the values they denote.
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Parsing.ClosedClassSegmentWithValue`1.#ctor(Imaginarium.Parsing.Parser,System.Collections.Generic.KeyValuePair{System.Object,`0}[])">
+            <inheritdoc />
+        </member>
+        <member name="M:Imaginarium.Parsing.ClosedClassSegmentWithValue`1.ScanTo(System.Func{System.String,System.Boolean})">
+            <inheritdoc />
+        </member>
+        <member name="M:Imaginarium.Parsing.ClosedClassSegmentWithValue`1.ScanTo(System.String)">
+            <inheritdoc />
+        </member>
+        <member name="M:Imaginarium.Parsing.ClosedClassSegmentWithValue`1.ScanToEnd(System.Boolean)">
+            <inheritdoc />
+        </member>
+        <member name="P:Imaginarium.Parsing.ClosedClassSegmentWithValue`1.Keywords">
+            <inheritdoc />
+        </member>
+        <member name="T:Imaginarium.Parsing.Parser">
+            <summary>
+            Rules for parsing the top-level syntax of sentences.
+            </summary>
+            <summary>
+            Implements methods for scanning input tokens and backtracking.
+            </summary>
+            <summary>
+            Rules for parsing the top-level syntax of sentences.
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Parsing.Parser.ResetConstituentInformation">
+            <summary>
+            Reinitialize global variables that track the values of constituents.
+            Called each time a new syntax rule is tried.
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Parsing.Parser.Subject">
+            <summary>
+            Segment for the subject of a sentence
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Parsing.Parser.Object">
+            <summary>
+            Segment for the object of a sentence
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Parsing.Parser.Verb">
+            <summary>
+            The verb matched in a sentence pattern, if any
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Parsing.Parser.Verb2">
+            <summary>
+            The second verb matched in a sentence pattern, if any
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Parsing.Parser.SubjectNounList">
+            <summary>
+            Used when the subject of a sentences is a list of NPs
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Parsing.Parser.PredicateAPList">
+            <summary>
+            Used when the predicate of a sentences is a list of APs
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Parsing.Parser.PredicateAP">
+            <summary>
+            Segment for the AP forming the predicate of a sentences
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Parsing.Parser.ListName">
+            <summary>
+            Segment for the file name of a list of values (e.g. for possible names of characters)
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Parsing.Parser.ButtonName">
+            <summary>
+            Segment for the name of a button being created
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Parsing.Parser.Text">
+            <summary>
+            Free-form text, e.g. from a quotation.
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Parsing.Parser.Quantifier">
+            <summary>
+            Matches an English quantifier
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Parsing.Parser.ParsedCount">
+            <summary>
+            The count of a number of items, e.g. in a declaration of a Part.
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Parsing.Parser.ParsedLowerBound">
+            <summary>
+            The lower bound of a range appearing in the definition of a numeric property
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Parsing.Parser.ParsedUpperBound">
+            <summary>
+            The upper bound of a range appearing in the definition of a numeric property
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Parsing.Parser.VerbNumber">
+            <summary>
+            The number (plural, singular) of the main verb of the sentence
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Parsing.Parser.Is">
+            <summary>
+            Recognizes conjugations of the verb to be.
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Parsing.Parser.Has">
+            <summary>
+            Recognizes conjugations of the verb to have
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Parsing.Parser.OptionalAll">
+            <summary>
+            Matches all, every, or nothing
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Parsing.Parser.OptionalAlways">
+            <summary>
+            Matches always or nothing
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Parsing.Parser.ExistNotExist">
+            <summary>
+            Matches exist or not exist
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Parsing.Parser.RareCommon">
+            <summary>
+            Matches rare, common, etc.
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Parsing.Parser.CanMust">
+            <summary>
+            Matches can and must
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Parsing.Parser.CanNot">
+            <summary>
+            Matches can't, cannot, etc.
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Parsing.Parser.Reflexive">
+            <summary>
+            Matches reflexive pronouns (herself, etc.)
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Parsing.Parser.PossessivePronoun">
+            <summary>
+            Matches possessive pronouns (its, their, his, her)
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Parsing.Parser.Always">
+            <summary>
+            Matches always, every
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Parsing.Parser.EachOther">
+            <summary>
+            Matches "each other"
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Parsing.Parser.Count">
+            <summary>
+            Recognizes numbers and stores them in count
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Parsing.Parser.LowerBound">
+            <summary>
+            Recognizes numbers and stores them in lowerBound
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Parsing.Parser.UpperBound">
+            <summary>
+            Recognizes numbers and stores them in upperBound
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Parsing.Parser.ObjectSingular">
+            <summary>
+            Object is not marked plural.  If number is ambiguous, force it to singular.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Imaginarium.Parsing.Parser.ObjectExplicitlySingular">
+            <summary>
+            Object is syntactically singular, i.e. it starts with "a", "an", etc.
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Parsing.Parser.SubjectExplicitlySingular">
+            <summary>
+            Subject is syntactically singular, i.e. it starts with "a", "an", etc.
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Parsing.Parser.SubjectUnmodified">
+            <summary>
+            Used for sentential forms that can't accept adjectives in their subject.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Imaginarium.Parsing.Parser.ObjectUnmodified">
+            <summary>
+            Used for sentential forms that can't accept adjectives in their object.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Imaginarium.Parsing.Parser.ListConjunction(System.String)">
+            <summary>
+            True if the token is a conjunction that can end a list of items: "and" / "or"
+            </summary>
+            <param name="currentToken"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Imaginarium.Parsing.Parser.#ctor(Imaginarium.Ontology.Ontology,System.Func{Imaginarium.Parsing.Parser,System.Collections.Generic.IEnumerable{Imaginarium.Parsing.SentencePattern}}[])">
+            <inheritdoc />
+        </member>
+        <member name="F:Imaginarium.Parsing.Parser.Ontology">
+            <summary>
+            Ontology into which this parser loads new content
+            </summary>
+        </member>
+        <member name="T:Imaginarium.Parsing.Parser.Number">
+            <summary>
+            Grammatical number feature
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Parsing.Parser.Number.Singular">
+            <summary>
+            The noun or verb is in its singular form
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Parsing.Parser.Number.Plural">
+            <summary>
+            The noun or verb is in its plural form
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Parsing.Parser.LoadedFiles">
+            <summary>
+            Files from the current project (generator) currently being loaded
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Parsing.Parser.CurrentSourceFile">
+            <summary>
+            File currently being loaded
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Parsing.Parser.CurrentSourceLine">
+            <summary>
+            Line of the file we're currently loading
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Parsing.Parser.SentencePatterns">
+            <summary>
+            Rules for the different sentential forms understood by the system.
+            Each consists of a pattern to recognize the form and store its components in static fields such
+            as Subject, Object, and VerbNumber, and an Action to perform updates to the ontology based on
+            the data stored in those static fields.  The Check option is used to insure features are properly
+            set.
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Parsing.Parser.RulesMatchingKeywords(System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            Return all rules whose keywords overlap the specified set of tokens
+            </summary>
+            <param name="tokens">Words to check against rule keywords</param>
+            <returns>Rules with keywords in common</returns>
+        </member>
+        <member name="F:Imaginarium.Parsing.Parser.RuleTriggeringException">
+            <summary>
+            Rule in which grammatical error was detected.
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Parsing.Parser.InputTriggeringException">
+            <summary>
+            When parsing throws an exception, the specific sentence being parsed at the time can be found here.
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Parsing.Parser.ParseAndExecute(System.String)">
+            <summary>
+            Finds the matching Syntax rule for sentence and runs its associated action.
+            </summary>
+            <param name="sentence">User input (either an ontology statement or a command)</param>
+            <returns>True if command altered the ontology.</returns>
+        </member>
+        <member name="M:Imaginarium.Parsing.Parser.ParseAndExecute(System.String[])">
+            <summary>
+            Parse and execute a series of statements
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Parsing.Parser.ResetParser">
+            <summary>
+            Re-initializes all information associated with parsing.
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Parsing.Parser.Match(System.String)">
+            <summary>
+            Attempt to match next token to TOKEN.  If successful, returns true and advances to next token.
+            </summary>
+            <param name="token">Token to match to next token in input</param>
+            <returns>Success</returns>
+        </member>
+        <member name="M:Imaginarium.Parsing.Parser.Match(System.String[])">
+            <summary>
+            Attempts to match the specified series of tokens.
+            Each token must match in order.  If any token fails to match, state is reset
+            to the state before the call.
+            </summary>
+            <param name="tokens">Tokens to match</param>
+            <returns>True on success</returns>
+        </member>
+        <member name="M:Imaginarium.Parsing.Parser.Match(System.Func{System.String,System.Boolean})">
+            <summary>
+            Attempt to match next token to TOKEN.  If successful, returns true and advances to next token.
+            </summary>
+            <param name="tokenPredicate">Predicate to apply to next token</param>
+            <returns>Success</returns>
+        </member>
+        <member name="M:Imaginarium.Parsing.Parser.MatchCopula">
+            <summary>
+            Attempt to match token to a conjugation of "be"
+            </summary>
+            <returns>True on success</returns>
+        </member>
+        <member name="M:Imaginarium.Parsing.Parser.IsCopula(System.String)">
+            <summary>
+            True if argument is a conjugation of "be"
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Parsing.Parser.MatchHave">
+            <summary>
+            Attempt to match token to a conjugation of "have"
+            </summary>
+            <returns>True on success</returns>
+        </member>
+        <member name="M:Imaginarium.Parsing.Parser.IsHave(System.String)">
+            <summary>
+            True if argument is a conjugation of "have"
+            </summary>
+            <param name="s"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Imaginarium.Parsing.Parser.MatchInt(System.Int32@)">
+            <summary>
+            Attempt to match token to an integernumber.  If successful, writes number to out arg.
+            </summary>
+            <param name="number">Variable or field to write result back to</param>
+            <returns>True on success</returns>
+        </member>
+        <member name="M:Imaginarium.Parsing.Parser.MatchFloat(System.Single@)">
+            <summary>
+            Attempt to match token to a floating-point number.  If successful, writes number to out arg.
+            </summary>
+            <param name="number">Variable or field to write result back to</param>
+            <returns>True on success</returns>
+        </member>
+        <member name="M:Imaginarium.Parsing.Parser.MatchTrie``1(Imaginarium.Ontology.TokenTrie{``0})">
+            <summary>
+            Attempts to match tokens to the name of a known monadic concept (CommonNoun or Adjective)
+            </summary>
+            <returns>The concept, if successful, or null</returns>
+        </member>
+        <member name="M:Imaginarium.Parsing.Parser.SkipToken">
+            <summary>
+            Skip to the next token in the input
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Parsing.Parser.SkipToEnd">
+            <summary>
+            Skip over all remaining tokens, to the end of the input.
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Parsing.Parser.Backup">
+            <summary>
+            "Unread" the last token
+            </summary>
+        </member>
+        <member name="P:Imaginarium.Parsing.Parser.Input">
+            <summary>
+            List of tokens to be parsed
+            </summary>
+        </member>
+        <member name="P:Imaginarium.Parsing.Parser.currentTokenIndex">
+            <summary>
+            Index within input of the next token to be matched
+            </summary>
+        </member>
+        <member name="P:Imaginarium.Parsing.Parser.EndOfInput">
+            <summary>
+            True if all tokens have already been read
+            </summary>
+        </member>
+        <member name="P:Imaginarium.Parsing.Parser.CurrentToken">
+            <summary>
+            Token currently being processed.
+            Fails if EndOfInput.
+            </summary>
+        </member>
+        <member name="P:Imaginarium.Parsing.Parser.State">
+            <summary>
+            Current state of the parser.
+            </summary>
+        </member>
+        <member name="P:Imaginarium.Parsing.Parser.RemainingInput">
+            <summary>
+            The words from the current sentence that have not yet been matched by the sentence pattern currently being tried.
+            </summary>
+        </member>
+        <member name="T:Imaginarium.Parsing.Parser.ScannerState">
+            <summary>
+            Saved position within the input sentence being parsed
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Parsing.Parser.ScannerState.CurrentTokenIndex">
+            <summary>
+            Save index within TokenStream of the token that was currently being matched
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Parsing.Parser.ResetTo(Imaginarium.Parsing.Parser.ScannerState)">
+            <summary>
+            Back up to the specified position in the input
+            </summary>
+            <param name="s"></param>
+        </member>
+        <member name="F:Imaginarium.Parsing.Parser.TokenStream">
+            <summary>
+            Sentence currently being parsed
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Parsing.Parser.CurrentTokenIndex">
+            <summary>
+            Index
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Parsing.Parser.DefinitionFilePath(Imaginarium.Ontology.Referent)">
+            <summary>
+            Returns full path for library definitions for the specified noun.
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Parsing.Parser.DefinitionFilePath(System.String)">
+            <summary>
+            Returns the full path for the specified file in the definition library.
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Parsing.Parser.ListFilePath(System.String)">
+            <summary>
+            Returns the full path for the specified list file in the definition library.
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Parsing.Parser.MaybeLoadDefinitions(Imaginarium.Ontology.Referent)">
+            <summary>
+            Load definitions for noun, if there is a definition file for it.
+            Called when noun is first added to ontology.
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Parsing.Parser.LoadDefinitions(Imaginarium.Ontology.Referent)">
+            <summary>
+            Add all the statements from the definition file for noun to the ontology
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Parsing.Parser.LoadDefinitions(System.String,System.Boolean)">
+            <summary>
+            Load the definitions found in the specified file
+            </summary>
+            <param name="path">Path to the file to load</param>
+            <param name="throwOnErrors">True if errors should throw exceptions.  False, if list of exceptions should be returned instead</param>
+            <returns>List of exceptions if throwOnErrors is false and there were exceptions.  Otherwise null.</returns>
+        </member>
+        <member name="M:Imaginarium.Parsing.Parser.RemoveAfter(System.String,System.String)">
+            <summary>
+            Remove all text from s starting with the first occurrence of commentMarker.
+            If commentMarker doesn't appear, string is left unchanged.
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Parsing.Parser.ConfigureVerb(Imaginarium.Parsing.VerbSegment,Imaginarium.Parsing.NP,Imaginarium.Parsing.NP)">
+            <summary>
+            Set the subject and object kind and modifiers of Verb based on Subject and Object.
+            </summary>
+            <returns>The verb</returns>
+        </member>
+        <member name="T:Imaginarium.Parsing.Extensions">
+            <summary>
+            Useful extension methods
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Parsing.Extensions.SameAs(System.String[],System.String[])">
+            <summary>
+            Two token strings are equivalent
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Parsing.Extensions.AddNew``1(System.Collections.Generic.List{``0},``0)">
+            <summary>
+            Add an element, if it is not already present
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Parsing.Extensions.Untokenize(System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            Convert a token string back into its corresponding text string
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Parsing.Extensions.LookupOrDefault``2(System.Collections.Generic.Dictionary{``0,``1},``0,``1)">
+            <summary>
+            Returns the item in dictionary or a default value if they key is not present
+            </summary>
+            <typeparam name="TKey">Key type</typeparam>
+            <typeparam name="TValue">Value type</typeparam>
+            <param name="d">Dictionary to check</param>
+            <param name="key">Key to find the value of</param>
+            <param name="def">Default value to use if the key is not present</param>
+            <returns></returns>
+        </member>
+        <member name="T:Imaginarium.Parsing.GrammaticalError">
+            <inheritdoc />
+        </member>
+        <member name="M:Imaginarium.Parsing.GrammaticalError.#ctor(System.String)">
+            <inheritdoc />
+        </member>
+        <member name="M:Imaginarium.Parsing.GrammaticalError.#ctor(System.String,System.String)">
+            <inheritdoc />
+        </member>
+        <member name="T:Imaginarium.Parsing.Inflection">
+            <summary>
+            Implements a best effort to convert between English plural and singular noun inflections
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Parsing.Inflection.IsPreposition(System.String)">
+            <summary>
+            True if the word can be used as a preposition
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Parsing.Inflection.PluralOfNoun(System.String[])">
+            <summary>
+            The plural form of a singular noun
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Parsing.Inflection.PluralOfNoun(System.String)">
+            <summary>
+            The plural form of a one-word singular noun
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Parsing.Inflection.SingularOfNoun(System.String)">
+            <summary>
+            The singular form of a one-word plural noun
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Parsing.Inflection.SingularOfNoun(System.String[])">
+            <summary>
+            The singular form of a plural noun
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Parsing.Inflection.NounAppearsPlural(System.String)">
+            <summary>
+            Heuristically guess is this one-word noun is in plural form
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Parsing.Inflection.NounAppearsPlural(System.String[])">
+            <summary>
+            Heuristically guess is this noun is in plural form
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Parsing.Inflection.SingularOfVerb(System.String[])">
+            <summary>
+            The singular form of a plural form verb
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Parsing.Inflection.PluralOfVerb(System.String[])">
+            <summary>
+            The plural form of a singular form verb
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Parsing.Inflection.IsGerund(System.String[])">
+            <summary>
+            Heuristically guess if this verb is in gerund form
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Parsing.Inflection.GerundsOfVerb(System.String[])">
+            <summary>
+            Enumerate every potential gerund form of a (third person) plural verb
+            It's hard to know algorithmically which is correct, so we just allow
+            all of them.
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Parsing.Inflection.RegularGerundsOfWord(System.String)">
+            <summary>
+            Enumerate every possible gerund form of a single-word verb.
+            It's hard to know algorithmically which one is correct, so we allow
+            all of them.
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Parsing.Inflection.BaseFormOfGerund(System.String[])">
+            <summary>
+            Convert the gerund form of a verb to its base form
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Parsing.Inflection.ReplaceCopula(System.String[],System.String)">
+            <summary>
+            Replace any occurence of the copula (e.g. is/are/be/being) with the specified replacement
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Parsing.Inflection.PassiveParticiple(System.String[])">
+            <summary>
+            Determine the passive participle of a verb given its base form
+            </summary>
+        </member>
+        <member name="T:Imaginarium.Parsing.NP">
+            <summary>
+            A Segment representing a Noun (CommonNoun or ProperNoun)
+            </summary>
+        </member>
+        <member name="P:Imaginarium.Parsing.NP.Noun">
+            <summary>
+            The Noun this NP refers to.
+            </summary>
+        </member>
+        <member name="P:Imaginarium.Parsing.NP.CommonNoun">
+            <summary>
+            The CommonNoun this NP refers to (or exception if it's a proper noun)
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Parsing.NP.Modifiers">
+            <summary>
+            The modifiers (adjectives or other common nouns) applied to the CommonNoun head, if any.
+            For example, in "quick, brown fox", fox is the CommonNoun and quick and brown are modifiers.
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Parsing.NP.BeginsWithDeterminer">
+            <summary>
+            True if the segment starts with a determiner
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Parsing.NP.ForceCommonNoun">
+            <summary>
+            True if we've been told by our syntax rule that this has to be a common noun.
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Parsing.NP.ScanTo(System.String)">
+            <summary>
+            Scan forward to the next occurence of token.
+            </summary>
+            <param name="token">Token that marks the end of this NP</param>
+            <returns>True if token found and it marks a non-empty NP.</returns>
+        </member>
+        <member name="M:Imaginarium.Parsing.NP.ScanTo(System.Func{System.String,System.Boolean})">
+            <summary>
+            Scan forward to the first token satisfying endPredicate.
+            </summary>
+            <param name="endPredicate">Predicate to test for the end of the NP</param>
+            <returns>True if ending token found and it marks a non-empty NP.</returns>
+        </member>
+        <member name="M:Imaginarium.Parsing.NP.ScanToEnd(System.Boolean)">
+            <summary>
+            Scan forward to the end of the input
+            </summary>
+            <param name="failOnConjunction">Must always be true - NPs with embedded conjunctions are not supported</param>
+            <returns>True if successful</returns>
+        </member>
+        <member name="M:Imaginarium.Parsing.NP.ScanDeterminer">
+            <summary>
+            Skip over a determiner if we see one, and update state variables.
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Parsing.NP.ScanComplexNP">
+            <summary>
+            Attempt to match tokens to a complex NP, including modifiers.
+            If successful, this sets Modifiers and CommonNoun directly.
+            Will fail phrase includes an unknown noun or adjective.
+            </summary>
+            <returns>True on success</returns>
+        </member>
+        <member name="M:Imaginarium.Parsing.NP.GetConcept">
+            <summary>
+            Find the Noun this NP refers to.
+            IMPORTANT:
+            - This is called after scanning, so it's only called once we've verified there's a valid NP
+            - The Scan methods call ScanComplexNP(), which will fill in the noun directly if successful.
+            - So this is only called after scanning for NPs with no modifiers.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:Imaginarium.Parsing.NP.Number">
+            <summary>
+            The grammatical Number of this NP (singular, plural, or null if unmarked or not yet known)
+            </summary>
+        </member>
+        <member name="P:Imaginarium.Parsing.NP.ExplicitCount">
+            <summary>
+            The explicitly specified count of the NP, if any.
+            For example, "ten cats"
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Parsing.NP.Reset">
+            <inheritdoc />
+        </member>
+        <member name="M:Imaginarium.Parsing.NP.#ctor(Imaginarium.Parsing.Parser)">
+            <inheritdoc />
+        </member>
+        <member name="T:Imaginarium.Parsing.QuantifyingDeterminer">
+            <summary>
+            A matches a determiner that quantifies a noun phrase
+            For example, a/an/one is singular, many is plural, and 3 is plural but a specific number.
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Parsing.QuantifyingDeterminer.Quantifier">
+            <summary>
+            The token that was used as a determiner;
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Parsing.QuantifyingDeterminer.IsQuantifier">
+            <summary>
+            Tests if the token is one of the known quantifiers
+            </summary>
+        </member>
+        <member name="P:Imaginarium.Parsing.QuantifyingDeterminer.Keywords">
+            <inheritdoc />
+        </member>
+        <member name="P:Imaginarium.Parsing.QuantifyingDeterminer.IsPlural">
+            <summary>
+            True if this quantifier is indicating the NP is plural
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Parsing.QuantifyingDeterminer.IsOther">
+            <summary>
+            The quantifier includes the word "other", as in "one other", "many other", or just "other".
+            </summary>
+        </member>
+        <member name="P:Imaginarium.Parsing.QuantifyingDeterminer.IsInvalid">
+            <summary>
+            The token contains a word specifically disallowed as a quantifier
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Parsing.QuantifyingDeterminer.ExplicitCount">
+            <summary>
+            When the quantifier specifies a specific number, rather than just "many", the specific number.
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Parsing.QuantifyingDeterminer.ScanTo(System.Func{System.String,System.Boolean})">
+            <inheritdoc />
+        </member>
+        <member name="M:Imaginarium.Parsing.QuantifyingDeterminer.ScanTo(System.String)">
+            <inheritdoc />
+        </member>
+        <member name="M:Imaginarium.Parsing.QuantifyingDeterminer.ScanToEnd(System.Boolean)">
+            <inheritdoc />
+        </member>
+        <member name="M:Imaginarium.Parsing.QuantifyingDeterminer.Reset">
+            <inheritdoc />
+        </member>
+        <member name="M:Imaginarium.Parsing.QuantifyingDeterminer.#ctor(Imaginarium.Parsing.Parser)">
+            <inheritdoc />
+        </member>
+        <member name="T:Imaginarium.Parsing.ReferringExpression`1">
+            <summary>
+            Base class of Segments that denote Referents
+            </summary>
+            <typeparam name="TR">Type of Referent of this expression class</typeparam>
+        </member>
+        <member name="F:Imaginarium.Parsing.ReferringExpression`1.CachedConcept">
+            <summary>
+            Internal field for storing the Referent of this expression
+            </summary>
+        </member>
+        <member name="P:Imaginarium.Parsing.ReferringExpression`1.Concept">
+            <summary>
+            Gets the Referent of this expression
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Parsing.ReferringExpression`1.Reset">
+            <summary>
+            Clears any stored state in this expression, for example the CachedConcept.
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Parsing.ReferringExpression`1.GetConcept">
+            <summary>
+            Determine the reference of expression.
+            Called only from the get method of Concept.
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Parsing.ReferringExpression`1.#ctor(Imaginarium.Parsing.Parser)">
+            <inheritdoc />
+        </member>
+        <member name="T:Imaginarium.Parsing.ReferringExpressionList`2">
+            <summary>
+            A Segment that refers to a list of some Referents
+            </summary>
+            <typeparam name="TE">Type of the constituent ReferringExpressions</typeparam>
+            <typeparam name="TR">Type of the Referents of the constituent expressions</typeparam>
+        </member>
+        <member name="F:Imaginarium.Parsing.ReferringExpressionList`2.SanityCheck">
+            <summary>
+            Validates constituent expressions during parsing.  Must return true for each constituent
+            or the parse fails.
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Parsing.ReferringExpressionList`2.concepts">
+            <summary>
+            Internal cached list of referents.
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Parsing.ReferringExpressionList`2.Expressions">
+            <summary>
+            List of constituent expressions
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Parsing.ReferringExpressionList`2.IsAnd">
+            <summary>
+            True if the constituents are joined by "and", otherwise they're joined by "or"
+            </summary>
+        </member>
+        <member name="P:Imaginarium.Parsing.ReferringExpressionList`2.Concepts">
+            <summary>
+            The list of concepts referred to by the constituent expressions
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Parsing.ReferringExpressionList`2.Reset">
+            <summary>
+            Reset internal state so we can reparse.
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Parsing.ReferringExpressionList`2.ListItemTerminator(System.Func{System.String,System.Boolean})">
+            <summary>
+            Makes a function that tests whether an argument token terminates an individual list item.
+            Function returns true when argument token satisfies test, is a list conjunction, or a comma.
+            </summary>
+            <param name="overallTerminator">User-supplied test for terminating a list item.</param>
+            <returns>True if the token marks the end of a list item</returns>
+        </member>
+        <member name="M:Imaginarium.Parsing.ReferringExpressionList`2.ScanTo(System.String)">
+            <inheritdoc />
+        </member>
+        <member name="M:Imaginarium.Parsing.ReferringExpressionList`2.ScanTo(System.Func{System.String,System.Boolean})">
+            <summary>
+            Scan a list of constituent expressions until a token satisfying endPredicate is found.
+            </summary>
+            <param name="endPredicate">Test for end of the list</param>
+            <returns>True on success</returns>
+        </member>
+        <member name="M:Imaginarium.Parsing.ReferringExpressionList`2.ScanToEnd(System.Boolean)">
+            <summary>
+            Sequence of items until end of input.  Fails if a non-item is found before end of input.
+            </summary>
+            <param name="ignore">Not used.  This is the failOnConjunction argument from the Segment class, and we would never want to fail on conjunction for a list.</param>
+            <returns>True on success, false if scanner encountered something that wasn't a valid constituent</returns>
+        </member>
+        <member name="M:Imaginarium.Parsing.ReferringExpressionList`2.#ctor(Imaginarium.Parsing.Parser,System.Func{`0})">
+            <inheritdoc />
+        </member>
+        <member name="T:Imaginarium.Parsing.Segment">
+            <summary>
+            Scans a contiguous sequence of input tokens
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Parsing.Segment.ScanTo(System.String)">
+            <summary>
+            Scan forward from current position to the occurence of token.
+            Text will not include token, and terminating token will not be skipped.
+            </summary>
+            <param name="token">Token marking the end of the segment</param>
+            <returns>True on success</returns>
+        </member>
+        <member name="M:Imaginarium.Parsing.Segment.ScanTo(System.Func{System.String,System.Boolean})">
+            <summary>
+            Scan forward from current position to the first token satisfying endPredicate
+            Text will not include terminating token, and terminating token will not be skipped.
+            </summary>
+            <param name="endPredicate">Test recognize tokens that come after segment</param>
+            <returns>True on success</returns>
+        </member>
+        <member name="M:Imaginarium.Parsing.Segment.ScanToEnd(System.Boolean)">
+            <summary>
+            Set segment to all remaining tokens.
+            Fails when remaining tokens includes a conjunction, unless failOnConjunction is set to false.
+            </summary>
+            <param name="failOnConjunction">True if segment should not include a conjunction ("and" or "or").</param>
+            <returns>True on success.</returns>
+        </member>
+        <member name="M:Imaginarium.Parsing.Segment.ValidBeginning(System.String)">
+            <summary>
+            Tests whether the first token of a segment is a valid start to the segment.
+            </summary>
+            <param name="firstToken">first token of the segment</param>
+            <returns>True if this is a valid start to the sentence.</returns>
+        </member>
+        <member name="M:Imaginarium.Parsing.Segment.ParseModifiers">
+            <summary>
+            Swallow any special preliminary words like determiners
+            </summary>
+        </member>
+        <member name="P:Imaginarium.Parsing.Segment.Length">
+            <summary>
+            Number of tokens in the text scanned by this segment.
+            </summary>
+        </member>
+        <member name="P:Imaginarium.Parsing.Segment.Item(System.Int32)">
+            <summary>
+            The position-th token of this segment, counting from zero.
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Parsing.Segment.MatchSegment(System.String[])">
+            <summary>
+            Succeeds if specified tokens appear next, in order, in the remaining input.
+            Skips over tokens.
+            </summary>
+        </member>
+        <member name="P:Imaginarium.Parsing.Segment.Text">
+            <summary>
+            The token string matched by this segment.
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Parsing.Segment.Name">
+            <summary>
+            Name of this segment, for use in printing doc strings
+            </summary>
+        </member>
+        <member name="T:Imaginarium.Parsing.SentencePattern">
+            <summary>
+            Possible pattern for a sentence that can be matched against it
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Parsing.SentencePattern.Parser">
+            <summary>
+            Parser to which this sentence pattern belongs
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Parsing.SentencePattern.ForceBaseForm(Imaginarium.Parsing.NP)">
+            <summary>
+            Used in SubjectNounList to ensure all NPs are in base form (singular but no determiner)
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Parsing.SentencePattern.#ctor(Imaginarium.Parsing.Parser,System.Object[])">
+            <summary>
+            Makes a new sentence pattern
+            </summary>
+            <param name="p">Parser to which the pattern will be added</param>
+            <param name="constituents">Segments and other elements to match against the input, in order</param>
+        </member>
+        <member name="M:Imaginarium.Parsing.SentencePattern.Action(System.Action)">
+            <summary>
+            Adds an action to a Syntax rule.
+            This is here only so that the syntax constructor can take the constituents as a params arg,
+            which makes the code a little more readable.
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Parsing.SentencePattern.Check(System.Func{System.Boolean}[])">
+            <summary>
+            Adds a set of feature checks to a Syntax rule.
+            This is here only so that the syntax constructor can take the constituents as a params arg,
+            which makes the code a little more readable.
+            </summary>
+        </member>
+        <member name="P:Imaginarium.Parsing.SentencePattern.Keywords">
+            <summary>
+            Closed class words used in this sentence template
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Parsing.SentencePattern.HasCommonKeywords(System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            True if the tokens have a word in common with the keywords of this rule
+            </summary>
+            <param name="tokens">Words to check against the keywords of this rule.</param>
+            <returns>True if there is a word in common</returns>
+        </member>
+        <member name="M:Imaginarium.Parsing.SentencePattern.Try">
+            <summary>
+            Try to make a syntax rule and run its action if successful.
+            </summary>
+            <returns>True on success</returns>
+        </member>
+        <member name="M:Imaginarium.Parsing.SentencePattern.MatchConstituents">
+            <summary>
+            Try to match the constituents of a syntax rule, resetting the parser on failure.
+            </summary>
+            <returns>True if successful</returns>
+        </member>
+        <member name="F:Imaginarium.Parsing.SentencePattern.constituents">
+            <summary>
+            Matching routines for the constituents of the sentential form, in order.
+            For example: Subject, Is, Object
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Parsing.SentencePattern.action">
+            <summary>
+            Procedure to run if this sentential form matches the input.
+            This procedure should update the ontology based on the data stored in the constituents
+            during the matching phase.
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Parsing.SentencePattern.validityTests">
+            <summary>
+            Additional sanity checks to perform, e.g. for checking plurality.
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Parsing.SentencePattern.IsCommand">
+            <summary>
+            True if this is a command rather than a declaration
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Parsing.SentencePattern.BreakOnMatch">
+            <summary>
+            True if we should trigger a breakpoint whenever the parser tries to match this sentence pattern to an input.
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Parsing.SentencePattern.LogAllParsing">
+            <summary>
+            True if logging all parsing
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Parsing.SentencePattern._logMatch">
+            <summary>
+            True if logging this one rule, regardless of LogAllParsing
+            </summary>
+        </member>
+        <member name="P:Imaginarium.Parsing.SentencePattern.LogMatch">
+            <summary>
+            True if we should log the parsing of this rule right now.
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Parsing.SentencePattern.DebugMatch">
+            <summary>
+            Force parser to breakpoint when trying to match this pattern.
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Parsing.SentencePattern.Log">
+            <summary>
+            Elaborately log the matching process for this pattern
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Imaginarium.Parsing.SentencePattern.Command">
+            <summary>
+            Mark this pattern as a command rather than an assertion.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="F:Imaginarium.Parsing.SentencePattern.DocString">
+            <summary>
+            User-facing description of this form.
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Parsing.SentencePattern.Documentation(System.String)">
+            <summary>
+            Adds the specified documentation string to the Syntax form.
+            </summary>
+        </member>
+        <member name="P:Imaginarium.Parsing.SentencePattern.HelpDescription">
+            <summary>
+            Text describing this pattern and what it does
+            </summary>
+        </member>
+        <member name="P:Imaginarium.Parsing.SentencePattern.SentencePatternDescription">
+            <summary>
+            Text describing this pattern and what it does
+            </summary>
+        </member>
+        <member name="T:Imaginarium.Parsing.SimpleClosedClassSegment">
+            <summary>
+            A segment that can match one of a fixed, predefined set of phrases.
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Parsing.SimpleClosedClassSegment.PossibleMatches">
+            <summary>
+            Specific phrases this segment is allowed to match
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Parsing.SimpleClosedClassSegment.Optional">
+            <summary>
+            This constituent is always optional; it can match the empty string.
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Parsing.SimpleClosedClassSegment.#ctor(Imaginarium.Parsing.Parser,System.Object[])">
+            <inheritdoc />
+        </member>
+        <member name="M:Imaginarium.Parsing.SimpleClosedClassSegment.ScanTo(System.Func{System.String,System.Boolean})">
+            <inheritdoc />
+        </member>
+        <member name="M:Imaginarium.Parsing.SimpleClosedClassSegment.ScanTo(System.String)">
+            <inheritdoc />
+        </member>
+        <member name="M:Imaginarium.Parsing.SimpleClosedClassSegment.ScanToEnd(System.Boolean)">
+            <inheritdoc />
+        </member>
+        <member name="P:Imaginarium.Parsing.SimpleClosedClassSegment.Text">
+            <inheritdoc />
+        </member>
+        <member name="P:Imaginarium.Parsing.SimpleClosedClassSegment.Keywords">
+            <inheritdoc />
+        </member>
+        <member name="T:Imaginarium.Parsing.Spreadsheet">
+            <summary>
+            Represents the contents of a CSV file
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Parsing.Spreadsheet.Path">
+            <summary>
+            Path from which it was read.
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Parsing.Spreadsheet.Data">
+            <summary>
+            Row/column data
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Parsing.Spreadsheet.idColumnIndex">
+            <summary>
+            Index of the column used as an id for rows, if any.
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Parsing.Spreadsheet.#ctor(System.String,System.String)">
+            <summary>
+            Make a Spreadsheet object from a CSV file
+            </summary>
+            <param name="path">Path to the file</param>
+            <param name="idColumnName">Name of the column (as it appears in the header row) used for the names of rows</param>
+        </member>
+        <member name="P:Imaginarium.Parsing.Spreadsheet.Header">
+            <summary>
+            The header row of the spreadsheet
+            </summary>
+        </member>
+        <member name="P:Imaginarium.Parsing.Spreadsheet.Item(System.Object)">
+            <summary>
+            The row containing the specified key in the column specified as the ID column for this Spreadsheet.
+            </summary>
+            <param name="key"></param>
+        </member>
+        <member name="P:Imaginarium.Parsing.Spreadsheet.Item(System.Object,System.String)">
+            <summary>
+            The contents of the cell from the row with the specified key and the specified column.
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Parsing.Spreadsheet.LookupOrNull(System.Object,System.String)">
+            <summary>
+            Return the value of specified column in the row identified by key.
+            If there is no row matching key, then return null.
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Parsing.Spreadsheet.ContainsKey(System.Object)">
+            <summary>
+            True if some row has the specified key in its ID column
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Parsing.Spreadsheet.Read(System.String,System.Char)">
+            <summary>
+            Read a CSV file from the specified path using the specified delimiter character (default = ',')
+            Return it as a raw array-of-arrays rather than as a Spreadsheet object
+            </summary>
+            <param name="path">Path to the CSV file</param>
+            <param name="delimiter">Delimiter to use between values in rows</param>
+            <returns></returns>
+        </member>
+        <member name="M:Imaginarium.Parsing.Spreadsheet.ConvertAllNumbers(System.Object[][])">
+            <summary>
+            Overwrite any strings that happen to look like numbers in the specified array of arrays to
+            the actual numbers (ints or floats)
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Parsing.Spreadsheet.TrimWhitespace(System.Object[][])">
+            <summary>
+            Remove trailing whitespace from strings in raw array-of-arrays
+            </summary>
+            <param name="spreadsheet"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Imaginarium.Parsing.Spreadsheet.Write(System.Collections.IList,System.String,System.Char)">
+            <summary>
+            Write a raw list-of-lists to a CSV file
+            </summary>
+            <param name="rows">Rows to write</param>
+            <param name="path">Path to CSV file</param>
+            <param name="delimiter">Delimiter to use between items in rows</param>
+        </member>
+        <member name="M:Imaginarium.Parsing.Spreadsheet.Save">
+            <summary>
+            Save the modified data back to the original file.
+            </summary>
+        </member>
+        <member name="T:Imaginarium.Parsing.Tokenizer">
+            <summary>
+            Converts between text strings and their tokenized forms.
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Parsing.Tokenizer.Tokenize(System.String)">
+            <summary>
+            Convert text to a sequence of tokens.
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Parsing.Tokenizer.Untokenize(System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            Convert a sequence of tokens into a single text string, adding spaces where appropriate.
+            </summary>
+        </member>
+        <member name="T:Imaginarium.Parsing.TokenString">
+            <summary>
+            A read-only sequence of tokens that can be matched in a case-independent manner.
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Parsing.TokenString.Tokens">
+            <summary>
+            Tokens in the sequence
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Parsing.TokenString.#ctor(System.String[])">
+            <summary>
+            Make a token string
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Parsing.TokenString.GetHashCode">
+            <inheritdoc />
+        </member>
+        <member name="M:Imaginarium.Parsing.TokenString.Equals(System.Object)">
+            <inheritdoc />
+        </member>
+        <member name="P:Imaginarium.Parsing.TokenString.Text">
+            <summary>
+            Text contained in this token string, converted to one string and downcased.
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Parsing.TokenString.op_Implicit(System.String[])~Imaginarium.Parsing.TokenString">
+            <summary>
+            Implicit conversion string[] -> TokenString
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Parsing.TokenString.op_Implicit(System.String)~Imaginarium.Parsing.TokenString">
+            <summary>
+            Implicit conversion string -> TokenString
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Parsing.TokenString.op_Implicit(Imaginarium.Parsing.TokenString)~System.String[]">
+            <summary>
+            Implicit conversion TokenString -> string[]
+            </summary>
+        </member>
+        <member name="T:Imaginarium.Parsing.UserException">
+            <summary>
+            Base class for exceptions believed to be caused by a user's mistake.
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Parsing.UserException.RichText">
+            <summary>
+            Rich text version of the error message
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Parsing.UserException.#ctor(System.String,System.String)">
+            <inheritdoc />
+        </member>
+        <member name="T:Imaginarium.Parsing.VerbSegment">
+            <summary>
+            A Segment representing a Noun (CommonNoun or ProperNoun)
+            </summary>
+        </member>
+        <member name="P:Imaginarium.Parsing.VerbSegment.Verb">
+            <summary>
+            The Verb this NP refers to.
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Parsing.VerbSegment.Conjugation">
+            <summary>
+            What form this verb takes (singular, plural, base, etc.)
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Parsing.VerbSegment.Reset">
+            <inheritdoc />
+        </member>
+        <member name="M:Imaginarium.Parsing.VerbSegment.ScanTo(System.String)">
+            <summary>
+            Scan forward to the next occurence of token.
+            </summary>
+            <param name="token">Token that marks the end of this verb</param>
+            <returns>True if token found and it marks a non-empty verb.</returns>
+        </member>
+        <member name="M:Imaginarium.Parsing.VerbSegment.ScanTo(System.Func{System.String,System.Boolean})">
+            <summary>
+            Scan forward to the first token satisfying endPredicate.
+            </summary>
+            <param name="endPredicate">Predicate to test for the end of the NP</param>
+            <returns>True if ending token found and it marks a non-empty NP.</returns>
+        </member>
+        <member name="M:Imaginarium.Parsing.VerbSegment.ScanToEnd(System.Boolean)">
+            <summary>
+            Scan forward to the end of the input
+            </summary>
+            <param name="failOnConjunction">Must always be true - verbs with embedded conjunctions are not supported</param>
+            <returns>True if successful</returns>
+        </member>
+        <member name="M:Imaginarium.Parsing.VerbSegment.ScanExistingVerb">
+            <summary>
+            Attempt to match tokens to a known verb.
+            </summary>
+            <returns>True on success</returns>
+        </member>
+        <member name="M:Imaginarium.Parsing.VerbSegment.GetConcept">
+            <inheritdoc />
+        </member>
+        <member name="M:Imaginarium.Parsing.VerbSegment.#ctor(Imaginarium.Parsing.Parser)">
+            <inheritdoc />
+        </member>
+    </members>
+</doc>
