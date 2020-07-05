@@ -559,12 +559,12 @@
         </member>
         <member name="F:Imaginarium.Ontology.CommonNoun.Subkinds">
             <summary>
-            The common nouns identifying the subtypes of this noun
+            The common nouns identifying the immediate subkinds of this noun
             </summary>
         </member>
         <member name="F:Imaginarium.Ontology.CommonNoun.Superkinds">
             <summary>
-            The common nouns identifying the superkinds of this noun
+            The common nouns identifying the immediate superkinds of this noun
             </summary>
         </member>
         <member name="F:Imaginarium.Ontology.CommonNoun.RelevantAdjectives">
@@ -603,6 +603,11 @@
         <member name="M:Imaginarium.Ontology.CommonNoun.PropertyNamed(System.String[])">
             <summary>
             Return the property of this noun with the specified name, or null.
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Ontology.CommonNoun.FindPropertyInAncestor(System.String[])">
+            <summary>
+            Search for and return the property with the specified name in this noun or one of its ancestor kinds
             </summary>
         </member>
         <member name="M:Imaginarium.Ontology.CommonNoun.ForAllAncestorKinds(System.Action{Imaginarium.Ontology.CommonNoun},System.Boolean)">
@@ -1192,6 +1197,11 @@
             Rules for which menus to use when for this variable, it it's a MenuVariable.
             </summary>
         </member>
+        <member name="F:Imaginarium.Ontology.Property.IntervalRules">
+            <summary>
+            Rules for which Intervals to use when for this variable, it it's a FloatVariable.
+            </summary>
+        </member>
         <member name="F:Imaginarium.Ontology.Property.Name">
             <summary>
             Token string used to refer to this property
@@ -1215,6 +1225,21 @@
             </summary>
         </member>
         <member name="F:Imaginarium.Ontology.Property.MenuRule.Menu">
+            <summary>
+            Menu of allowable strings
+            </summary>
+        </member>
+        <member name="T:Imaginarium.Ontology.Property.IntervalRule">
+            <summary>
+            A set of conditions under which a float property should take its value from a specific interval (range).
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Ontology.Property.IntervalRule.Conditions">
+            <summary>
+            Conditions in which this rule applies
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Ontology.Property.IntervalRule.Interval">
             <summary>
             Menu of allowable strings
             </summary>
@@ -1981,7 +2006,7 @@
         </member>
         <member name="M:Imaginarium.Parsing.Parser.MatchInt(System.Int32@)">
             <summary>
-            Attempt to match token to an integernumber.  If successful, writes number to out arg.
+            Attempt to match token to an integer.  If successful, writes number to out arg.
             </summary>
             <param name="number">Variable or field to write result back to</param>
             <returns>True on success</returns>
