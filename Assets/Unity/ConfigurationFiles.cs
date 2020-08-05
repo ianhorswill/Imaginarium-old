@@ -71,7 +71,7 @@ public static class ConfigurationFiles
     /// <summary>
     /// Path to the directory containing configuration files.
     /// </summary>
-    public static string ApplicationHome = UnityPath;
+    public static string ApplicationHome => UnityPath;
 
     public const string ListExtension = ".txt";
 
