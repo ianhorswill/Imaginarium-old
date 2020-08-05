@@ -398,7 +398,8 @@ public class UIDriver : MonoBehaviour, IRepl
             RelationshipGraph.AddNode(i, Invention.NameString(i));
         foreach (var i in Invention.Individuals)
         foreach (var p in i.Parts)
-            RelationshipGraph.AddEdge(i, p.Value, p.Key.Text);
+            foreach (var pi in p.Value)
+            RelationshipGraph.AddEdge(i, pi, p.Key.Text);
 
         foreach (var relationship in Invention.Relationships)
         {
