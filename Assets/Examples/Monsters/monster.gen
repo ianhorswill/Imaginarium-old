@@ -1,0 +1,108 @@
+
+Pressing "monsters" means "imagine 20 monsters".
+Pressing "test" means "test".
+
+A monster has a name from monster-names.
+
+# Important: Imaginarium has trouble with nouns that have the same plural
+# and singular form.  So it only recognizes "fishes" as as the plural of fish.
+
+fish, bird, plant, fungus, reptile, mammal, insect, and crustacean are kinds of monster.
+the plural of fungus is fungi.
+
+# TODO: winged ameboid fungus should not be a thing.
+
+humanoid, carnivoid, rodent, bat, marsupial, shrew, ungulate, and rabbitoid are kinds of mammal. 
+
+felinoid, caninoid, and bearoid are kinds of carnivoid.
+carnivoids are quadrapedal.
+
+A monster is flat, ameboid, legged, serpentine, polyhedral, or spherical.
+# winged fungus is not ameboid
+A legged monster is bipedal, tripedal, quadrapedal, hexapodal, octopodal, or centipedal.
+Do not mention being legged.
+
+mammals are legged.
+reptiles are legged.
+birds are legged.
+insects can be legged.  // Not sure if there are insects in real life that don't
+crustaceans are legged.
+fishes are not legged.
+
+## Part 1 - Fill in your code here
+
+Monsters are winged or non-winged.
+Monsters can be aerial or aquatic.
+
+## Part 2 - Fill in your code here
+
+Monsters can be teleporting, burrowing, slithering, flying, swimming, walking, or hovering. 
+Walking monsters are legged.
+Burrowing monsters are legged.
+Monsters can be winged.
+Flying monsters are winged.
+Birds are winged.
+Aerial monsters are hovering or flying.
+Flying monsters are aerial
+Hovering monsters are aerial.
+Swimming monsters are aquatic.
+Aquatic monsters are swimming.
+Reptiles can be slithering.
+A slithering monster is a reptile.
+
+
+## Part 3 - Fill in your code here
+
+Monsters can be spitting, biting, clawing, bashing, or fire breathing
+Aquatic monsters are not spitting
+Aquatic monsters are not fire breathing.
+
+
+## Part 4 - Fill in your code here
+
+Monsters can be blue, green, orange, purple, black, or brown.
+Monsters can be gigantic, large, or tiny.
+Monsters can be sneaky, imposing, fast, or lumbering.
+Gigantic monsters are not sneaky.
+Gigantic monsters are not fast.
+Tiny monsters are not lumbering.
+Tiny monsters are not imposing.
+
+
+## Tests - Enter your tests here!
+
+Winged monsters should exist.
+Non-winged monsters should exist.
+Aerial monsters should exist.
+Aquatic monsters should exist.
+Aerial aquatic monsters should not exist 
+Non-aerial non-aquatic monsters should exist.
+
+walking legged monsters should exist
+burrowing legged monsters should exist
+flying winged monsters should exist
+non-legged walking monsters should not exist
+non-winged flying monsters should not exist
+flying aerial monsters should exist
+non-winged flying monsters should not exist
+swimming non-aquatic monsters should not exist.
+swimming aquatic monsters should exist
+slithering reptiles should exist
+slithering non-reptile monsters should not exist.
+
+Spitting monsters should exist
+Biting Monsters should exist
+bashing monsters should exist
+spitting bashing monsters should not exist
+spitting aquatic monsters should not exist
+fire breathing aquatic monsters should not exist
+
+blue monsters should exist
+purple monsters should exist
+gigantic monsters should exist
+gigantic imposing monsters should exist
+gigantic sneaky monsters should not exist
+fast tiny monsters should exist
+imposing tiny monsters should not exist.
+
+

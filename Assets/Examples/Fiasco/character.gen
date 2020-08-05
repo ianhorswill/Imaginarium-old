@@ -1,0 +1,51 @@
+# Simple generator for Fiasco setups.
+# This isn't anywhere near enough content to be a true Fiasco playset, but it could be expanded into one.
+# It also doesn't have a specific theme; it's just trying to demonstrate how you can code relationships.
+
+A character is a kind of human.
+A character has a narrative resource called its detail.
+
+adult and child are kinds of character.
+the plural of child is children.
+
+Characters can relate to each other.
+Characters cannot relate to themselves
+A character must relate to two other characters.
+
+characters can be friends with each other.
+being friends with is a way of relating to.
+
+Characters can be enemies with each other.
+being enemies with is a way of relating to
+
+An adult can parent a child.
+parenting is a way of relating to.
+
+An adult can be teacher of a child.
+being teacher of is a way of relating to.
+
+an adult can be secretly in love with another adult.
+being secretly in love with is a way of relating to.
+
+an adult can be in an affair with another adult.
+being in an affair with is a way of relating to.
+
+an adult can be exes with another adult.
+being exes with is a way of relating to.
+
+adults can be colleagues with each other.
+being colleagues with is a way of relating to.
+
+object, location, and need are kinds of narrative resource.
+a narrative resource is identified as "[Noun]".
+
+handgun, sack of cash, The Photographs, slightly used murder weapon, haunted teddybear, million dollar gift card for Taco Bell, Elvis' last Cadillac, small supply of Elon Musk's experimental cannabis strain, and egyptian scarab are kinds of object.
+Dollywood, Nightowl Curry Restaurant, a bank under Federal scrutiny, Thunderbird Lounge, Big Beard Coffeehouse, confederate statue with a short life expectency, Sybaris Pool Suites, Peter Thiel's secret bunker, and abandoned church are kinds of location
+stay one step ahead of the law, stick it to the man, get even, make amends, get married, find atlantis, get the band back together, and get out of dodge are kinds of need. 
+
+an object is described as "They have a [Noun]"
+a location is described as "They can sometimes be found at [Noun]"
+a need is described as "They need to [Noun]"
+
+
+Pressing "5 characters" means "imagine 5 characters".

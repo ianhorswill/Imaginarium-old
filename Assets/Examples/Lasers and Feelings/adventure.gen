@@ -1,0 +1,7 @@
+An adventure has a threat from threats
+An adventure has a goal from goals
+An adventure has a target from targets
+An adventure has a consequence from consequences
+An adventure is identified as "[threat] wants to [goal] [target] which will [consequence]".
+
+Pressing "adventure" means "imagine an adventure".
