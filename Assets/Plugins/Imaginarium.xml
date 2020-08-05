@@ -406,6 +406,16 @@
             A textual description of the Individual's attributes within Model.
             </summary>
         </member>
+        <member name="M:Imaginarium.Generator.Invention.NounsString(Imaginarium.Ontology.Individual,System.String,System.String)">
+            <summary>
+            Nouns describing i, as a string
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Generator.Invention.AdjectivesString(Imaginarium.Ontology.Individual)">
+            <summary>
+            Adjectives describing i, as a string
+            </summary>
+        </member>
         <member name="M:Imaginarium.Generator.Invention.PropertyValue(Imaginarium.Ontology.Individual,Imaginarium.Ontology.Property)">
             <summary>
             The value of the specified property of the specified individual in this Invention.
@@ -799,6 +809,9 @@
             <summary>
             Implements an arbitrary total order on Individuals
             </summary>
+        </member>
+        <member name="M:Imaginarium.Ontology.Individual.ToString">
+            <inheritdoc />
         </member>
         <member name="T:Imaginarium.Ontology.MonadicConcept">
             <summary>
