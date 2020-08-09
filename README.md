@@ -3,24 +3,25 @@ It lets you define programs called generators that make random instances of diff
 
 For example, the following lets you generate random groups of cats, along with their relationships:
 
-  A cat is a kind of person.
-  Persian, tabby, Siamese, manx, Chartreux, and Maine coon are kinds of cat.
-  Cats are long-haired or short-haired.
-  Cats can be big or small.
-  Cats can be cuddly or haughty.
-  A cat can be staid or crazy.
-  The plural of Chartreux is Chartreux.
-  The plural of Siamese is Siamese.
-  Chartreux are grey.
-  Siamese are grey.
-  Persians are long-haired.
-  Siamese are short-haired.
-  Maine coons are large.
-  Cats are black, white, grey, or ginger.
+```A cat is a kind of person.
+Persian, tabby, Siamese, manx, Chartreux, and Maine coon are kinds of cat.
+Cats are long-haired or short-haired.
+Cats can be big or small.
+Cats can be cuddly or haughty.
+A cat can be staid or crazy.
+The plural of Chartreux is Chartreux.
+The plural of Siamese is Siamese.
+Chartreux are grey.
+Siamese are grey.
+Persians are long-haired.
+Siamese are short-haired.
+Maine coons are large.
+Cats are black, white, grey, or ginger.
 
-  Cats can love other cats
-  Cats can hate other cats
-  Love and hate are mutually exclusive.
+Cats can love other cats
+Cats can hate other cats
+Love and hate are mutually exclusive.
+```
 
 There is a full tutorial in the release.  But if you just want to try out cat generation, you can do this:
 * Download the current release for your operating system
