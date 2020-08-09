@@ -24,7 +24,9 @@
 #endregion
 
 using System.Collections;
+using System.Diagnostics;
 using Imaginarium.Driver;
+using Imaginarium.Parsing;
 using UnityEngine;
 
 public class MainMenu : MonoBehaviour
@@ -57,5 +59,12 @@ public class MainMenu : MonoBehaviour
     private void UpdateToggleButton()
     {
         LogButtonText.text = LogFile.Enabled ? "End debug log" : "Start debug log";
+    }
+
+    public void OpenProjectFolder()
+    {
+        var folder = UIDriver.Ontology.DefinitionsDirectory;
+        if (folder != null)
+            Process.Start(folder);
     }
 }

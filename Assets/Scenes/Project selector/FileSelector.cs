@@ -25,7 +25,6 @@
 
 using System.IO;
 using System.Linq;
-using Imaginarium.Driver;
 using LibGit2Sharp;
 using UnityEngine;
 using UnityEngine.UI;
