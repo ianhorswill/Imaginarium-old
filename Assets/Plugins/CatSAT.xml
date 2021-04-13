@@ -1023,7 +1023,7 @@
             Position in the Problem's Clauses list.
             </summary>
         </member>
-        <member name="P:CatSAT.Clause.IsNormalDisjunction">
+        <member name="F:CatSAT.Clause.IsNormalDisjunction">
             <summary>
             True if this is a plain old boring disjunction
             </summary>
@@ -1831,6 +1831,18 @@
             Test the truth of the specified literal within the model
             </summary>
         </member>
+        <member name="M:CatSAT.Solution.SetProposition(System.UInt16,System.Boolean)">
+            <summary>
+            Set the truth of a proposition/positive literal
+            </summary>
+            <param name="index">Index of the proposition</param>
+            <param name="truth">Value of the proposition</param>
+        </member>
+        <member name="M:CatSAT.Solution.SetProposition(CatSAT.Proposition,System.Boolean)">
+            <summary>
+            Set the truth of the specified proposition within the model
+            </summary>
+        </member>
         <member name="M:CatSAT.Solution.IsTrue(System.Int16)">
             <summary>
             Test the truth of a literal (positive or negative) in the model.
@@ -2470,6 +2482,11 @@
             The solver is free to choose this as it likes
             </summary>
         </member>
+        <member name="F:CatSAT.SATVariable.DeterminationState.Preinitialized">
+            <summary>
+            The it's been preset by user as part of InitializeTruthAssignment
+            </summary>
+        </member>
         <member name="F:CatSAT.SATVariable.DeterminationState.Inferred">
             <summary>
             The optimizer determined this from other set or fixed variables
@@ -2485,7 +2502,7 @@
             The variable's value was immutably set by an Assertion.
             </summary>
         </member>
-        <member name="F:CatSAT.SATVariable.DeterminionState">
+        <member name="F:CatSAT.SATVariable.DeterminationStatus">
             <summary>
             Whether the variable's value is predetermined.
             If floating, then the solver is allowed to choose its value freely.
@@ -2578,7 +2595,7 @@
         <member name="T:CatSAT.Problem">
             <summary>
             A logic program.
-            Contains a set of prositions, rules for the propositions, and general clauses.
+            Contains a set of propositions, rules for the propositions, and general clauses.
             </summary>
         </member>
         <member name="F:CatSAT.Problem.Current">
@@ -2602,12 +2619,12 @@
         </member>
         <member name="P:CatSAT.Problem.OptimizationTime">
             <summary>
-            Number of microseconds spent in Boolean Constriant Propagation
+            Number of microseconds spent in Boolean Constraint Propagation
             </summary>
         </member>
         <member name="P:CatSAT.Problem.CompilationTime">
             <summary>
-            Number of microsections spent computing the completions of rules
+            Number of microseconds spent computing the completions of rules
             </summary>
         </member>
         <member name="P:CatSAT.Problem.CreationTime">
@@ -2695,7 +2712,7 @@
         </member>
         <member name="F:CatSAT.Problem.TimeHorizon">
             <summary>
-            Number of timesteps in history, if fluents are used.
+            Number of time-steps in history, if fluents are used.
             </summary>
         </member>
         <member name="F:CatSAT.Problem.CallTries">
@@ -2787,6 +2804,26 @@
             Map an array of Literals to an array of their signed indices.
             </summary>
         </member>
+        <member name="T:CatSAT.Problem.PreSetHandler">
+            <summary>
+            Delegate used for pre-setting variables in a solution. 
+            </summary>
+        </member>
+        <member name="E:CatSAT.Problem.InitializeTruthAssignment">
+            <summary>
+            Called to let user preinitialize truth assignments for solution
+            </summary>
+        </member>
+        <member name="M:CatSAT.Problem.InvokeInitialization">
+            <summary>
+            Method used for running all registered events. 
+            </summary>
+        </member>
+        <member name="M:CatSAT.Problem.ResetPreinitialization">
+            <summary>
+            Change SATVariables marked preinitialized back to floating.
+            </summary>
+        </member>
         <member name="M:CatSAT.Problem.Solve(System.Boolean)">
             <summary>
             Return a Solution to the Problem.
@@ -2824,7 +2861,7 @@
             <summary>
             Adds a set of assertions to this problem.
             Assertions are immutable: they cannot be changed or reset
-            Assertions cannot be edded after the first call to Solve()
+            Assertions cannot be added after the first call to Solve()
             </summary>
             <param name="assertions">Assertions to add (literals, rules, implications, etc.)</param>
             <exception cref="T:System.InvalidOperationException">When the Problem has already been solved once</exception>
@@ -2833,16 +2870,23 @@
             <summary>
             Asserts the literal must always be true in any solution.
             Assertions are immutable: they cannot be changed or reset
-            Assertions cannot be edded after the first call to Solve()
+            Assertions cannot be added after the first call to Solve()
             </summary>
             <param name="literal">Literal tha must always be true</param>
             <exception cref="T:System.InvalidOperationException">When the Problem has already been solved once</exception>
+        </member>
+        <member name="M:CatSAT.Problem.Initialize(CatSAT.Proposition,System.Boolean)">
+            <summary>
+            Used to specify an initial value to be used by the solver for this one particular run of the solver.
+            </summary>
+            <param name="p">Proposition to assign a value to</param>
+            <param name="value">Truth value to assign to the proposition</param>
         </member>
         <member name="M:CatSAT.Problem.Assert(CatSAT.Implication)">
             <summary>
             Asserts that the head must be true in any solution in which the body is true
             Assertions are immutable: they cannot be changed or reset
-            Assertions cannot be edded after the first call to Solve()
+            Assertions cannot be added after the first call to Solve()
             </summary>
             <param name="implication">Implication that must be true in any solution</param>
             <exception cref="T:System.InvalidOperationException">When the Problem has already been solved once</exception>
@@ -2851,7 +2895,7 @@
             <summary>
             Adds a rule to the problem.
             Assertions are immutable: they cannot be changed or reset
-            Assertions cannot be edded after the first call to Solve()
+            Assertions cannot be added after the first call to Solve()
             </summary>
             <param name="rule">Rule to add to the problem</param>
             <exception cref="T:System.InvalidOperationException">When the Problem has already been solved once</exception>
@@ -2860,7 +2904,7 @@
             <summary>
             Asserts that in any solution, either the head and body must both be true or both be false
             Assertions are immutable: they cannot be changed or reset
-            Assertions cannot be edded after the first call to Solve()
+            Assertions cannot be added after the first call to Solve()
             </summary>
             <param name="equivalence">Equivalence that must be true in any solution</param>
             <exception cref="T:System.InvalidOperationException">When the Problem has already been solved once</exception>
@@ -3112,7 +3156,7 @@
             <summary>
             Gets or sets the predetermined value of the literal.
             </summary>
-            <param name="l">Literalto check</param>
+            <param name="l">Literal to check</param>
             <returns>Predetermined value</returns>
             <exception cref="T:System.InvalidOperationException">If the literal's proposition has not been given a predetermined value</exception>
         </member>

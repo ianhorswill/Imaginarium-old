@@ -229,6 +229,22 @@
             Rebuild and re-solve the CatSAT problem
             </summary>
         </member>
+        <member name="M:Imaginarium.Generator.Generator.RandomlySelectKinds(CatSAT.Problem)">
+            <summary>
+            For each individual, randomly select its subkinds, if any.
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Generator.Generator.SelectInitialSubkind(Imaginarium.Ontology.Individual,Imaginarium.Ontology.CommonNoun)">
+            <summary>
+            Individual i is of kind k; randomly choose a subkind, if k has subkinds.
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Generator.Generator.DeselectSubkinds(Imaginarium.Ontology.Individual,Imaginarium.Ontology.CommonNoun)">
+            <summary>
+            Individual i is known not to be of kind k.  Initialize to also not
+            be one of its subkinds
+            </summary>
+        </member>
         <member name="M:Imaginarium.Generator.Generator.DetermineIndividuals">
             <summary>
             Find all the individuals that need to exist in these inventions
@@ -380,6 +396,35 @@
             The output from the "imagine" command that created this invention.
             </summary>
         </member>
+        <member name="F:Imaginarium.Generator.Invention.PossibleIndividuals">
+            <summary>
+            The PossibleIndividuals in this invention (possible world).
+            PossibleIndividuals are just combinations of Individuals and Inventions.
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Generator.Invention.PossibleIndividual(Imaginarium.Ontology.Individual)">
+            <summary>
+            Returns the PossibleIndividual from within this Invention, corresponding to the specified individual.
+            </summary>
+        </member>
+        <member name="P:Imaginarium.Generator.Invention.Item(System.Int32)">
+            <summary>
+            The index'th PossibleIndividual in this invention.
+            </summary>
+            <param name="index">Index of the individual.  This will be 0 if there is only one individual.</param>
+        </member>
+        <member name="P:Imaginarium.Generator.Invention.Item(Imaginarium.Ontology.Individual)">
+            <summary>
+            Returns the PossibleIndividual within this invention of the specified individual
+            </summary>
+        </member>
+        <member name="P:Imaginarium.Generator.Invention.Item(System.String)">
+            <summary>
+            Returns the PossibleIndividual with the specified name
+            </summary>
+            <param name="name">Name to search for</param>
+            <returns>The PossibleIndividual or null</returns>
+        </member>
         <member name="F:Imaginarium.Generator.Invention.Generator">
             <summary>
             The Generator that created this invention
@@ -400,6 +445,11 @@
             Remove trailing whitespace from the StringBuilder
             </summary>
             <param name="b"></param>
+        </member>
+        <member name="M:Imaginarium.Generator.Invention.Description(System.String,System.String)">
+            <summary>
+            A description of all the individuals in this invention
+            </summary>
         </member>
         <member name="M:Imaginarium.Generator.Invention.Description(Imaginarium.Ontology.Individual,System.String,System.String)">
             <summary>
@@ -483,6 +533,126 @@
             <param name="ind">Individual to look up the kinds of</param>
             <returns>All kinds that apply to individual</returns>
         </member>
+        <member name="T:Imaginarium.Generator.PossibleIndividual">
+            <summary>
+            Represents the instantiation of a specific Individual within a specific Invention (possible world).
+            </summary>
+        </member>
+        <member name="P:Imaginarium.Generator.PossibleIndividual.Generator">
+            <summary>
+            The Generator that generated this possible individual
+            </summary>
+        </member>
+        <member name="P:Imaginarium.Generator.PossibleIndividual.Ontology">
+            <summary>
+            The Ontology describing this possible individual
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Generator.PossibleIndividual.Individual">
+            <summary>
+            The underlying Individual
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Generator.PossibleIndividual.Invention">
+            <summary>
+            The Invention (model, possible world) from which this PossibleIndividual takes its attributes
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Generator.PossibleIndividual.Description(System.String,System.String)">
+            <summary>
+            A textual description of the Individual's attributes within Model.
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Generator.PossibleIndividual.NounsString(System.String,System.String)">
+            <summary>
+            Nouns describing i, as a string
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Generator.PossibleIndividual.AdjectivesString">
+            <summary>
+            Adjectives describing i, as a string
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Generator.PossibleIndividual.PropertyValue(Imaginarium.Ontology.Property)">
+            <summary>
+            The value of the specified property.
+            </summary>
+            <param name="property">The Property object for the property requested.</param>
+            <returns>The value of property</returns>
+        </member>
+        <member name="M:Imaginarium.Generator.PossibleIndividual.AdjectivesDescribing">
+            <summary>
+            All Adjectives that are true of the individual in Model.
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Generator.PossibleIndividual.MostSpecificNouns">
+            <summary>
+            Finds the minima of the sub-lattice of nouns satisfied by this individual.
+            Translation: every noun that's true of ind but that doesn't have a more specific noun that's
+            also true of it.  We suppress the more general nouns because they're implied by the truth of
+            the more specified ones.
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Generator.PossibleIndividual.NameString">
+            <summary>
+            The name of the Individual within this Invention
+            </summary>
+            <returns>Name as a single string</returns>
+        </member>
+        <member name="P:Imaginarium.Generator.PossibleIndividual.Name">
+            <summary>
+            NameString for the object.
+            Caches name, so the name is only computed once.
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Generator.PossibleIndividual.IsA(System.String[])">
+            <summary>
+            True if the concept with the specified name applies to the individual in the current Model.
+            </summary>
+            <param name="name">Name of concept to test</param>
+            <returns>True if Individual is an instance of the named concept.</returns>
+        </member>
+        <member name="M:Imaginarium.Generator.PossibleIndividual.IsA(Imaginarium.Ontology.MonadicConcept)">
+            <summary>
+            True if concept applies to individual in the current Model.
+            </summary>
+            <param name="c">Concept to test the truth of</param>
+            <returns>True if i is an instance of c in the current Model</returns>
+        </member>
+        <member name="M:Imaginarium.Generator.PossibleIndividual.TrueKinds">
+            <summary>
+            All the kinds that apply to the individual in the current Model
+            </summary>
+            <returns>All kinds that apply to individual</returns>
+        </member>
+        <member name="M:Imaginarium.Generator.PossibleIndividual.RelatesTo(Imaginarium.Generator.PossibleIndividual,Imaginarium.Ontology.Verb)">
+            <summary>
+            True if this is related to other via the verb.  That is, if "this verbs other"
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Generator.PossibleIndividual.RelatesTo(Imaginarium.Generator.PossibleIndividual,System.String)">
+            <summary>
+            True if this is related to other via the verb.  That is, if "this verbs other"
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Generator.PossibleIndividual.Part(Imaginarium.Ontology.Part)">
+            <summary>
+            Returns the PossibleIndividual(s) representing the specified Part of this possible individual
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Generator.PossibleIndividual.Part(System.String[])">
+            <summary>
+            Returns the PossibleIndividual(s) representing the specified Part of this possible individual
+            </summary>
+        </member>
+        <member name="P:Imaginarium.Generator.PossibleIndividual.Relationships">
+            <summary>
+            Returns the relationships in which this individual is involved.
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Generator.PossibleIndividual.ToString">
+            <inheritdoc />
+        </member>
         <member name="T:Imaginarium.Ontology.Adjective">
             <summary>
             A monadic predicate that is surfaced in English as an adjective.
@@ -493,6 +663,11 @@
         </member>
         <member name="P:Imaginarium.Ontology.Adjective.DictionaryStylePartOfSpeech">
             <inheritdoc />
+        </member>
+        <member name="F:Imaginarium.Ontology.Adjective.ReferenceCount">
+            <summary>
+            Number of alternative sets or implications this adjective is involved in
+            </summary>
         </member>
         <member name="M:Imaginarium.Ontology.Adjective.RelevantTo(Imaginarium.Ontology.CommonNoun)">
             <summary>
@@ -539,6 +714,11 @@
         <member name="M:Imaginarium.Ontology.CommonNoun.IsNamed(System.String[])">
             <inheritdoc />
         </member>
+        <member name="P:Imaginarium.Ontology.CommonNoun.RandomSubkind">
+            <summary>
+            Randomly choose a subkind of this kind, weighted by the subkinds' respective RelativeFrequencies
+            </summary>
+        </member>
         <member name="P:Imaginarium.Ontology.CommonNoun.SingularForm">
             <summary>
             Singular form of the noun
@@ -570,6 +750,11 @@
         <member name="F:Imaginarium.Ontology.CommonNoun.Subkinds">
             <summary>
             The common nouns identifying the immediate subkinds of this noun
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Ontology.CommonNoun.SubkindFrequencies">
+            <summary>
+            Relative frequencies (in the sense of probability) of the respective Subkinds
             </summary>
         </member>
         <member name="F:Imaginarium.Ontology.CommonNoun.Superkinds">
@@ -660,7 +845,7 @@
             Returns the LUB of the three kinds in the kind lattice
             </summary>
         </member>
-        <member name="M:Imaginarium.Ontology.CommonNoun.DeclareSuperclass(Imaginarium.Ontology.CommonNoun)">
+        <member name="M:Imaginarium.Ontology.CommonNoun.DeclareSuperclass(Imaginarium.Ontology.CommonNoun,System.Single)">
             <summary>
             Ensure super is an immediate super-kind of this kind.
             Does nothing if it is already a super-kind.
@@ -676,6 +861,11 @@
             At most one of these may be true of the noun
             </summary>
         </member>
+        <member name="F:Imaginarium.Ontology.CommonNoun.AlternativeSet.AlternativeFrequencies">
+            <summary>
+            Relative frequencies for the corresponding alternative
+            </summary>
+        </member>
         <member name="F:Imaginarium.Ontology.CommonNoun.AlternativeSet.MinCount">
             <summary>
             Minimum number of literals that can be true
@@ -684,6 +874,16 @@
         <member name="F:Imaginarium.Ontology.CommonNoun.AlternativeSet.MaxCount">
             <summary>
             Maximum number of literals that can be true
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Ontology.CommonNoun.AlternativeSet.TotalWeight">
+            <summary>
+            Sum of the frequencies of all alternatives.
+            </summary>
+        </member>
+        <member name="P:Imaginarium.Ontology.CommonNoun.AlternativeSet.RandomAlternative">
+            <summary>
+            Randomly choose a subkind of this kind, weighted by the subkinds' respective RelativeFrequencies
             </summary>
         </member>
         <member name="T:Imaginarium.Ontology.CommonNoun.ConditionalModifier">
@@ -854,6 +1054,14 @@
             Inverts a monadic concept literal
             </summary>
         </member>
+        <member name="P:Imaginarium.Ontology.MonadicConceptLiteral.DebugString">
+            <summary>
+            Printed string representation of this literal
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Ontology.MonadicConceptLiteral.ToString">
+            <inheritdoc />
+        </member>
         <member name="T:Imaginarium.Ontology.NameCollisionException">
             <summary>
             Represents an error in which the same name is used for two different Concepts of different types (e.g. noun and verb)
@@ -902,9 +1110,29 @@
             <param name="name">Name for the ontology (for debugging purposes)</param>
             <param name="definitionsDirectory">Path to the directory containing code to load</param>
         </member>
+        <member name="F:Imaginarium.Ontology.Ontology.IsLocked">
+            <summary>
+            If true, prevent new concepts from being added to the ontology.
+            </summary>
+        </member>
         <member name="F:Imaginarium.Ontology.Ontology.Name">
             <summary>
             Name of the ontology (for debugging purposes)
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Ontology.Ontology.Author">
+            <summary>
+            Author(s) who wrote this generator
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Ontology.Ontology.Description">
+            <summary>
+            Description of the generator
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Ontology.Ontology.Instructions">
+            <summary>
+            Instructions for use
             </summary>
         </member>
         <member name="F:Imaginarium.Ontology.Ontology.AllTokenTries">
@@ -1076,6 +1304,16 @@
             The default Parser for use with this ontology.
             </summary>
         </member>
+        <member name="M:Imaginarium.Ontology.Ontology.ParseAndExecute(System.String)">
+            <summary>
+            Load the specified code into the ontology
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Ontology.Ontology.ParseAndExecute(System.String[])">
+            <summary>
+            Load the specified code into the ontology
+            </summary>
+        </member>
         <member name="M:Imaginarium.Ontology.Ontology.Load">
             <summary>
             Load all the source files in the current project
@@ -1086,12 +1324,13 @@
             Directory holding definitions files and item lists.
             </summary>
         </member>
-        <member name="M:Imaginarium.Ontology.Ontology.EnsureUndefinedOrDefinedAsType(System.String[],System.Type)">
+        <member name="M:Imaginarium.Ontology.Ontology.CheckTerminologyCanBeAdded(System.String[],System.Type,System.Boolean)">
             <summary>
             Throw an exception if an object with a different type is already defined under this name.
             </summary>
             <param name="name">Name of the concept</param>
             <param name="type">C# type we think the referent should have (e.g. typeof(Verb) for verb)</param>
+            <param name="addingToOntology">True if we are addingToOntology this referent for the first time, as opposed to adding a new inflection of an existing term</param>
             <exception cref="T:Imaginarium.Ontology.NameCollisionException">If there is already a concept with that name but a different type.</exception>
         </member>
         <member name="M:Imaginarium.Ontology.Ontology.ClearTests">
@@ -1267,10 +1506,13 @@
             The ontology to which this belongs
             </summary>
         </member>
-        <member name="M:Imaginarium.Ontology.Referent.#ctor(Imaginarium.Ontology.Ontology,System.String[])">
+        <member name="M:Imaginarium.Ontology.Referent.#ctor(Imaginarium.Ontology.Ontology,System.String[],System.Boolean)">
             <summary>
             Make a new referent.
             </summary>
+            <param name="name">Name of the referent</param>
+            <param name="ephemeral">True if this referent will exist only in one generator, and is not being added to the ontology</param>
+            <param name="ontology">Ontology within which the referent exists</param>
         </member>
         <member name="M:Imaginarium.Ontology.Referent.IsNamed(System.String[])">
             <summary>
@@ -1399,6 +1641,26 @@
             <summary>
             Remove all data from the monadic concept trie
             Used when reinitializing the ontology.
+            </summary>
+        </member>
+        <member name="T:Imaginarium.Ontology.UnknownReferentException">
+            <summary>
+            Represents an error in which the same name is used for two different Concepts of different types (e.g. noun and verb)
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Ontology.UnknownReferentException.Name">
+            <summary>
+            Name that was inconsistently defined
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Ontology.UnknownReferentException.NewType">
+            <summary>
+            New type the user tried to assign to it.
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Ontology.UnknownReferentException.#ctor(System.String[],System.Type)">
+            <summary>
+            Make a new NameCollisionException
             </summary>
         </member>
         <member name="T:Imaginarium.Ontology.Verb">
@@ -1604,6 +1866,11 @@
         <member name="F:Imaginarium.Parsing.AP.IsNegated">
             <summary>
             True if the adjectival phrase is prefixed by "not"  or "non-"
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Parsing.AP.RelativeFrequency">
+            <summary>
+            How often this adjective it to be chosen compared to other adjectives in the same list.
             </summary>
         </member>
         <member name="P:Imaginarium.Parsing.AP.MonadicConceptLiteral">
@@ -2149,6 +2416,19 @@
             If commentMarker doesn't appear, string is left unchanged.
             </summary>
         </member>
+        <member name="M:Imaginarium.Parsing.Parser.ParseRelativeFrequencyFromText(System.String[])">
+            <summary>
+            Take a chunk of tokens, and remove "(number)" from the end, returning the stripped
+            text and the number.  If there is no number at the end, just return the original
+            text and 1.
+            </summary>
+        </member>
+        <member name="M:Imaginarium.Parsing.Parser.ParseRelativeFrequency">
+            <summary>
+            Check for '(number)' in the input stream.  If it's there, consume those tokens
+            and return the number.  Otherwise, leave the input stream unchanged and return 1.
+            </summary>
+        </member>
         <member name="M:Imaginarium.Parsing.Parser.ConfigureVerb(Imaginarium.Parsing.VerbSegment,Imaginarium.Parsing.NP,Imaginarium.Parsing.NP)">
             <summary>
             Set the subject and object kind and modifiers of Verb based on Subject and Object.
@@ -2357,6 +2637,11 @@
         <member name="P:Imaginarium.Parsing.NP.Number">
             <summary>
             The grammatical Number of this NP (singular, plural, or null if unmarked or not yet known)
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Parsing.NP.RelativeFrequency">
+            <summary>
+            The number appearing in a parenthesized expression after the main NP, or 1 if there is no number
             </summary>
         </member>
         <member name="P:Imaginarium.Parsing.NP.ExplicitCount">
