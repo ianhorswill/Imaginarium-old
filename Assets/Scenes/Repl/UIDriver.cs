@@ -29,6 +29,7 @@ using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using GraphVisualization;
 using Imaginarium.Driver;
 using Imaginarium.Generator;
@@ -350,7 +351,7 @@ public class UIDriver : MonoBehaviour, IRepl
 
                 void Walk(Individual i)
                 {
-                    if (walked.Contains(i))
+                    if (walked.Contains(i)  || i.Kinds.Any(k => k.SuppressDescription))
                         return;
                     walked.Add(i);
 

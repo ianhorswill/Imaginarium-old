@@ -747,6 +747,11 @@
             Template used to generate a a description of the object
             </summary>
         </member>
+        <member name="F:Imaginarium.Ontology.CommonNoun.SuppressDescription">
+            <summary>
+            Do not print objects of this type as separate lines in the Imaginarium REPL
+            </summary>
+        </member>
         <member name="F:Imaginarium.Ontology.CommonNoun.Subkinds">
             <summary>
             The common nouns identifying the immediate subkinds of this noun
