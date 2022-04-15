@@ -230,7 +230,7 @@
         <member name="M:CatSAT.NonBoolean.SMT.Float.FloatProposition.ValidateNotDependency">
             <summary>
             Check that other propositions don't depend on this one.
-            This is needed for propositions for which we can't implement their inverses as constraints.
+            This is needed for propositions for which we can't implement their inverses as constraint.
             </summary>
         </member>
         <member name="M:CatSAT.NonBoolean.SMT.Float.FloatSolver.Preprocess">
@@ -241,9 +241,9 @@
         </member>
         <member name="M:CatSAT.NonBoolean.SMT.Float.FloatSolver.Solve(CatSAT.Solution)">
             <summary>
-            Try to find values for the FloatVariables that are consistent with the true constraints.
+            Try to find values for the FloatVariables that are consistent with the true constraint.
             </summary>
-            <param name="s">Model providing truth values for constraints</param>
+            <param name="s">Model providing truth values for constraint</param>
             <returns>True if variable values found successfully</returns>
         </member>
         <member name="M:CatSAT.NonBoolean.SMT.Float.FloatSolver.FindEquivalenceClasses(CatSAT.Solution)">
@@ -254,7 +254,7 @@
         </member>
         <member name="M:CatSAT.NonBoolean.SMT.Float.FloatSolver.FindActiveFunctionalConstraints(CatSAT.Solution)">
             <summary>
-            Find all functional constraints that are active in solution and attach them to the
+            Find all functional constraint that are active in solution and attach them to the
             representatives of their associated variables.
             </summary>
         </member>
@@ -264,7 +264,7 @@
             Save these bounds in SolutionBounds field of each variable
             </summary>
             <param name="s">Model against which to compute bounds</param>
-            <returns>False if constraints in this model are contradictory</returns>
+            <returns>False if constraint in this model are contradictory</returns>
         </member>
         <member name="M:CatSAT.NonBoolean.SMT.Float.FloatSolver.ResetAll">
             <summary>
@@ -279,7 +279,7 @@
         </member>
         <member name="T:CatSAT.NonBoolean.SMT.Float.FunctionalConstraint">
             <summary>
-            Base class for constraints such as SumConstraint.
+            Base class for constraint such as SumConstraint.
             Represents the constraint that Result = f(args) for some f and args
             </summary>
         </member>
@@ -407,6 +407,68 @@
             The relation of the constraint (e.g. less-than-equal)
             </summary>
         </member>
+        <member name="T:CatSAT.NonBoolean.SMT.MenuVariables.Menu`1">
+            <summary>
+            A fixed, finite collection of values for MenuVariable
+            </summary>
+            <typeparam name="T">Underlying type of the variable</typeparam>
+        </member>
+        <member name="M:CatSAT.NonBoolean.SMT.MenuVariables.Menu`1.#ctor(System.String,`0[])">
+            <summary>
+            Create a Menu (domain of enumerated values) for a MenuVariable from a fixed set of values
+            </summary>
+            <param name="name">Name to give to the menu (for debugging purposes)</param>
+            <param name="selections">Allowable values</param>
+        </member>
+        <member name="F:CatSAT.NonBoolean.SMT.MenuVariables.Menu`1.Selections">
+            <summary>
+            Fixed set of values in the domain
+            </summary>
+        </member>
+        <member name="M:CatSAT.NonBoolean.SMT.MenuVariables.Menu`1.Instantiate(System.Object,CatSAT.Problem,CatSAT.Literal)">
+            <inheritdoc />
+        </member>
+        <member name="F:CatSAT.NonBoolean.SMT.MenuVariables.MenuSolver`1.Variables">
+            <summary>
+            All the MenuVariables used in this Problem.
+            </summary>
+        </member>
+        <member name="F:CatSAT.NonBoolean.SMT.MenuVariables.MenuSolver`1.Propositions">
+            <summary>
+            All the SpecialPropositions, i.e. possible constraints, on MenuVariables inside this
+            problem.
+            </summary>
+        </member>
+        <member name="M:CatSAT.NonBoolean.SMT.MenuVariables.MenuSolver`1.SelectValue(CatSAT.NonBoolean.SMT.MenuVariables.MenuVariable{`0})">
+            <summary>
+            Choose a specific value for v in the current solution
+            </summary>
+        </member>
+        <member name="T:CatSAT.NonBoolean.SMT.MenuVariables.MenuVariable`1">
+            <summary>
+            A theory variable whose possible values come from a fixed, finite domain of specified values
+            </summary>
+            <typeparam name="T">Underlying type for the variable's values</typeparam>
+        </member>
+        <member name="M:CatSAT.NonBoolean.SMT.MenuVariables.MenuVariable`1.#ctor(System.Object,CatSAT.NonBoolean.SMT.MenuVariables.Menu{`0},CatSAT.Problem,CatSAT.Literal)">
+            <summary>
+            Make a variable whose allowable values from some the specified menu
+            </summary>
+            <param name="name">Name of the variable, for debugging purposes</param>
+            <param name="baseMenu">Default menu of allowable values</param>
+            <param name="problem">Problem object to which this variable belongs</param>
+            <param name="condition">Literal that must be true within a given solution in order for this variable to be defined in that solution</param>
+        </member>
+        <member name="M:CatSAT.NonBoolean.SMT.MenuVariables.MenuVariable`1.In(CatSAT.NonBoolean.SMT.MenuVariables.Menu{`0})">
+            <summary>
+            When true, this variable takes its value from the specified menu
+            </summary>
+        </member>
+        <member name="F:CatSAT.NonBoolean.SMT.MenuVariables.MenuVariable`1.BaseMenu">
+            <summary>
+            Default menu of values to use when no In assertion is true.
+            </summary>
+        </member>
         <member name="P:CatSAT.NonBoolean.SMT.MenuVariables.MenuVariable`1.Domain">
             <inheritdoc />
         </member>
@@ -489,12 +551,12 @@
         </member>
         <member name="F:CatSAT.FloatVariable.AllFunctionalConstraints">
             <summary>
-            All functional constraints applying to this variable
+            All functional constraint applying to this variable
             </summary>
         </member>
         <member name="F:CatSAT.FloatVariable.ActiveFunctionalConstraints">
             <summary>
-            Functional constraints that apply in this solution
+            Functional constraint that apply in this solution
             </summary>
         </member>
         <member name="F:CatSAT.FloatVariable.equivalence">
@@ -639,6 +701,22 @@
             A FloatVariable constrained to be the product of another FloatVariable and a constant
             </summary>
         </member>
+        <member name="M:CatSAT.FloatVariable.Sum(CatSAT.FloatVariable[])">
+            <summary>
+            The sum of a set of float variables
+            </summary>
+            <param name="vars">set of variables to sum</param>
+            <returns>Variable constrained to be the sum of vars</returns>
+            <exception cref="T:System.ArgumentException">When one of the variables has a condition on its existence</exception>
+        </member>
+        <member name="M:CatSAT.FloatVariable.Average(CatSAT.FloatVariable[])">
+            <summary>
+            Computes the average value of the specified FloatVariables
+            </summary>
+            <param name="vars">Variables to average</param>
+            <returns>A new FloatVariable constrained to be the average of vars</returns>
+            <exception cref="T:System.ArgumentException">When one of the vars has a condition on it (i.e. isn't defined in all models)</exception>
+        </member>
         <member name="T:CatSAT.Interval">
             <summary>
             A closed interval over the single-precision floating-point numbers
@@ -656,6 +734,11 @@
             Make an interval consisting of a single value
             </summary>
             <param name="singletonValue">The single value in the interval</param>
+        </member>
+        <member name="F:CatSAT.Interval.Zero">
+            <summary>
+            The interval consisting of just the value zero
+            </summary>
         </member>
         <member name="F:CatSAT.Interval.AllValues">
             <summary>
@@ -777,28 +860,28 @@
             Number of flips required to generate this solution
             </summary>
         </member>
-        <member name="F:CatSAT.BooleanSolver.solution">
+        <member name="F:CatSAT.BooleanSolver.Solution">
             <summary>
             The solution object containing the model we're generating.
             </summary>
         </member>
-        <member name="F:CatSAT.BooleanSolver.propositions">
+        <member name="F:CatSAT.BooleanSolver.Propositions">
             <summary>
             States of the different propositions of the Program, indexed by proposition number.
             IMPORTANT: this is a cache of solution.Propositions.
             </summary>
         </member>
-        <member name="F:CatSAT.BooleanSolver.trueDisjunctCount">
+        <member name="F:CatSAT.BooleanSolver.TrueDisjunctCount">
             <summary>
             Number of presently true disjuncts in each of the Program's clauses, index by clause number.
             </summary>
         </member>
-        <member name="F:CatSAT.BooleanSolver.lastFlip">
+        <member name="F:CatSAT.BooleanSolver.LastFlip">
             <summary>
             Last flipped disjunct of a given clause
             </summary>
         </member>
-        <member name="F:CatSAT.BooleanSolver.unsatisfiedClauses">
+        <member name="F:CatSAT.BooleanSolver.UnsatisfiedClauses">
             <summary>
             Total number of unsatisfied clauses
             </summary>
@@ -813,6 +896,23 @@
             The total utility of all the true propositions in the solution.
             </summary>
         </member>
+        <member name="F:CatSAT.BooleanSolver.trueLiterals">
+            <summary>
+            Used during MakeRandomAssignment/Propagate
+            Number of literals established so far as being true in the specified constraint
+            </summary>
+        </member>
+        <member name="F:CatSAT.BooleanSolver.falseLiterals">
+            <summary>
+            Used during MakeRandomAssignment/Propagate
+            Number of literals established so far as being false in the specified constraint
+            </summary>
+        </member>
+        <member name="F:CatSAT.BooleanSolver.varInitialized">
+            <summary>
+            Arrays to hold state information; indexed by proposition number.
+            </summary>
+        </member>
         <member name="P:CatSAT.BooleanSolver.PerformanceStatistics">
             <summary>
             A string listing the performance statistics of the solver run that generated this solution.
@@ -824,15 +924,6 @@
             Implements the WalkSAT algorithm
             </summary>
             <returns>True if a satisfying assignment was found.</returns>
-        </member>
-        <member name="M:CatSAT.BooleanSolver.GreedyFlip(System.Boolean,System.Int16[],System.UInt16)">
-            <summary>
-            Find the proposition from the specified clause that will do the least damage to the clauses that are already satisfied.
-            </summary>
-            <param name="increaseTrueDisjuncts">If true, the clause has too few disjuncts true</param>
-            <param name="disjuncts">Signed indices of the disjuncts of the clause</param>
-            <param name="lastFlipOfThisClause">Variable that was last chosen for flipping in this clause.</param>
-            <returns>Index of the prop to flip</returns>
         </member>
         <member name="M:CatSAT.BooleanSolver.UnsatisfiedClauseDelta(System.UInt16)">
             <summary>
@@ -860,10 +951,93 @@
             Check the invariant that totalUtility == the sum of the utilities of all true propositions
             </summary>
         </member>
+        <member name="M:CatSAT.BooleanSolver.UpdateUtility(System.UInt16)">
+            <summary>
+            update the utility of the current initializing proposition.
+            <param name="pIndex">Index of the variable/proposition to be updated</param>
+            </summary>
+        </member>
+        <member name="M:CatSAT.BooleanSolver.PropagateConstraints(System.UInt16,System.Boolean)">
+            <summary>
+            Update true/false literal counts for constraints involved with this proposition
+            and set values of other propositions appearing in the constraint when the number
+            of false propositions requires all remaining ones to be true, or vice-versa.
+            <param name="pIndex">Index of the variable/proposition to be propagated</param>
+            <param name="initialValue">the truth value will be assigned to proposition pIndex</param>
+            </summary>
+        </member>
+        <member name="M:CatSAT.BooleanSolver.CanPropagate(System.UInt16)">
+            <summary>
+            True if Propagate() can set the value of this proposition
+            This will be when it's neither predetermined nor already initialized.
+            </summary>
+            <param name="prop">Index of the proposition</param>
+        </member>
         <member name="M:CatSAT.BooleanSolver.MakeRandomAssignment">
             <summary>
             Randomly assign values to the propositions,
+            propagate through the initialization,
             and initialize the other state information accordingly.
+            </summary>
+        </member>
+        <member name="T:CatSAT.BooleanSolver.DynamicUShortSet">
+            <summary>
+            Fast implementation of a dynamic set of ushorts less than some maximum value.
+            uses O(max) space.
+            </summary>
+        </member>
+        <member name="M:CatSAT.BooleanSolver.DynamicUShortSet.#ctor(System.Int32)">
+            <summary>
+            Make an initially empty set of ushorts no larger than max-1.
+            </summary>
+            <param name="max">Largest allowable ushort + 1</param>
+        </member>
+        <member name="F:CatSAT.BooleanSolver.DynamicUShortSet.contents">
+            <summary>
+            Array holding the set of ushorts currently in the set
+            </summary>
+        </member>
+        <member name="F:CatSAT.BooleanSolver.DynamicUShortSet.indices">
+            <summary>
+            Array for each possible ushort giving the location in contents that that short is listed
+            or ushort.MaxValue, if it's not in the set at all.
+            </summary>
+        </member>
+        <member name="F:CatSAT.BooleanSolver.DynamicUShortSet.Size">
+            <summary>
+            Number of elements in the set
+            </summary>
+        </member>
+        <member name="P:CatSAT.BooleanSolver.DynamicUShortSet.Item(System.Int32)">
+            <summary>
+            Returns the i'th element of the set.
+            </summary>
+            <param name="i">Position in the set, from 0..Size-1</param>
+        </member>
+        <member name="P:CatSAT.BooleanSolver.DynamicUShortSet.RandomElement">
+            <summary>
+            A randomly chosen element of the set.
+            Set must currently be non-empty.
+            </summary>
+        </member>
+        <member name="M:CatSAT.BooleanSolver.DynamicUShortSet.Add(System.UInt16)">
+            <summary>
+            Adds an element to the set.
+            </summary>
+        </member>
+        <member name="M:CatSAT.BooleanSolver.DynamicUShortSet.Remove(System.UInt16)">
+            <summary>
+            Removes an element from the set
+            </summary>
+        </member>
+        <member name="M:CatSAT.BooleanSolver.DynamicUShortSet.Clear">
+            <summary>
+            Remove all elements from the set
+            </summary>
+        </member>
+        <member name="M:CatSAT.BooleanSolver.DynamicUShortSet.Contains(System.UInt16)">
+            <summary>
+            True if the set contains this element
             </summary>
         </member>
         <member name="T:CatSAT.Call">
@@ -992,43 +1166,66 @@
             <param name="variableName">Variable to check the value of</param>
             <param name="variableValue">Value the variable should have</param>
         </member>
-        <member name="T:CatSAT.Clause">
+        <member name="T:CatSAT.ConditionalPBC">
             <summary>
-            Represents a constraint in a Problem.
+            Represents a subclass of Pseudo Boolean Constraint in a Problem.
+            A Conditional PBC is a PBC that has no effect in models for which the condition is false.
+            </summary>
+        </member>
+        <member name="F:CatSAT.ConditionalPBC.Condition">
+            <summary>
+            The condition Boolean in the clause that needs to be true
+            If false, ignore the whole constraint.
+            </summary>
+        </member>
+        <member name="M:CatSAT.ConditionalPBC.#ctor(System.UInt16,System.UInt16,System.Int16,System.Int16[])">
+            <summary>
+            Make a new clause (but doesn't add it to a Program)
+            </summary>
+            <param name="min">Minimum number of disjuncts that must be true to consider the clause satisfied</param>
+            <param name="max">Maximum number of disjuncts that are allowed to be true to consider the clause satisfied, or 0 if the is no maximum</param>
+            <param name="disjuncts">The disjuncts, encoded as signed proposition indices</param>
+            <param name="condition"> The condition literal in the clause that needs to be true </param>
+        </member>
+        <member name="M:CatSAT.ConditionalPBC.IsEnabled(CatSAT.Solution)">
+            <summary>
+            Check if the conditional PBC's condition literal is satisfied.
+            </summary>
+        </member>
+        <member name="M:CatSAT.ConditionalPBC.UpdateTruePositiveAndFalseNegative(CatSAT.BooleanSolver)">
+            <summary>
+             transit prop appears as a negative literal in clause from false -> true,
+             OR prop appears as a positive literal in clause from true -> false
+             </summary>
+        </member>
+        <member name="M:CatSAT.ConditionalPBC.UpdateTrueNegativeAndFalsePositive(CatSAT.BooleanSolver)">
+            <summary>
+             transit prop appears as a negative literal in clause from true -> false,
+             OR prop appears as a positive literal in clause from false -> true
+             </summary>
+        </member>
+        <member name="T:CatSAT.PseudoBooleanConstraint">
+            <summary>
+            Represents a subclass of Constraint, for the pseudo-Boolean constraints, in a Problem.
             The name is a slight misnomer, since a true clause is satisfied as long as at least one disjunct is satisfied.
-            A clause in CatSAT is a generalized cardinality constraint, meaning the user can specify arbitrary max/min
+            A PseudoBoolean Constrain in CatSAT is a generalized cardinality constraint, meaning the user can specify arbitrary max/min
             number of disjuncts may be satisfied.
             </summary>
         </member>
-        <member name="F:CatSAT.Clause.Disjuncts">
+        <member name="F:CatSAT.PseudoBooleanConstraint.MaxDisjunctsPlusOne">
             <summary>
-            The literals of the clause
-            </summary>
-        </member>
-        <member name="F:CatSAT.Clause.MinDisjunctsMinusOne">
-            <summary>
-            Minimum number of disjusts that must be true in order for the constraint
-            to be satisfied, minus one.  For a normal clause, this is 0 (i.e. the real min number is 1)
-            </summary>
-        </member>
-        <member name="F:CatSAT.Clause.MaxDisjunctsPlusOne">
-            <summary>
-            Maximum number of disjucts that are allowed to be true in order for the
+            Maximum number of disjuncts that are allowed to be true in order for the
             constraint to be considered satisfied, plus one.
             For a normal clause, there is no limit, so this gets set to Disjuncts.Count+1.
             </summary>
         </member>
-        <member name="F:CatSAT.Clause.Index">
+        <member name="P:CatSAT.PseudoBooleanConstraint.IsConditional">
             <summary>
-            Position in the Problem's Clauses list.
+            True if this is a Conditional PBC
+            Currently not referenced... yet
             </summary>
         </member>
-        <member name="F:CatSAT.Clause.IsNormalDisjunction">
-            <summary>
-            True if this is a plain old boring disjunction
-            </summary>
-        </member>
-        <member name="M:CatSAT.Clause.#ctor(System.UInt16,System.UInt16,System.Int16[])">
+        <member name="M:CatSAT.PseudoBooleanConstraint.#ctor(System.UInt16,System.UInt16,System.Int16[])">
             <summary>
             Make a new clause (but doesn't add it to a Program)
             </summary>
@@ -1036,28 +1233,201 @@
             <param name="max">Maximum number of disjuncts that are allowed to be true to consider the clause satisfied, or 0 if the is no maximum</param>
             <param name="disjuncts">The disjuncts, encoded as signed proposition indices</param>
         </member>
-        <member name="M:CatSAT.Clause.CountDisjuncts(CatSAT.Solution)">
-            <summary>
-            Return the number of disjuncts that are satisfied in the specified solution (i.e. model).
-            </summary>
-            <param name="solution">Solution to test against</param>
-            <returns>Number of satisfied disjuncts</returns>
-        </member>
-        <member name="M:CatSAT.Clause.IsSatisfied(System.UInt16)">
+        <member name="M:CatSAT.PseudoBooleanConstraint.IsSatisfied(System.UInt16)">
             <summary>
             Is this constraint satisfied if the specified number of disjuncts is satisfied?
             </summary>
             <param name="satisfiedDisjuncts">Number of satisfied disjuncts</param>
             <returns>Whether the constraint is satisfied.</returns>
         </member>
-        <member name="M:CatSAT.Clause.OneTooManyDisjuncts(System.UInt16)">
+        <member name="M:CatSAT.PseudoBooleanConstraint.OneTooManyDisjuncts(System.UInt16)">
             <summary>
             Is the specified number of disjuncts one too many for this constraint to be satisfied?
             </summary>
         </member>
-        <member name="M:CatSAT.Clause.OneTooFewDisjuncts(System.UInt16)">
+        <member name="M:CatSAT.PseudoBooleanConstraint.OneTooFewDisjuncts(System.UInt16)">
             <summary>
             Is the specified number of disjuncts one too few for this constraint to be satisfied?
+            </summary>
+        </member>
+        <member name="M:CatSAT.PseudoBooleanConstraint.ThreatCountDeltaIncreasing(System.UInt16)">
+            <summary>
+            ThreatCountDelta when current clause is getting one more true disjunct.
+            </summary>
+        </member>
+        <member name="M:CatSAT.PseudoBooleanConstraint.ThreatCountDeltaDecreasing(System.UInt16)">
+            <summary>
+            ThreatCountDelta when current clause is getting one less true disjunct.
+            </summary>
+        </member>
+        <member name="M:CatSAT.PseudoBooleanConstraint.UpdateTruePositiveAndFalseNegative(CatSAT.BooleanSolver)">
+            <summary>
+             transit prop appears as a negative literal in clause from false -> true,
+             OR prop appears as a positive literal in clause from true -> false
+             </summary>
+        </member>
+        <member name="M:CatSAT.PseudoBooleanConstraint.UpdateTrueNegativeAndFalsePositive(CatSAT.BooleanSolver)">
+            <summary>
+             transit prop appears as a negative literal in clause from true -> false,
+             OR prop appears as a positive literal in clause from false -> true
+             </summary>
+        </member>
+        <member name="M:CatSAT.PseudoBooleanConstraint.MaxFalseLiterals(System.Int32)">
+            <summary>
+            Return the max number of false literals in a PseudoBoolean constraint.
+            </summary>
+        </member>
+        <member name="M:CatSAT.PseudoBooleanConstraint.MaxTrueLiterals(System.Int32)">
+            <summary>
+            Return the max number of true literals in a PseudoBoolean constraint.
+            </summary>
+        </member>
+        <member name="T:CatSAT.Clause">
+            <summary>
+            Represents a Clause in a Problem.
+            The name is a slight misnomer, since a true clause is satisfied as long as at least one disjunct is satisfied.
+            A clause in CatSAT is a generalized cardinality Clause, meaning the user can specify arbitrary min
+            number of disjuncts may be satisfied.
+            </summary>
+        </member>
+        <member name="M:CatSAT.Clause.#ctor(System.Int16[])">
+            <summary>
+            Make a new normal clause (but doesn't add it to a Program)
+            </summary>
+            <param name="disjuncts">The disjuncts, encoded as signed proposition indices</param>
+        </member>
+        <member name="M:CatSAT.Clause.IsSatisfied(System.UInt16)">
+            <summary>
+            Is this Clause satisfied if the specified number of disjuncts is satisfied?
+            </summary>
+            <param name="satisfiedDisjuncts">Number of satisfied disjuncts</param>
+            <returns>Whether the Clause is satisfied.</returns>
+        </member>
+        <member name="M:CatSAT.Clause.ThreatCountDeltaIncreasing(System.UInt16)">
+            <summary>
+            ThreatCountDelta when current clause is getting one more true disjunct.
+            </summary>
+        </member>
+        <member name="M:CatSAT.Clause.ThreatCountDeltaDecreasing(System.UInt16)">
+            <summary>
+            ThreatCountDelta when current clause is getting one less true disjunct.
+            </summary>
+        </member>
+        <member name="M:CatSAT.Clause.UpdateTruePositiveAndFalseNegative(CatSAT.BooleanSolver)">
+            <summary>
+             transit prop appears as a negative literal in clause from false -> true,
+             OR prop appears as a positive literal in clause from true -> false
+             </summary>
+        </member>
+        <member name="M:CatSAT.Clause.UpdateTrueNegativeAndFalsePositive(CatSAT.BooleanSolver)">
+            <summary>
+             transit prop appears as a negative literal in clause from true -> false,
+             OR prop appears as a positive literal in clause from false -> true
+             </summary>
+        </member>
+        <member name="M:CatSAT.Clause.MaxFalseLiterals(System.Int32)">
+            <summary>
+            Return the max number of false literals in a normal clause.
+            </summary>
+        </member>
+        <member name="M:CatSAT.Clause.MaxTrueLiterals(System.Int32)">
+            <summary>
+            Return the max number of true literals in a normal clause.
+            </summary>
+        </member>
+        <member name="F:CatSAT.Constraint.Disjuncts">
+            <summary>
+            The literals of the constraint
+            </summary>
+        </member>
+        <member name="F:CatSAT.Constraint.UnPredeterminedDisjuncts">
+            <summary>
+            The not predeteremined disjuncts of the constraint
+            </summary>
+        </member>
+        <member name="F:CatSAT.Constraint.Index">
+            <summary>
+            Position in the Problem's Constraints list.
+            </summary>
+        </member>
+        <member name="F:CatSAT.Constraint.IsNormalDisjunction">
+            <summary>
+            True if this is a plain old boring disjunction
+            </summary>
+        </member>
+        <member name="F:CatSAT.Constraint.MinDisjunctsMinusOne">
+            <summary>
+            Minimum number of disjuncts that must be true in order for the constraint
+            to be satisfied, minus one.  For a normal clause, this is 0 (i.e. the real min number is 1)
+            </summary>
+        </member>
+        <member name="M:CatSAT.Constraint.CountDisjuncts(CatSAT.Solution)">
+            <summary>
+            Return the number of disjuncts that are satisfied in the specified solution (i.e. model).
+            </summary>
+            <param name="solution">Solution to test against</param>
+            <returns>Number of satisfied disjuncts</returns>
+        </member>
+        <member name="M:CatSAT.Constraint.IsSatisfied(System.UInt16)">
+            <summary>
+            Is this constraint satisfied if the specified number of disjuncts is satisfied?
+            </summary>
+            <param name="satisfiedDisjuncts">Number of satisfied disjuncts</param>
+            <returns>Whether the constraint is satisfied.</returns>
+        </member>
+        <member name="M:CatSAT.Constraint.ThreatCountDeltaIncreasing(System.UInt16)">
+            <summary>
+            ThreatCountDelta when current clause is getting one more true disjunct.
+            </summary>
+        </member>
+        <member name="M:CatSAT.Constraint.ThreatCountDeltaDecreasing(System.UInt16)">
+            <summary>
+            ThreatCountDelta when current clause is getting one less true disjunct.
+            </summary>
+        </member>
+        <member name="M:CatSAT.Constraint.UpdateTruePositiveAndFalseNegative(CatSAT.BooleanSolver)">
+            <summary>
+             transit prop appears as a negative literal in clause from false -> true,
+             OR prop appears as a positive literal in clause from true -> false
+             </summary>
+        </member>
+        <member name="M:CatSAT.Constraint.UpdateTrueNegativeAndFalsePositive(CatSAT.BooleanSolver)">
+            <summary>
+             transit prop appears as a negative literal in clause from true -> false,
+             OR prop appears as a positive literal in clause from false -> true
+             </summary>
+        </member>
+        <member name="M:CatSAT.Constraint.GreedyFlip(CatSAT.BooleanSolver)">
+            <summary>
+            Find the proposition from the specified clause that will do the least damage to the clauses that are already satisfied.
+            </summary>
+            <param name="b">Current BooleanSolver</param>
+            <returns>Index of the prop to flip</returns>
+        </member>
+        <member name="M:CatSAT.Constraint.Decompile(CatSAT.Problem)">
+            <summary>
+            Generate a textual representation of the constraint for debugging purposes
+            </summary>
+        </member>
+        <member name="M:CatSAT.Constraint.EquivalentTo(CatSAT.Constraint)">
+            <summary>
+            Check if this constraint is just a copy of (or identical to) the specified constraint
+            </summary>
+        </member>
+        <member name="M:CatSAT.Constraint.IsEnabled(CatSAT.Solution)">
+            <summary>
+            Check if a constraint's condition literal is satisfied.
+            Conditional PBC only. Default true for all other types of constraint.
+            </summary>
+        </member>
+        <member name="M:CatSAT.Constraint.MaxFalseLiterals(System.Int32)">
+            <summary>
+            Return the max number of false literals in a constraint.
+            </summary>
+        </member>
+        <member name="M:CatSAT.Constraint.MaxTrueLiterals(System.Int32)">
+            <summary>
+            Return the max number of true literals in a constraint.
             </summary>
         </member>
         <member name="T:CatSAT.CompiledStruct">
@@ -1351,7 +1721,7 @@
         </member>
         <member name="M:CatSAT.FDVariable`1.EqualityProposition(System.Object)">
             <summary>
-            Returns the Prooposition representing that this variable has the specified value
+            Returns the Proposition representing that this variable has the specified value
             </summary>
             <param name="value">Value to compare to</param>
             <returns>The unique Proposition object representing that this variable has the specified value.</returns>
@@ -1483,7 +1853,7 @@
             Returns the proposition with the specified name
             </summary>
             <param name="s">Name of hte proposition</param>
-            <returns>The proposition with that naem</returns>
+            <returns>The proposition with that name</returns>
         </member>
         <member name="P:CatSAT.Literal.BaseProposition">
             <summary>
@@ -2282,6 +2652,9 @@
             The Problem containing the contradiction
             </summary>
         </member>
+        <member name="M:CatSAT.ContradictionException.#ctor(CatSAT.Problem,System.String)">
+            <inheritdoc />
+        </member>
         <member name="T:CatSAT.Struct">
             <summary>
             The VariableType (essentially the domain) for CatSAT variables containing other variables
@@ -2293,7 +2666,7 @@
             </summary>
             <param name="name">Name of the variable</param>
             <param name="memberVariables">Variables to be created inside this variable</param>
-            <param name="constrainer">Procedure to add constraints to a newly created instance, if desired.</param>
+            <param name="constrainer">Procedure to add constraint to a newly created instance, if desired.</param>
         </member>
         <member name="M:CatSAT.Struct.Instantiate(System.Object,CatSAT.Problem,CatSAT.Literal)">
             <inheritdoc />
@@ -2462,13 +2835,13 @@
         </member>
         <member name="F:CatSAT.SATVariable.PositiveClauses">
             <summary>
-            Clauses in which this variable appears unnegated.
+            Constraint in which this variable appears unnegated.
             Used to know what clauses to check if we flip this variable
             </summary>
         </member>
         <member name="F:CatSAT.SATVariable.NegativeClauses">
             <summary>
-            Clauses in which this variable appears negated.
+            Constraint in which this variable appears negated.
             Used to know what clauses to check if we flip this variable
             </summary>
         </member>
@@ -2695,6 +3068,11 @@
             String showing size statistics for this problem object
             </summary>
         </member>
+        <member name="P:CatSAT.Problem.Decompiled">
+            <summary>
+            Returns a textual representation of the constraint in the problem.
+            </summary>
+        </member>
         <member name="F:CatSAT.Problem.Name">
             <summary>
             Name of the Problem, for debugging purposes.
@@ -2734,10 +3112,15 @@
             variable.
             </summary>
         </member>
-        <member name="F:CatSAT.Problem.Clauses">
+        <member name="F:CatSAT.Problem.Constraints">
             <summary>
-            The constraints in the Problem.
-            Most of these are normal clauses (disjunctions), but other cardinality constraints are possible.
+            The constraint in the Problem.
+            Most of these are normal clauses (disjunctions), but other cardinality constraint are possible.
+            </summary>
+        </member>
+        <member name="F:CatSAT.Problem.PropagateConstraintsDuringInitialization">
+            <summary>
+            Do constraint propagation during the process of randomly initializing the truth assignment for a solution.
             </summary>
         </member>
         <member name="P:CatSAT.Problem.Propositions">
@@ -2786,17 +3169,28 @@
         </member>
         <member name="M:CatSAT.Problem.AddClause(CatSAT.Literal[])">
             <summary>
-            Forcibly add a clause to the Problem.
+            Forcibly add a constraint to the Problem.
+            </summary>
+        </member>
+        <member name="M:CatSAT.Problem.AddClause(System.UInt16,CatSAT.Literal[])">
+            <summary>
+            Forcibly add a normal constraint to the Problem.
             </summary>
         </member>
         <member name="M:CatSAT.Problem.AddClause(System.UInt16,System.UInt16,CatSAT.Literal[])">
             <summary>
-            Forcibly add a clause to the Problem.
+            Forcibly add a PseudoBoolean constraint to the Problem.
             </summary>
         </member>
-        <member name="M:CatSAT.Problem.AddClause(CatSAT.Clause)">
+        <member name="M:CatSAT.Problem.AddConditionalPBC(CatSAT.Literal,System.UInt16,System.UInt16,System.Collections.Generic.IEnumerable{CatSAT.Literal})">
             <summary>
-            Forcibly add a clause to the Problem.
+            Add a Conditional PBC to the Problem.
+            Acts like a PBC in models for which the condition is true, has no effect in other models.
+            </summary>
+        </member>
+        <member name="M:CatSAT.Problem.AddClause(CatSAT.Constraint)">
+            <summary>
+            Forcibly add a constraint to the Problem.
             </summary>
         </member>
         <member name="M:CatSAT.Problem.CompileClause(CatSAT.Literal[])">
@@ -2874,6 +3268,11 @@
             </summary>
             <param name="literal">Literal tha must always be true</param>
             <exception cref="T:System.InvalidOperationException">When the Problem has already been solved once</exception>
+        </member>
+        <member name="M:CatSAT.Problem.SetInferredValue(CatSAT.Proposition,System.Boolean)">
+            <summary>
+            Declares a value for the proposition that has been inferred as part of the optimization process.
+            </summary>
         </member>
         <member name="M:CatSAT.Problem.Initialize(CatSAT.Proposition,System.Boolean)">
             <summary>
@@ -2954,6 +3353,33 @@
             <param name="min">Minimum number of literals that must be true in a solution</param>
             <param name="max">Maximum number of literals that may be true in a solution</param>
             <param name="literals">Literals being quantified</param>
+        </member>
+        <member name="M:CatSAT.Problem.QuantifyIf(CatSAT.Literal,System.Int32,System.Int32,CatSAT.Literal[])">
+            <summary>
+            Whenever condition is true, bounds on the number of literals in the specified set that must be true
+            </summary>
+            <param name="condition">Condition under which the constraint applies</param>
+            <param name="min">Minimum number of literals that must be true in a solution</param>
+            <param name="max">Maximum number of literals that may be true in a solution</param>
+            <param name="literals">Literals being quantified</param>
+        </member>
+        <member name="M:CatSAT.Problem.QuantifyIf(CatSAT.Literal,System.Int32,System.Int32,System.Collections.Generic.IEnumerable{CatSAT.Literal})">
+            <summary>
+            Whenever condition is true, bounds on the number of literals in the specified set that must be true
+            </summary>
+            <param name="condition">Condition under which the constraint applies</param>
+            <param name="min">Minimum number of literals that must be true in a solution</param>
+            <param name="max">Maximum number of literals that may be true in a solution</param>
+            <param name="literals">Literals being quantified</param>
+        </member>
+        <member name="M:CatSAT.Problem.PreprocessConstraintLiterals(System.Int32,System.Int32,System.Collections.Generic.IEnumerable{CatSAT.Literal})">
+            <summary>
+            Remove duplications and constant-valued literals from literals to be included in constraint
+            </summary>
+            <param name="min">Specified minimum number of literals to satisfy constraint</param>
+            <param name="max">Specified maximum number of literals to satisfy constraint</param>
+            <param name="literals">Literals specified for the constraint</param>
+            <returns></returns>
         </member>
         <member name="M:CatSAT.Problem.All(CatSAT.Literal[])">
             <summary>
@@ -3137,11 +3563,11 @@
             </summary>
             <exception cref="T:CatSAT.ContradictionException">If the optimizer determines the problem is provably unsatisfiable</exception>
         </member>
-        <member name="M:CatSAT.Problem.UndeterminedDisjunctOf(CatSAT.Clause)">
+        <member name="M:CatSAT.Problem.UndeterminedDisjunctOf(CatSAT.Constraint)">
             <summary>
-            Find the first (and presumably only) undetermined disjunct of the clause.
+            Find the first (and presumably only) undetermined disjunct of the constraint.
             </summary>
-            <param name="c">The clause</param>
+            <param name="c">The constraint</param>
             <returns>Signed index of the disjunct</returns>
         </member>
         <member name="P:CatSAT.Problem.Item(CatSAT.Proposition)">
@@ -3173,7 +3599,7 @@
         </member>
         <member name="M:CatSAT.Problem.ResetProposition(CatSAT.Proposition)">
             <summary>
-            Reset a previously set proposition ot an undetermined state.
+            Reset a previously set proposition to an undetermined state.
             </summary>
             <param name="p">Proposition to reset</param>
         </member>

@@ -2595,6 +2595,11 @@
             True if we've been told by our syntax rule that this has to be a common noun.
             </summary>
         </member>
+        <member name="F:Imaginarium.Parsing.NP.ElementOfList">
+            <summary>
+            Whether this is an element of a list of NPs, and so can't include commas inside of it.
+            </summary>
+        </member>
         <member name="M:Imaginarium.Parsing.NP.ScanTo(System.String)">
             <summary>
             Scan forward to the next occurence of token.
