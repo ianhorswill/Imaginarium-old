@@ -2071,6 +2071,11 @@
             Matches always or nothing
             </summary>
         </member>
+        <member name="F:Imaginarium.Parsing.Parser.OptionalOther">
+            <summary>
+            Matches other, another, or nothing
+            </summary>
+        </member>
         <member name="F:Imaginarium.Parsing.Parser.ExistNotExist">
             <summary>
             Matches exist or not exist
