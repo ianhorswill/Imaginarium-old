@@ -25,14 +25,15 @@
 
 using System;
 using System.Collections;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
 using Imaginarium.Driver;
 using Imaginarium.Ontology;
 using Imaginarium.Parsing;
-using UnityEngine;
 using static System.IO.Path;
+using Debug = UnityEngine.Debug;
 using Object = UnityEngine.Object;
 
 public static class AutoGrader
@@ -64,6 +65,19 @@ public static class AutoGrader
         using (var results = new StreamWriter(Combine(dir, "Scores.csv")))
         {
             results.WriteLine("Student,Score,Errors");
+            // If the submissions were plain .gen files, make directories for them
+            foreach (var bareSubmission in Directory.GetFiles(dir))
+            {
+                var sub = GetFileNameWithoutExtension(bareSubmission);
+                if (GetExtension(bareSubmission) == ".gen" && sub.Split('_').Length > 2)
+                {
+                    var subDir = Combine(dir, sub);
+                    Directory.CreateDirectory(subDir);
+                    File.Move(bareSubmission, Combine(subDir, Path.GetFileName(bareSubmission)));
+                }
+            }
+            
+            // Process the directories
             foreach (var submission in Directory.GetDirectories(dir))
             {
                 var submissionName = GetFileNameWithoutExtension(submission);
