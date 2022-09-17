@@ -1926,6 +1926,12 @@
         <member name="M:Imaginarium.Parsing.ClosedClassSegment.#ctor(Imaginarium.Parsing.Parser)">
             <inheritdoc />
         </member>
+        <member name="M:Imaginarium.Parsing.ClosedClassSegment.WasMatchedTo(System.String[])">
+            <summary>
+            True if text is the text this was matched to in the input
+            </summary>
+            <param name="text">Text to match</param>
+        </member>
         <member name="T:Imaginarium.Parsing.ClosedClassSegmentWithValue`1">
             <summary>
             A closed-class segment that can denote a value of type T
@@ -2061,6 +2067,11 @@
             Recognizes conjugations of the verb to have
             </summary>
         </member>
+        <member name="F:Imaginarium.Parsing.Parser.AtMost">
+            <summary>
+            Matches at most, up to
+            </summary>
+        </member>
         <member name="F:Imaginarium.Parsing.Parser.OptionalAll">
             <summary>
             Matches all, every, or nothing
@@ -2089,6 +2100,16 @@
         <member name="F:Imaginarium.Parsing.Parser.CanMust">
             <summary>
             Matches can and must
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Parsing.Parser.CanMustButShouldBeCan">
+            <summary>
+            Matches can and must, but reports as just can
+            </summary>
+        </member>
+        <member name="F:Imaginarium.Parsing.Parser.CanMustButShouldBeMust">
+            <summary>
+            Matches can and must but reports and jsut must
             </summary>
         </member>
         <member name="F:Imaginarium.Parsing.Parser.CanNot">

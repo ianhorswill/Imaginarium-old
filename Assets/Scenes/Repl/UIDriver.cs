@@ -30,6 +30,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using CatSAT;
 using GraphVisualization;
 using Imaginarium.Driver;
 using Imaginarium.Generator;
@@ -232,15 +233,28 @@ public class UIDriver : MonoBehaviour, IRepl
 
             Input = "";
         }
+
         catch (Exception ex)
         {
             var previousOutput = Driver.CommandResponse;
             Driver.ClearCommandBuffer();
             Driver.AppendResponseLine("<color=yellow>");
-            Driver.AppendResponseLine(Parser.RuleTriggeringException == null
-                ? $"Uh oh.  I got confused by '<i>{Parser.InputTriggeringException ?? "none"}</i>'"
-                : $"    Uh oh.  I got confused while matching the input '<i>{Parser.InputTriggeringException ?? "none"}</i>' to the pattern '{Parser.RuleTriggeringException.SentencePatternDescription}' ({Parser.RuleTriggeringException.SentencePatternDescription}).");
-            Driver.AppendResponseLine($"    {FormatExceptionMessage(ex)}.");
+            
+            switch (ex)
+            {
+                case ContradictionException _:
+                    Driver.AppendResponseLine("<color=orange><b>Sorry; I found a contradiction.  You asked to imagine something that cannot exist given the statements in your generator.</b></color>");
+                    Driver.AppendResponseLine($"<color=grey>Internal error message: {ex.Message}</color>");
+                    break;
+                
+                default:
+                    Driver.AppendResponseLine(Parser.RuleTriggeringException == null
+                        ? $"Uh oh.  I got confused by '<i>{Parser.InputTriggeringException ?? "none"}</i>'"
+                        : $"    Uh oh.  I got confused while matching the input '<i>{Parser.InputTriggeringException ?? "none"}</i>' to the pattern '{Parser.RuleTriggeringException.SentencePatternDescription}' ({Parser.RuleTriggeringException.SentencePatternDescription}).");
+                    Driver.AppendResponseLine($"    {FormatExceptionMessage(ex)}.");
+                    break;
+            }
+
             Driver.AppendResponseLine("</color>");
 
             if (ex is GrammaticalError && Parser.RuleTriggeringException == null)
